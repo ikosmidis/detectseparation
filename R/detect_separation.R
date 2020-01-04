@@ -101,8 +101,10 @@
 #' ## and is also reveal by the divergence of the NV column of the
 #' ## result from the more computationally intensive check
 #' check_infinite_estimates(murder_glm)
-#' ## Mean bias reduction via adjusted scores results in finite estimates
-#' update(murder_glm, method = "brglm_fit")
+#' Mean bias reduction via adjusted scores results in finite estimates
+#' if (requireNamespace("brglm2", quietly = TRUE)) {
+#'     update(murder_glm, method = brglm2::brglm_fit)
+#' }
 #' }
 #' @export
 detect_separation <- function (x, y, weights = rep(1, nobs),
@@ -179,7 +181,7 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
             names(betas) <- betas_names
             inds <- abs(betas) < control$beta_tolerance
             betas <- Inf * betas
-            betas[inds] <- 0
+            betas[inds] <- 1
             betas_all[betas_names] <- betas
         }
         out <- list(x = x, y = y, betas = betas_all, separation = out$separation)
@@ -227,7 +229,7 @@ print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L
     if (!is.null(x$betas)) {
         cat("Existence of maximum likelihood estimates\n")
         print(x$betas)
-        cat("0: finite value, Inf: infinity, -Inf: -infinity\n")
+        cat("1: finite value, Inf: infinity, -Inf: -infinity\n")
     }
 }
 
