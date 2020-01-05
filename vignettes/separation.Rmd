@@ -1,9 +1,9 @@
 ---
 title: "Detecting separation and infinite estimates in binomial response GLMs"
-author: "[Ioannis Kosmidis](http://www.ikosmidis.com)"
-date: "16 May 2017"
+author: "[Ioannis Kosmidis](http://www.ikosmidis.com) and [Dirk Schumacher](http://www.dirk-schumacher.net)"
+date: "5 January 2020"
 output: rmarkdown::html_vignette
-bibliography: brglm2.bib
+bibliography: detectseparation.bib
 vignette: >
   %\VignetteIndexEntry{Detecting separation and infinite estimates in binomial response GLMs}
   %\VignetteEngine{knitr::rmarkdown}
@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 # The **brglm2** package
 
-Along with methods for improving the estimation of generalized linear models (see [`iteration`](https://cran.r-project.org/package=brglm2/brglm2.pdf) vignette), [**brglm2**](https://github.com/ikosmidis/brglm2) provides *pre-fit* and *post-fit* methods for the detection of separation and of infinite maximum likelihood estimates in binomial response generalized linear models.
+[**detectseparation**](https://github.com/ikosmidis/detectseparation) provides *pre-fit* and *post-fit* methods for the detection of separation and of infinite maximum likelihood estimates in binomial response generalized linear models.
 
 The key methods are `detect_separation` and `check_infinite_estimates` and this vignettes describes their use.
 
@@ -47,7 +47,7 @@ for the estimated standard error, and, hence the value `r
 round(coef(summary(modML))["NV", "z value"], 3)` for the $z$-statistic
 cannot be trusted for inference on the size of the effect for `NV`.
 
-‘@lesaffre:89[, Section 4] describe a procedure that can hint on the occurrence of infinite estimates. In particular, the model is successively refitted, by increasing the maximum number of allowed IWLS iterations at east step. At east step the estimated asymptotic standard errors are divided to the corresponding ones from the first fit. If the sequence of ratios diverges, then the maximum likelihood estimate of the corresponding parameter is minus or plus infinity. The following code chunk applies this process to `modML`.
+@lesaffre:89[, Section 4] describe a procedure that can hint on the occurrence of infinite estimates. In particular, the model is successively refitted, by increasing the maximum number of allowed IWLS iterations at east step. At east step the estimated asymptotic standard errors are divided to the corresponding ones from the first fit. If the sequence of ratios diverges, then the maximum likelihood estimate of the corresponding parameter is minus or plus infinity. The following code chunk applies this process to `modML`.
 ```{r, echo = TRUE, eval = TRUE}
 check_infinite_estimates(modML)
 ```
@@ -77,6 +77,6 @@ coef(summary(modML))[, "Std. Error"] + abs(endometrial_sep$betas)
 ```
 
 # Citation
-If you found this vignette or **brglm2**, in general, useful, please consider citing **brglm2** and the associated paper. You can find information on how to do this by typing `citation("brglm2")`.
+If you found this vignette or **detectseparation** useful, please consider citing **detectseparation**. You can find information on how to do this by typing `citation("detectseparation")`.
 
 # References
