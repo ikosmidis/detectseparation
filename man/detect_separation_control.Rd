@@ -9,12 +9,12 @@
 detect_separation_control(linear_program = c("primal", "dual"),
   purpose = c("find", "test"),
   beta_tolerance = sqrt(.Machine$double.eps),
-  separator = c("separator_konis", "separator"))
+  separator = "separator_konis")
 
 detectSeparationControl(linear_program = c("primal", "dual"),
   purpose = c("find", "test"),
   beta_tolerance = sqrt(.Machine$double.eps),
-  separator = c("separator_konis", "separator"))
+  separator = "separator_konis")
 }
 \arguments{
 \item{linear_program}{should \code{\link{detect_separation}} solve

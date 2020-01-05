@@ -184,7 +184,7 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
             betas[inds] <- 0
             betas_all[betas_names] <- betas
         }
-        out <- list(x = x, y = y, betas = betas_all, separation = out$separation)
+        out <- list(x = x, y = y, coefficients = betas_all, separation = out$separation)
     }
     out$linear_program <- control$linear_program
     out$purpose <- control$purpose
@@ -213,8 +213,7 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
 detect_separation_control <- function(linear_program = c("primal", "dual"),
                                       purpose = c("find", "test"),
                                       beta_tolerance = sqrt(.Machine$double.eps),
-                                      separator = c("separator_konis", "separator")) {
-    separator <- match.arg(separator)
+                                      separator = "separator_konis") {
     separator <- match.fun(separator)
     linear_program <- match.arg(linear_program)
     purpose <- match.arg(purpose)
@@ -228,9 +227,11 @@ print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L
     cat("Separation:", x$separation, "\n")
     if (!is.null(x$betas)) {
         cat("Existence of maximum likelihood estimates\n")
-        print(x$betas)
+        print(coef(x))
         cat("0: finite value, Inf: infinity, -Inf: -infinity\n")
     }
 }
+
+
 
 
