@@ -90,20 +90,21 @@
 #' ## Example inspired by unpublished microeconometrics lecture notes by
 #' ## Achim Zeileis https://eeecon.uibk.ac.at/~zeileis/
 #' ## The maximum likelihood estimate of sourhernyes is infinite
-#' data("MurderRates", package = "AER")
-#' murder_sep <- glm(I(executions > 0) ~ time + income +
-#'                   noncauc + lfp + southern, data = MurderRates,
-#'                   family = binomial(), method = "detect_separation")
-#' murder_sep
-#' ## which is also evident by the large estimated standard error for NV
-#' murder_glm <- update(murder_sep, method = "glm.fit")
-#' summary(murder_glm)
-#' ## and is also reveal by the divergence of the NV column of the
-#' ## result from the more computationally intensive check
-#' check_infinite_estimates(murder_glm)
-#' Mean bias reduction via adjusted scores results in finite estimates
-#' if (requireNamespace("brglm2", quietly = TRUE)) {
-#'     update(murder_glm, method = brglm2::brglm_fit)
+#' if (requireNamespace("AER", quietly = TRUE)) {
+#'     data("MurderRates", package = "AER")
+#'     murder_sep <- glm(I(executions > 0) ~ time + income +
+#'                       noncauc + lfp + southern, data = MurderRates,
+#'                       family = binomial(), method = "detect_separation")
+#'     murder_sep
+#'     ## which is also evident by the large estimated standard error for NV
+#'     murder_glm <- update(murder_sep, method = "glm.fit")
+#'     summary(murder_glm)
+#'     ## and is also reveal by the divergence of the NV column of the
+#'     ## result from the more computationally intensive check
+#'     check_infinite_estimates(murder_glm)
+#'     ## Mean bias reduction via adjusted scores results in finite estimates
+#'     if (requireNamespace("brglm2", quietly = TRUE)) 
+#'         update(murder_glm, method = brglm2::brglm_fit)
 #' }
 #' }
 #' @export
@@ -225,7 +226,7 @@ detect_separation_control <- function(linear_program = c("primal", "dual"),
 #' @export
 print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L), ...) {
     cat("Separation:", x$separation, "\n")
-    if (!is.null(x$betas)) {
+    if (!is.null(x$coefficients)) {
         cat("Existence of maximum likelihood estimates\n")
         print(coef(x))
         cat("0: finite value, Inf: infinity, -Inf: -infinity\n")
