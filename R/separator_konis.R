@@ -18,7 +18,7 @@
 #  http://www.r-project.org/Licenses/
 
 separator_konis <- function(x, y, linear_program = c("primal", "dual"), purpose = c("test", "find"),
-                      beta_tolerance = 1e-03) {
+                            tolerance = 1e-03) {
     n <- dim(x)[1L]
     p <- dim(x)[2L]
     p_seq <- seq.int(p)
@@ -70,7 +70,7 @@ separator_konis <- function(x, y, linear_program = c("primal", "dual"), purpose 
             stop("unexpected result from lpSolveAPI for primal test")
         }
         beta <- lpSolveAPI::get.variables(lp)
-        if (any(abs(beta) > beta_tolerance)) {
+        if (any(abs(beta) > tolerance)) {
             ans$separation <- TRUE
         }
         else {
@@ -126,7 +126,7 @@ separator_konis <- function(x, y, linear_program = c("primal", "dual"), purpose 
         status <- lpSolveAPI::set.basis(lp, -(n + p + basis))
         status <- lpSolveAPI::solve.lpExtPtr(lp)
         beta <- lpSolveAPI::get.dual.solution(lp)[2:(p+1)]
-        if (all(abs(beta) > beta_tolerance)) {
+        if (all(abs(beta) > tolerance)) {
             ans$separation <- TRUE
         }
         else {

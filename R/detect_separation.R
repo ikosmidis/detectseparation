@@ -173,14 +173,14 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
         x <- x[c(which(ones), which(zeros), rep(which(non_boundary), 2)), , drop = FALSE]
         y <- c(y[ones], y[zeros], rep(c(0., 1.), each = sum(non_boundary)))
         ## Run linear program
-        out <- separator(x = x, y = y, linear_program = control$linear_program, purpose = control$purpose, beta_tolerance = control$beta_tolerance)
+        out <- separator(x = x, y = y, linear_program = control$linear_program, purpose = control$purpose, tolerance = control$tolerance)
         if (is.null(out$beta)) {
             betas_all <- NULL
         }
         else {
             betas <- out$beta
             names(betas) <- betas_names
-            inds <- abs(betas) < control$beta_tolerance
+            inds <- abs(betas) < control$tolerance
             betas <- Inf * betas
             betas[inds] <- 0
             betas_all[betas_names] <- betas
@@ -207,18 +207,18 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
 #' @param purpose should \code{\link{detect_separation}} simply
 #'     \code{"test"} for separation or also \code{"find"} which
 #'     parameters are infinite?
-#' @param beta_tolerance maximum absolute variable value from the
+#' @param tolerance maximum absolute variable value from the
 #'     linear program, before separation is declared.
 #'
 #' @export
 detect_separation_control <- function(linear_program = c("primal", "dual"),
                                       purpose = c("find", "test"),
-                                      beta_tolerance = sqrt(.Machine$double.eps),
+                                      tolerance = sqrt(.Machine$double.eps),
                                       separator = "separator_konis") {
     separator <- match.fun(separator)
     linear_program <- match.arg(linear_program)
     purpose <- match.arg(purpose)
-    list(linear_program = linear_program, purpose = purpose, beta_tolerance = beta_tolerance, separator = separator)
+    list(linear_program = linear_program, purpose = purpose, tolerance = tolerance, separator = separator)
 }
 
 

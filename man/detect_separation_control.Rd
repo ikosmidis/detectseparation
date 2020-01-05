@@ -7,13 +7,11 @@
 \code{method} is \code{\link{detect_separation}}.}
 \usage{
 detect_separation_control(linear_program = c("primal", "dual"),
-  purpose = c("find", "test"),
-  beta_tolerance = sqrt(.Machine$double.eps),
+  purpose = c("find", "test"), tolerance = sqrt(.Machine$double.eps),
   separator = "separator_konis")
 
 detectSeparationControl(linear_program = c("primal", "dual"),
-  purpose = c("find", "test"),
-  beta_tolerance = sqrt(.Machine$double.eps),
+  purpose = c("find", "test"), tolerance = sqrt(.Machine$double.eps),
   separator = "separator_konis")
 }
 \arguments{
@@ -25,7 +23,7 @@ separation detection?}
 \code{"test"} for separation or also \code{"find"} which
 parameters are infinite?}
 
-\item{beta_tolerance}{maximum absolute variable value from the
+\item{tolerance}{maximum absolute variable value from the
 linear program, before separation is declared.}
 }
 \description{

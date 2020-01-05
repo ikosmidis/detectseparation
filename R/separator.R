@@ -1,6 +1,6 @@
 separator <- function(x, y,
                       linear_program = c("primal", "dual"), purpose = c("test", "find"), # this will most probably not be necessary
-                      beta_tolerance = 1e-03) {
+                      tolerance = 1e-03) {
     n <- dim(x)[1L]
     p <- dim(x)[2L]
 
