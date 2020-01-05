@@ -34,6 +34,6 @@ sun and in shade, at three times of day.
 }
 }
 \seealso{
-\code{\link{brglm_fit}}
+\code{\link[brglm2]{brglm_fit}}
 }
 \keyword{datasets}

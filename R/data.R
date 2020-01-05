@@ -16,7 +16,7 @@
 #'
 #' @seealso
 #'
-#' \code{\link{brglm_fit}}
+#' \code{\link[brglm2]{brglm_fit}}
 
 #'
 #' @source
@@ -56,7 +56,7 @@
 #'
 #' @seealso
 #'
-#' \code{\link{brglm_fit}}
+#' \code{\link[brglm2]{brglm_fit}}
 #' 
 #'  
 #' @references

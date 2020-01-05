@@ -23,8 +23,8 @@ separation detection?}
 \code{"test"} for separation or also \code{"find"} which
 parameters are infinite?}
 
-\item{tolerance}{maximum absolute variable value from the
-linear program, before separation is declared.}
+\item{tolerance}{maximum absolute variable value from the linear
+program, before separation is declared.}
 }
 \description{
 Typically only used internally by \code{\link{detect_separation}}

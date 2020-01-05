@@ -207,8 +207,8 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
 #' @param purpose should \code{\link{detect_separation}} simply
 #'     \code{"test"} for separation or also \code{"find"} which
 #'     parameters are infinite?
-#' @param tolerance maximum absolute variable value from the
-#'     linear program, before separation is declared.
+#' @param tolerance maximum absolute variable value from the linear
+#'     program, before separation is declared.
 #'
 #' @export
 detect_separation_control <- function(linear_program = c("primal", "dual"),

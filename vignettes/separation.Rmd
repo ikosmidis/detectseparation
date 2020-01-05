@@ -1,5 +1,5 @@
 ---
-title: "Detecting separation and infinite estimates in binomial response GLMs"
+title: "Detect or check for separation and infinite maximum likelihood esitmates in generalized linear models with categorical responses"
 author: "[Ioannis Kosmidis](http://www.ikosmidis.com) and [Dirk Schumacher](http://www.dirk-schumacher.net)"
 date: "5 January 2020"
 output: rmarkdown::html_vignette
