@@ -228,7 +228,7 @@ print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L
     cat("Separation:", x$separation, "\n")
     if (!is.null(x$coefficients)) {
         cat("Existence of maximum likelihood estimates\n")
-        print(coef(x))
+        print(coefficients(x))
         cat("0: finite value, Inf: infinity, -Inf: -infinity\n")
     }
 }

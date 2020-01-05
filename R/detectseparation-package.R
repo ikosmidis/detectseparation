@@ -1,3 +1,13 @@
+#' detectseparation: Detect or check for separation and infinite maximum likelihood esitmates in generalized linear models with categorical responses
+#'
+#' [SHORT DESCRIPTION HERE]
+#'
+#' @docType package
+#' @name detectseparation
+#' @import stats
+#'
+NULL
+
 #' Generic method for checking for infinite estimates
 #' @param object a fitted model object (e.g. the result of a
 #'     \code{\link{glm}} call).
