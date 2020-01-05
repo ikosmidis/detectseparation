@@ -14,8 +14,8 @@ lizards_separation <- glm(cbind(grahami, opalinus) ~ height + diameter +
 
 
 test_that("infinte estimates have been found as expected", {
-    expect_equal(endometrial_separation$betas, c(1, -Inf, 1, 1), check.attributes = FALSE)
-    expect_equal(lizards_separation$betas, rep(1L, 6), check.attributes = FALSE)
+    expect_equal(coef(endometrial_separation), c(0L, -Inf, 0L, 0L), check.attributes = FALSE)
+    expect_equal(coef(lizards_separation), rep(0L, 6), check.attributes = FALSE)
 })
 
 
