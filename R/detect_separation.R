@@ -62,7 +62,7 @@
 #'
 #' @author Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Kjell Konis [ctb] \email{kjell.konis@me.com}
 #'
-#' @seealso \code{\link[brglm]{brglm_fit}}, \code{\link{glm.fit}} and \code{\link{glm}}
+#' @seealso \code{\link[brglm2]{brglm_fit}}, \code{\link{glm.fit}} and \code{\link{glm}}
 #'
 #' @references
 #'
