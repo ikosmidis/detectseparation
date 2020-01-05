@@ -62,7 +62,7 @@
 #'
 #' @author Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Kjell Konis [ctb] \email{kjell.konis@me.com}
 #'
-#' @seealso \code{\link{brglm_fit}}, \code{\link{glm.fit}} and \code{\link{glm}}
+#' @seealso \code{\link[brglm]{brglm_fit}}, \code{\link{glm.fit}} and \code{\link{glm}}
 #'
 #' @references
 #'
@@ -181,7 +181,7 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
             names(betas) <- betas_names
             inds <- abs(betas) < control$beta_tolerance
             betas <- Inf * betas
-            betas[inds] <- 1
+            betas[inds] <- 0
             betas_all[betas_names] <- betas
         }
         out <- list(x = x, y = y, betas = betas_all, separation = out$separation)
@@ -229,7 +229,7 @@ print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L
     if (!is.null(x$betas)) {
         cat("Existence of maximum likelihood estimates\n")
         print(x$betas)
-        cat("1: finite value, Inf: infinity, -Inf: -infinity\n")
+        cat("0: finite value, Inf: infinity, -Inf: -infinity\n")
     }
 }
 

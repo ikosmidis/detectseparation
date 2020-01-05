@@ -16,6 +16,7 @@
 #
 #  A copy of the GNU General Public License is available at
 #  http://www.r-project.org/Licenses/
+
 separator_konis <- function(x, y, linear_program = c("primal", "dual"), purpose = c("test", "find"),
                       beta_tolerance = 1e-03) {
     n <- dim(x)[1L]
@@ -34,7 +35,7 @@ separator_konis <- function(x, y, linear_program = c("primal", "dual"), purpose 
             status <- lpSolveAPI::set.column(lp, j, x.bar[, j])
         }
         status <- lpSolveAPI::set.rhs(lp,  zeros)
-        status <- lpSolveAPI::set.constr.type(lp, rep.int(1, n))
+        status <- lpSolveAPI::set.constr.type(lp, rep.int(1L, n))
         status <- lpSolveAPI::set.objfn(lp, -colSums(x.bar))
         status <- lpSolveAPI::set.bounds(lp, lower = rep(-Inf, p), upper = rep(Inf, p))
         control <- lpSolveAPI::lp.control(lp, pivoting = "firstindex", sense = "max",
@@ -133,5 +134,21 @@ separator_konis <- function(x, y, linear_program = c("primal", "dual"), purpose 
         }
         ans$beta <- beta
     }
+    ans
+}
+
+separator <- function(x, y,
+                      linear_program = c("primal", "dual"), purpose = c("test", "find"),
+                      beta_tolerance = 1e-03) {
+    n <- dim(x)[1L]
+    p <- dim(x)[2L]
+
+    ## Some dummy code with garbage output
+
+    ans <- list()
+
+    ans$separation <- TRUE
+    ans$beta <- rep.int(0, p)
+
     ans
 }
