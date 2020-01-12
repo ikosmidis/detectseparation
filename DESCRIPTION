@@ -6,10 +6,19 @@ Description: Provides pre-fit and post-fit methods for detecting separation and 
 URL: https://github.com/ikosmidis/detectseparation
 BugReports: https://github.com/ikosmidis/detectseparation/issues
 Depends: R (>= 3.3.0)
-Imports: lpSolveAPI
+Imports:
+    lpSolveAPI,
+    ROI
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
-Suggests: testthat, knitr, rmarkdown, covr, brglm2, AER
+Suggests:
+    testthat,
+    knitr,
+    rmarkdown,
+    covr,
+    brglm2,
+    AER,
+    ROI.plugin.lpsolve
 VignetteBuilder: knitr
