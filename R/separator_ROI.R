@@ -19,13 +19,15 @@ separator_ROI <- function(x, y,
                           ...) {
   betas_names <- dimnames(x)[[2L]]
 
+  ## IK: 13/01/2020: 
+  ## detect_separation ensures that y is always 1 or zero so below checks is not necessary
   # just to be safe
-  unique_classes <- unique(y)
-  stopifnot(
-    is.numeric(unique_classes),
-    length(unique_classes) == 2L,
-    all(unique_classes %in% c(0, 1))
-  )
+  ## unique_classes <- unique(y)
+  ## stopifnot(
+  ##   is.numeric(unique_classes),
+  ##   length(unique_classes) == 2L,
+  ##   all(unique_classes %in% c(0, 1))
+  ## )
 
   # the model here is based on Konis (2007), chapter 4. In particular
   # sections 4.2, 4.4.3 and 4.4.4
@@ -64,10 +66,15 @@ separator_ROI <- function(x, y,
   # if the LP is unbounded, seperation exists. Otherwise an optiomal solution
   # with obj. value 0 exists.
   result <- ROI::ROI_solve(opt_model, solver = solver)
+  
+  ## an optimal solution should always exists
+  ## stopifnot(identical(as.integer(result$status$code), 0L))
+  ## IK: 13/01/2020
+  ## stoping with a message instead
+  if (!isTRUE(identical(result$status$code, 0L))) 
+      stop("unexpected result from ", solver)
 
-  # an optimal solution should always exists
-  stopifnot(identical(as.integer(result$status$code), 0L))
-
+  
   # compare to 0 zero with tolerance
   solution <- ROI::solution(result, "primal")
   non_zero <- abs(solution) > tolerance
