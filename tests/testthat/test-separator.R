@@ -10,7 +10,7 @@ endo_sep_new <- update(endo_sep_konis, separator = "separator")
 
 test_that("separator returns the same result as separator_konis [1]", {
     expect_identical(endo_sep_konis$separation, endo_sep_new$separation)
-    expect_equal(coef(endo_sep_konis), coef(endo_sep_new$separation$betas))    
+    expect_equal(coef(endo_sep_konis), coef(endo_sep_new))    
 })
 
 
@@ -24,6 +24,6 @@ if (requireNamespace("AER", quietly = TRUE)) {
 
     test_that("separator returns the same result as separator_konis [2]", {
         expect_identical(murder_sep_konis$separation, murder_sep_new$separation)
-        expect_equal(coef(murder_sep_konis), coef(murder_sep_new$separation$betas))    
+        expect_equal(coef(murder_sep_konis), coef(murder_sep_new))    
     })    
 }
