@@ -6,22 +6,31 @@
 \title{Auxiliary function for the \code{\link{glm}} interface when
 \code{method} is \code{\link{detect_separation}}.}
 \usage{
-detect_separation_control(linear_program = c("primal", "dual"),
-  purpose = c("find", "test"), tolerance = sqrt(.Machine$double.eps),
-  separator = "separator_konis")
+detect_separation_control(implementation = c("ROI", "lpSolveAPI"),
+  solver = c("lpsolve", "glpk"), linear_program = c("primal", "dual"),
+  purpose = c("find", "test"), tolerance = sqrt(.Machine$double.eps))
 
-detectSeparationControl(linear_program = c("primal", "dual"),
-  purpose = c("find", "test"), tolerance = sqrt(.Machine$double.eps),
-  separator = "separator_konis")
+detectSeparationControl(implementation = c("ROI", "lpSolveAPI"),
+  solver = c("lpsolve", "glpk"), linear_program = c("primal", "dual"),
+  purpose = c("find", "test"), tolerance = sqrt(.Machine$double.eps))
 }
 \arguments{
+\item{implementation}{should the \code{ROI} or the
+\code{lpSolveAPI} implementation be used? Default is
+\code{ROI}.}
+
+\item{solver}{should the linear program be solved using the
+\code{"lpsolve"} or the \code{"glpk"} solver?}
+
 \item{linear_program}{should \code{\link{detect_separation}} solve
 the \code{"primal"} or \code{"dual"} linear program for
-separation detection?}
+separation detection? Only relevant if \code{implementation =
+"lpSolveAPI"}.}
 
 \item{purpose}{should \code{\link{detect_separation}} simply
 \code{"test"} for separation or also \code{"find"} which
-parameters are infinite?}
+parameters are infinite? Only relevant if \code{implementation
+= "lpSolveAPI"}.}
 
 \item{tolerance}{maximum absolute variable value from the linear
 program, before separation is declared.}

@@ -72,15 +72,24 @@ For the definition of complete and quasi-complete separation, see
 Albert and Anderson (1984).
 
 \code{\link{detect_separation}} is a wrapper to the
-\code{separator_konis} function (a modified version of the
-\code{separator} function from the **safeBinaryRegression** R
+\code{separator_ROI} function and \code{separator_lpSolveAPI}
+function (a modified version of the \code{separator} function from
+the **safeBinaryRegression** R
 package). \code{\link{detect_separation}} can be passed directly as
 a method to the \code{\link{glm}} function. See, examples.
+}
+\note{
+\code{\link{detect_separation}} was designed in 2017 by Ioannis
+Kosmidis for the **brglm2** R package, after correspondence with
+Kjell Konis, and a port of the \code{separator} function had been
+included in **brglm2** under the permission of Kjell Konis.
 
-The interface to \code{separator_konis} was designed by Ioannis Kosmidis
-after correspondence with Kjell Konis, and a port of
-\code{separator_konis} has been included in **detectseparation** under the
-permission of Kjell Konis.
+In 2020, \code{\link{detect_separation}} and
+\code{\link{check_infinite_estimates}} were moved outside
+**brglm2** into the **detectseparation** package. Dirk Schumacher
+authored the \code{separator_ROI} function, which depends on the
+**ROI** R package and is now the default implementation used for
+detecting separation.
 
 \code{detectSeparation} is an alias for \code{detect_separation}.
 }
@@ -131,5 +140,5 @@ package version 0.1-3.
 \code{\link[brglm2]{brglm_fit}}, \code{\link{glm.fit}} and \code{\link{glm}}
 }
 \author{
-Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Kjell Konis [ctb] \email{kjell.konis@me.com}
+Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Dirk Schumacher [aut] \email{mail@dirk-schumacher.net}, Kjell Konis [ctb] \email{kjell.konis@me.com}
 }
