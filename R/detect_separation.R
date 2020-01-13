@@ -48,19 +48,29 @@
 #' Albert and Anderson (1984).
 #'
 #' \code{\link{detect_separation}} is a wrapper to the
-#' \code{separator_konis} function (a modified version of the
-#' \code{separator} function from the **safeBinaryRegression** R
+#' \code{separator_ROI} function and \code{separator_lpSolveAPI}
+#' function (a modified version of the \code{separator} function from
+#' the **safeBinaryRegression** R
 #' package). \code{\link{detect_separation}} can be passed directly as
 #' a method to the \code{\link{glm}} function. See, examples.
 #'
-#' The interface to \code{separator_konis} was designed by Ioannis Kosmidis
-#' after correspondence with Kjell Konis, and a port of
-#' \code{separator_konis} has been included in **detectseparation** under the
-#' permission of Kjell Konis.
+#' @note
+#' 
+#' \code{\link{detect_separation}} was designed in 2017 by Ioannis
+#' Kosmidis for the **brglm2** R package, after correspondence with
+#' Kjell Konis, and a port of the \code{separator} function had been
+#' included in **brglm2** under the permission of Kjell Konis.
 #'
+#' In 2020, \code{\link{detect_separation}} and
+#' \code{\link{check_infinite_estimates}} were moved outside
+#' **brglm2** into the **detectseparation** package. Dirk Schumacher
+#' authored the \code{separator_ROI} function, which depends on the
+#' **ROI** R package and is now the default implementation used for
+#' detecting separation.
+#' 
 #' \code{detectSeparation} is an alias for \code{detect_separation}.
 #'
-#' @author Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Kjell Konis [ctb] \email{kjell.konis@me.com}
+#' @author Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Dirk Schumacher [aut] \email{mail@dirk-schumacher.net}, Kjell Konis [ctb] \email{kjell.konis@me.com}
 #'
 #' @seealso \code{\link[brglm2]{brglm_fit}}, \code{\link{glm.fit}} and \code{\link{glm}}
 #'
@@ -109,9 +119,9 @@
 #' }
 #' @export
 detect_separation <- function (x, y, weights = rep(1, nobs),
-                              start = NULL, etastart = NULL,  mustart = NULL,
-                              offset = rep(0, nobs), family = gaussian(),
-                              control = list(), intercept = TRUE, singular.ok = TRUE) {
+                               start = NULL, etastart = NULL,  mustart = NULL,
+                               offset = rep(0, nobs), family = gaussian(),
+                               control = list(), intercept = TRUE, singular.ok = TRUE) {
     if (family$family != "binomial") {
         warning("detect_separation has been developed for use with binomial-response models")
     }
@@ -141,12 +151,10 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
         ## Detect aliasing
         qrx <- qr(x)
         rank <- qrx$rank
-        is_full_rank <- rank == nvars
-        
+        is_full_rank <- rank == nvars        
         if (!singular.ok && !is_full_rank) {
             stop("singular fit encountered")
         }
-
         if (!isTRUE(is_full_rank)) {
             aliased <- qrx$pivot[seq.int(qrx$rank + 1, nvars)]
             X_all <- x
@@ -173,7 +181,11 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
         x <- x[c(which(ones), which(zeros), rep(which(non_boundary), 2)), , drop = FALSE]
         y <- c(y[ones], y[zeros], rep(c(0., 1.), each = sum(non_boundary)))
         ## Run linear program
-        out <- separator(x = x, y = y, linear_program = control$linear_program, purpose = control$purpose, tolerance = control$tolerance)
+        out <- separator(x = x, y = y,
+                         linear_program = control$linear_program,
+                         purpose = control$purpose,
+                         tolerance = control$tolerance,
+                         solver = control$solver)
         if (is.null(out$beta)) {
             betas_all <- NULL
         }
@@ -185,10 +197,13 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
             betas[inds] <- 0
             betas_all[betas_names] <- betas
         }
-        out <- list(x = x, y = y, coefficients = betas_all, separation = out$separation)
+        out <- list(x = x,
+                    y = y,
+                    coefficients = betas_all,
+                    separation = out$separation)
     }
-    out$linear_program <- control$linear_program
-    out$purpose <- control$purpose
+    
+    out$control <- control
     out$class <- "detect_separation"
     class(out) <- "detect_separation"
     return(out)
@@ -201,30 +216,53 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
 #' but may be used to construct a \code{control} argument.
 #'
 #' @aliases detectSeparationControl
-#' @param linear_program should \code{\link{detect_separation}} solve
-#'     the \code{"primal"} or \code{"dual"} linear program for
-#'     separation detection?
-#' @param purpose should \code{\link{detect_separation}} simply
-#'     \code{"test"} for separation or also \code{"find"} which
-#'     parameters are infinite?
+#' @param implementation should the \code{ROI} or the
+#'     \code{lpSolveAPI} implementation be used? Default is
+#'     \code{ROI}.
 #' @param tolerance maximum absolute variable value from the linear
 #'     program, before separation is declared.
+#' @param linear_program should \code{\link{detect_separation}} solve
+#'     the \code{"primal"} or \code{"dual"} linear program for
+#'     separation detection? Only relevant if \code{implementation =
+#'     "lpSolveAPI"}.
+#' @param purpose should \code{\link{detect_separation}} simply
+#'     \code{"test"} for separation or also \code{"find"} which
+#'     parameters are infinite? Only relevant if \code{implementation
+#'     = "lpSolveAPI"}.
+#' @param solver should the linear program be solved using the
+#'     \code{"lpsolve"} or the \code{"glpk"} solver?
 #'
 #' @export
-detect_separation_control <- function(linear_program = c("primal", "dual"),
+detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
+                                      solver = c("lpsolve", "glpk"),
+                                      linear_program = c("primal", "dual"),
                                       purpose = c("find", "test"),
-                                      tolerance = sqrt(.Machine$double.eps),
-                                      separator = "separator_konis") {
-    separator <- match.fun(separator)
+                                      tolerance = sqrt(.Machine$double.eps)) {
+    implementation <- match.arg(implementation)
+    separator <- match.fun(paste("separator", implementation, sep = "_"))
     linear_program <- match.arg(linear_program)
     purpose <- match.arg(purpose)
-    list(linear_program = linear_program, purpose = purpose, tolerance = tolerance, separator = separator)
+    solver <- match.arg(solver)
+    
+    list(linear_program = linear_program,
+         solver = solver,
+         purpose = purpose,
+         tolerance = tolerance,
+         separator = separator,
+         implementation = implementation)
 }
 
 
 #' @method print detect_separation
 #' @export
 print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L), ...) {
+    cat("Implementation:", x$control$implementation, "| ")
+    if (identical(x$control$implementation, "ROI")) {
+        cat("Solver:", x$control$solver, "\n")
+    }
+    else {
+        cat("Linear program:", x$control$linear_program, "| Purpose:", x$control$purpose, "\n")
+    }
     cat("Separation:", x$separation, "\n")
     if (!is.null(x$coefficients)) {
         cat("Existence of maximum likelihood estimates\n")
