@@ -1,7 +1,22 @@
-separator <- function(x, y,
-                      linear_program = c("primal", "dual"), purpose = c("test", "find"), # this will most probably not be necessary
-                      tolerance = 1e-03,
-                      solver = "lpsolve") {
+#  Copyright (C) 2020 Dirk Schumacher, Ioannis Kosmidis
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 or 3 of the License
+#  (at your option).
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  A copy of the GNU General Public License is available at
+#  http://www.r-project.org/Licenses/
+
+separator_ROI <- function(x, y,
+                          solver = "lpsolve",
+                          tolerance = 1e-03,
+                          ...) {
   betas_names <- dimnames(x)[[2L]]
 
   # just to be safe
