@@ -16,7 +16,7 @@ if (requireNamespace("AER", quietly = TRUE)) {
 
     
     test_that("ROI implementation returns the same result with solver lpsolve and solve glpk", {
-        expect_equal(coef(murder_sep_konis), coef(murder_sep_glpk))    
+        expect_equal(coef(murder_sep_lpsolve), coef(murder_sep_glpk))    
     })    
 
 }
