@@ -4,8 +4,8 @@
 #'
 #' @docType package
 #' @name detectseparation
-#' @import stats
-#'
+#' @importFrom stats coef coefficients gaussian update vcov
+
 NULL
 
 #' Generic method for checking for infinite estimates
