@@ -17,8 +17,11 @@
 #  A copy of the GNU General Public License is available at
 #  http://www.r-project.org/Licenses/
 
-separator_konis <- function(x, y, linear_program = c("primal", "dual"), purpose = c("test", "find"),
-                            tolerance = 1e-03) {
+separator_lpSolveAPI <- function(x, y,
+                                 linear_program = c("primal", "dual"),
+                                 purpose = c("test", "find"),
+                                 tolerance = 1e-03,
+                                 ...) {
     n <- dim(x)[1L]
     p <- dim(x)[2L]
     p_seq <- seq.int(p)
@@ -126,7 +129,7 @@ separator_konis <- function(x, y, linear_program = c("primal", "dual"), purpose 
         status <- lpSolveAPI::set.basis(lp, -(n + p + basis))
         status <- lpSolveAPI::solve.lpExtPtr(lp)
         beta <- lpSolveAPI::get.dual.solution(lp)[2:(p+1)]
-        if (all(abs(beta) > tolerance)) {
+        if (any(abs(beta) > tolerance)) {
             ans$separation <- TRUE
         }
         else {
