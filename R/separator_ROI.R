@@ -60,8 +60,9 @@ separator_ROI <- function(x, y,
     maximum = TRUE
   )
 
+  # This will be now checked by match.arg in detect_separation_control
   # ensure the solver is loaded using the ROI plugin mechanism
-  require_solver(solver)
+  ## require_solver(solver)
 
   # if the LP is unbounded, seperation exists. Otherwise an optiomal solution
   # with obj. value 0 exists.
@@ -73,7 +74,6 @@ separator_ROI <- function(x, y,
   ## stoping with a message instead
   if (!isTRUE(identical(result$status$code, 0L))) 
       stop("unexpected result from ", solver)
-
   
   # compare to 0 zero with tolerance
   solution <- ROI::solution(result, "primal")
@@ -87,15 +87,15 @@ separator_ROI <- function(x, y,
   )
 }
 
-require_solver <- function(solver_name) {
-  solver_name <- match.arg(solver_name, choices = c("lpsolve", "glpk"))
-  roi_plugin_name <- paste0("ROI.plugin.", solver_name)
-  if (!requireNamespace(roi_plugin_name, quietly = TRUE)) {
-    stop(
-      "No ROI solver plugin loaded for linear programs. ",
-      "Please install the package ", roi_plugin_name,
-      " or use a different solver.",
-      call. = FALSE
-    )
-  }
-}
+## require_solver <- function(solver_name) {
+##   solver_name <- match.arg(solver_name, choices = c("lpsolve", "glpk"))
+##   roi_plugin_name <- paste0("ROI.plugin.", solver_name)
+##   if (!requireNamespace(roi_plugin_name, quietly = TRUE)) {
+##     stop(
+##       "No ROI solver plugin loaded for linear programs. ",
+##       "Please install the package ", roi_plugin_name,
+##       " or use a different solver.",
+##       call. = FALSE
+##     )
+##   }
+## }

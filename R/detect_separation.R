@@ -216,8 +216,8 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
 #' but may be used to construct a \code{control} argument.
 #'
 #' @aliases detectSeparationControl
-#' @param implementation should the \code{ROI} or the
-#'     \code{lpSolveAPI} implementation be used? Default is
+#' @param implementation should the implementation using \code{ROI} or
+#'     the implementation usinf \code{lpSolveAPI} be used? Default is
 #'     \code{ROI}.
 #' @param tolerance maximum absolute variable value from the linear
 #'     program, before separation is declared.
@@ -230,7 +230,9 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
 #'     parameters are infinite? Only relevant if \code{implementation
 #'     = "lpSolveAPI"}.
 #' @param solver should the linear program be solved using the
-#'     \code{"lpsolve"} or the \code{"glpk"} solver?
+#'     \code{"lpsolve"} (using the **ROI.plugin.lpsolve** package;
+#'     default) or the \code{"glpk"} (using the **ROI.plugin.glpk**
+#'     package) solver?
 #'
 #' @export
 detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
