@@ -17,6 +17,9 @@ nsteps}. Default value is 30.}
 
 \item{...}{currently not used.}
 }
+\value{
+An object of class \code{inf_check} that has a \code{plot} method.
+}
 \description{
 A simple diagnostic of whether the maximum likelihood estimates are
 infinite
@@ -45,7 +48,8 @@ endometrialML <- glm(HG ~ NV + PI + EH, data = endometrial,
                      family = binomial("probit"))
 ## clearly the maximum likelihood estimate for the coefficient of
 ## NV is infinite
-check_infinite_estimates(endometrialML)
+ests <- check_infinite_estimates(endometrialML)
+plot(ests)
 
 \dontrun{
 ## Aligator data (Agresti, 2002, Table~7.1)
