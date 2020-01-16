@@ -15,12 +15,14 @@ detectSeparationControl(implementation = c("ROI", "lpSolveAPI"),
   purpose = c("find", "test"), tolerance = sqrt(.Machine$double.eps))
 }
 \arguments{
-\item{implementation}{should the \code{ROI} or the
-\code{lpSolveAPI} implementation be used? Default is
+\item{implementation}{should the implementation using \code{ROI} or
+the implementation usinf \code{lpSolveAPI} be used? Default is
 \code{ROI}.}
 
 \item{solver}{should the linear program be solved using the
-\code{"lpsolve"} or the \code{"glpk"} solver?}
+\code{"lpsolve"} (using the **ROI.plugin.lpsolve** package;
+default) or the \code{"glpk"} (using the **ROI.plugin.glpk**
+package) solver?}
 
 \item{linear_program}{should \code{\link{detect_separation}} solve
 the \code{"primal"} or \code{"dual"} linear program for
