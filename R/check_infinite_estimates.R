@@ -25,6 +25,9 @@
 #'     nsteps}. Default value is 30.
 #' @param ... currently not used.
 #'
+#' @return
+#'
+#' An object of class \code{inf_check} that has a \code{plot} method.
 #'
 #' @details
 #'
@@ -59,7 +62,8 @@
 #'                      family = binomial("probit"))
 #' ## clearly the maximum likelihood estimate for the coefficient of
 #' ## NV is infinite
-#' check_infinite_estimates(endometrialML)
+#' ests <- check_infinite_estimates(endometrialML)
+#' plot(ests)
 #'
 #' \dontrun{
 #' ## Aligator data (Agresti, 2002, Table~7.1)
@@ -114,7 +118,14 @@ check_infinite_estimates.glm <- function(object, nsteps = 20, ...)
     }
     res <- sweep(stdErrors, 2, stdErrors[1, ], "/")
     colnames(res) <- betasNames
+    class(res) <- "inf_check"
     res
 }
 
-
+#' @export
+plot.inf_check <- function(x, tol = 1e+2, ...) {
+    ## heuristic for determining ploting ranges
+    sds <- apply(x, 2, sd)    
+    matplot(x, type = "l", lty = 1, ylim = range(x[, sds < tol]) * c(1, 1.5),
+            ylab = "estimate", xlab = "number of iterations")
+}
