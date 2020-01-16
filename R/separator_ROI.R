@@ -60,7 +60,10 @@ separator_ROI <- function(x, y,
     maximum = TRUE
   )
 
-  # This will be now checked by match.arg in detect_separation_control
+  ## IK: 13/01/2020
+  ## This will be now checked by match.arg in detect_separation_control
+  ## because ROI::ROI_applicable_solvers(opt_model) returns
+  ## [1] "lpsolve" "glpk"
   # ensure the solver is loaded using the ROI plugin mechanism
   ## require_solver(solver)
 
@@ -68,19 +71,22 @@ separator_ROI <- function(x, y,
   # with obj. value 0 exists.
   result <- ROI::ROI_solve(opt_model, solver = solver)
   
-  ## an optimal solution should always exists
-  ## stopifnot(identical(as.integer(result$status$code), 0L))
-  ## IK: 13/01/2020
-  ## stoping with a message instead
-  if (!isTRUE(identical(result$status$code, 0L))) 
-      stop("unexpected result from ", solver)
   
   # compare to 0 zero with tolerance
   solution <- ROI::solution(result, "primal")
   non_zero <- abs(solution) > tolerance
   names(solution) <- betas_names
   has_seperation <- any(non_zero, na.rm = TRUE)
+  
+  ## an optimal solution should always exists
+  ## stopifnot(identical(as.integer(result$status$code), 0L))
+  ## IK, 16 January 2020: if status is unexpected return separation = NA
+  if (!isTRUE(identical(result$status$code, 0L))) {
+      ## stop("unexpected result from ", solver)
+      has_separation <- NA
+  }
 
+  
   list(
     separation = has_seperation,
     beta = solution

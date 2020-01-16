@@ -53,7 +53,9 @@ separator_lpSolveAPI <- function(x, y,
                 ans$separation <- TRUE
             }
             else {
-                stop("unexpected result from lpSolveAPI for primal test")
+                ## IK, 16 January 2020: if status is unexpected return separation = NA
+                ## stop("unexpected result from lpSolveAPI for primal test")
+                ans$separation <- NA
             }
         }
     }
@@ -70,7 +72,9 @@ separator_lpSolveAPI <- function(x, y,
                               simplextype = c("primal", "primal"))
         status <- lpSolveAPI::solve.lpExtPtr(lp)
         if (status != 0) {
-            stop("unexpected result from lpSolveAPI for primal test")
+            ## IK, 16 January 2020: if status is unexpected return separation = NA           
+            ## stop("unexpected result from lpSolveAPI for primal test")
+            ans$separation <- NA
         }
         beta <- lpSolveAPI::get.variables(lp)
         if (any(abs(beta) > tolerance)) {
@@ -101,7 +105,10 @@ separator_lpSolveAPI <- function(x, y,
                 ans$separation <- TRUE
             }
             else {
-                stop("unexpected result from lpSolveAPI for dual test")}
+                ## IK, 16 January 2020: if status is unexpected return separation = NA
+                ## stop("unexpected result from lpSolveAPI for dual test")}
+                ans$separation <- NA
+            }
         }
     }
     if (linear_program == "dual" && purpose == "find") {
