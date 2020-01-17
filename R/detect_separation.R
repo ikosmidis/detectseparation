@@ -179,14 +179,21 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
         zeros <- y == 0
         non_boundary <- !(ones | zeros)        
         x <- x[c(which(ones), which(zeros), rep(which(non_boundary), 2)), , drop = FALSE]
-        y <- c(y[ones], y[zeros], rep(c(0., 1.), each = sum(non_boundary)))
-        
+        y <- c(y[ones], y[zeros], rep(c(0., 1.), each = sum(non_boundary)))       
         ## Run linear program
         out <- separator(x = x, y = y,
                          linear_program = control$linear_program,
                          purpose = control$purpose,
                          tolerance = control$tolerance,
-                         solver = control$solver)
+                         solver = control$solver)       
+        if (is.na(out$separation)) {
+            if (identical(control$implementation, "ROI")) {
+                warning("unexpected result from implementation ", control$implementation, " with solver: ", control$solver, "\n")
+            }
+            else {
+                warning("unexpected result from implementation ", control$implementation, " with linear_program: ", control$linear_program, " and purpose: ", control$purpose, "\n")
+            }
+        }
         if (is.null(out$beta)) {
             betas_all <- NULL
         }
@@ -202,8 +209,7 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
                     y = y,
                     coefficients = betas_all,
                     separation = out$separation)
-    }
-    
+    }   
     out$control <- control
     out$class <- "detect_separation"
     class(out) <- "detect_separation"
@@ -245,8 +251,7 @@ detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
     separator <- match.fun(paste("separator", implementation, sep = "_"))
     linear_program <- match.arg(linear_program)
     purpose <- match.arg(purpose)
-    solver <- match.arg(solver)
-    
+    solver <- match.arg(solver)    
     list(linear_program = linear_program,
          solver = solver,
          purpose = purpose,
