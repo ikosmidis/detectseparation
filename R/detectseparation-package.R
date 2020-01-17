@@ -4,6 +4,8 @@
 #'
 #' @docType package
 #' @name detectseparation
+#' @import ROI.plugin.lpsolve
+#' @import ROI.plugin.glpk
 #' @importFrom stats coef coefficients gaussian update vcov
 
 NULL
