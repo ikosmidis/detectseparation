@@ -28,28 +28,25 @@ The key methods are `detect_separation` and `check_infinite_estimates` and this 
 
 # Checking for infinite estimates
 
-@heinze:02 used a logistic regression model to analyse data from a
-study on endometrial cancer. @agresti:15[, Section 5.7] provide details on the data set. Below, we
-fit a probit regression model with the same linear predictor as the
-logistic regression model in @heinze:02.
+@heinze+schemper:2002 used a logistic regression model to analyse data from a
+study on endometrial cancer [see, @agresti:2015, Section 5.7 or `?endometrial` for more  details on the data set]. Below, we refit the model in @heinze+schemper:2002 in order to demonstrate the functionality that **detectseparation** provides.
 ```{r, echo = TRUE, eval = TRUE}
-library("brglm2")
-data("endometrial", package = "brglm2")
-modML <- glm(HG ~ NV + PI + EH, family = binomial("probit"), data = endometrial)
-theta_mle <- coef(modML)
-summary(modML)
+library("detectseparation")
+data("endometrial", package = "detectseparation")
+endo_glm <- glm(HG ~ NV + PI + EH, family = binomial("probit"), data = endometrial)
+theta_mle <- coef(endo_glm)
+summary(endo_glm)
 ```
-As is the case for the logistic regression in @heinze:02, the maximum
-likelihood (ML) estimate of the parameter for `NV` is actually
+The maximum likelihood (ML) estimate of the parameter for `NV` is actually
 infinite. The reported, apparently finite value is merely due to false
 convergence of the iterative estimation procedure. The same is true
 for the estimated standard error, and, hence the value `r
-round(coef(summary(modML))["NV", "z value"], 3)` for the $z$-statistic
+round(coef(summary(endo_glm))["NV", "z value"], 3)` for the $z$-statistic
 cannot be trusted for inference on the size of the effect for `NV`.
 
-@lesaffre:89[, Section 4] describe a procedure that can hint on the occurrence of infinite estimates. In particular, the model is successively refitted, by increasing the maximum number of allowed IWLS iterations at east step. At east step the estimated asymptotic standard errors are divided to the corresponding ones from the first fit. If the sequence of ratios diverges, then the maximum likelihood estimate of the corresponding parameter is minus or plus infinity. The following code chunk applies this process to `modML`.
+@lesaffre+albert:1989[, Section 4] describe a procedure that can hint on the occurrence of infinite estimates. In particular, the model is successively refitted, by increasing the maximum number of allowed IWLS iterations at east step. At east step the estimated asymptotic standard errors are divided to the corresponding ones from the first fit. If the sequence of ratios diverges, then the maximum likelihood estimate of the corresponding parameter is minus or plus infinity. The following code chunk applies this process to `endo_glm`.
 ```{r, echo = TRUE, eval = TRUE}
-(inf_check <- check_infinite_estimates(modML))
+(inf_check <- check_infinite_estimates(endo_glm))
 plot(inf_check)
 ```
 
@@ -60,33 +57,42 @@ Clearly, the ratios of estimated standard errors diverge for `NV`.
 quasi-complete separation in datasets for binomial response
 generalized linear models, and finds which of the parameters will have
 infinite maximum likelihood estimates. `detect_separation` relies on
-the linear programming methods developed in @konis:07.
+the linear programming methods developed in the 2017 PhD thesis by
+Kjell Konis [@konis:2007].
 
 `detect_separation` is *pre-fit* method, in the sense that it does not need to estimate the model to detect separation and/or identify infinite estimates. For example
 ```{r, eval = TRUE, echo = TRUE}
-endometrial_sep <- glm(HG ~ NV + PI + EH, data = endometrial,
-                       family = binomial("logit"),
-                       method = "detect_separation")
-endometrial_sep
+endo_sep <- glm(HG ~ NV + PI + EH, data = endometrial,
+                family = binomial("logit"),
+                method = "detect_separation")
+endo_sep
 ```
 The `detect_separation` method reports that there is separation in the data, that the estimates for `(Intercept)`, `PI` and `EH` are finite (coded 0), and that the estimate for  `NV` is plus infinity. So, the actual maximum likelihood estimates are
 ```{r, echo = TRUE,  eval = TRUE}
-coef(modML) + coef(endometrial_sep)
+coef(endo_glm) + coef(endo_sep)
 ```
 and the estimated standard errors are
 ```{r, echo = TRUE,  eval = TRUE}
-coef(summary(modML))[, "Std. Error"] + abs(coef(endometrial_sep))
+coef(summary(endo_glm))[, "Std. Error"] + abs(coef(endo_sep))
 ```
 
 We can also use the [`glpk`](https://CRAN.R-project.org/package=ROI.plugin.glpk) solver for solving the linear program for separation detection
 ```{r, echo = TRUE, eval = TRUE}
-update(endometrial_sep, solver = "glpk")
+update(endo_sep, solver = "glpk")
 ```
-or use tge direct [`lpSolveAPI`](https://CRAN.R-project.org/package=ROI.plugin.glpk) implementation
+or use the implementation using [**lpSolveAPI**](https://CRAN.R-project.org/package=ROI.plugin.glpk) directly
 ```{r,  echo = TRUE, eval = TRUE}
-update(endometrial_sep, implementation = "lpSolveAPI")
+update(endo_sep, implementation = "lpSolveAPI")
 ```
 See `?detect_separation_control` for more options.
+
+As proven in [@kosmidis+firth:2018], an estimator that is always finite, regardless whether separation occurs on not, is the reduced-bias estimator of [@firth:1993]. 
+
+which is implemented in the [**brglm2**](https://CRAN.R-project.org/package=brglm2) R package. 
+```{r, echo = TRUE, eval = TRUE}
+library("brglm2")
+summary(update(endo_glm, method = "brglm_fit"))
+```
 
 # Citation
 If you found this vignette or **detectseparation** useful, please consider citing **detectseparation**. You can find information on how to do this by typing `citation("detectseparation")`.
