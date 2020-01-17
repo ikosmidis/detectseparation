@@ -19,7 +19,7 @@ RoxygenNote: 6.1.1
 Suggests:
     testthat,
     knitr,
-    rmarkdowng,
+    rmarkdown,
     covr,
     brglm2,
     AER
