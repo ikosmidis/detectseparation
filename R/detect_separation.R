@@ -111,7 +111,7 @@
 #'     summary(murder_glm)
 #'     ## and is also reveal by the divergence of the NV column of the
 #'     ## result from the more computationally intensive check
-#'     check_infinite_estimates(murder_glm)
+#'     plot(check_infinite_estimates(murder_glm))
 #'     ## Mean bias reduction via adjusted scores results in finite estimates
 #'     if (requireNamespace("brglm2", quietly = TRUE)) 
 #'         update(murder_glm, method = brglm2::brglm_fit)
@@ -180,6 +180,7 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
         non_boundary <- !(ones | zeros)        
         x <- x[c(which(ones), which(zeros), rep(which(non_boundary), 2)), , drop = FALSE]
         y <- c(y[ones], y[zeros], rep(c(0., 1.), each = sum(non_boundary)))
+        
         ## Run linear program
         out <- separator(x = x, y = y,
                          linear_program = control$linear_program,

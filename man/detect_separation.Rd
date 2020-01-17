@@ -119,7 +119,7 @@ if (requireNamespace("AER", quietly = TRUE)) {
     summary(murder_glm)
     ## and is also reveal by the divergence of the NV column of the
     ## result from the more computationally intensive check
-    check_infinite_estimates(murder_glm)
+    plot(check_infinite_estimates(murder_glm))
     ## Mean bias reduction via adjusted scores results in finite estimates
     if (requireNamespace("brglm2", quietly = TRUE)) 
         update(murder_glm, method = brglm2::brglm_fit)
