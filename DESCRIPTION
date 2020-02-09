@@ -19,6 +19,6 @@ LazyData: true
 RoxygenNote: 7.0.2
 Suggests:
     testthat, knitr, rmarkdown, covr, brglm2, AER,
-    ROI.plugin.cplex, ROI.plugin.glpk, ROI.plugin.gurobi,
-    ROI.plugin.symphony, ROI.plugin.cbc, ROI.plugin.clp
+    ROI.plugin.cbc, ROI.plugin.clp, ROI.plugin.cplex, ROI.plugin.ecos,
+    ROI.plugin.glpk, ROI.plugin.gurobi, ROI.plugin.scs, ROI.plugin.symphony
 VignetteBuilder: knitr
