@@ -19,16 +19,6 @@ separator_ROI <- function(x, y,
                           ...) {
   betas_names <- dimnames(x)[[2L]]
 
-  ## IK: 13/01/2020: 
-  ## detect_separation ensures that y is always 1 or zero so below checks is not necessary
-  # just to be safe
-  ## unique_classes <- unique(y)
-  ## stopifnot(
-  ##   is.numeric(unique_classes),
-  ##   length(unique_classes) == 2L,
-  ##   all(unique_classes %in% c(0, 1))
-  ## )
-
   # the model here is based on Konis (2007), chapter 4. In particular
   # sections 4.2, 4.4.3 and 4.4.4
 
@@ -59,18 +49,10 @@ separator_ROI <- function(x, y,
     bounds = bounds,
     maximum = TRUE
   )
-
-  ## IK: 13/01/2020
-  ## This will be now checked by match.arg in detect_separation_control
-  ## because ROI::ROI_applicable_solvers(opt_model) returns
-  ## [1] "lpsolve" "glpk"
-  # ensure the solver is loaded using the ROI plugin mechanism
-  ## require_solver(solver)
-
+  
   # if the LP is unbounded, seperation exists. Otherwise an optiomal solution
   # with obj. value 0 exists.
-  result <- ROI::ROI_solve(opt_model, solver = solver)
-  
+  result <- ROI::ROI_solve(opt_model, solver = solver) 
   
   # compare to 0 zero with tolerance
   solution <- ROI::solution(result, "primal")
@@ -79,29 +61,12 @@ separator_ROI <- function(x, y,
   has_seperation <- any(non_zero, na.rm = TRUE)
   
   ## an optimal solution should always exists
-  ## stopifnot(identical(as.integer(result$status$code), 0L))
-  ## IK, 16 January 2020: if status is unexpected return separation = NA
   if (!isTRUE(identical(result$status$code, 0L))) {
-      ## stop("unexpected result from ", solver)
       has_separation <- NA
   }
-
   
   list(
     separation = has_seperation,
     beta = solution
   )
 }
-
-## require_solver <- function(solver_name) {
-##   solver_name <- match.arg(solver_name, choices = c("lpsolve", "glpk"))
-##   roi_plugin_name <- paste0("ROI.plugin.", solver_name)
-##   if (!requireNamespace(roi_plugin_name, quietly = TRUE)) {
-##     stop(
-##       "No ROI solver plugin loaded for linear programs. ",
-##       "Please install the package ", roi_plugin_name,
-##       " or use a different solver.",
-##       call. = FALSE
-##     )
-##   }
-## }

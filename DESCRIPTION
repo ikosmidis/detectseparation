@@ -10,19 +10,20 @@ BugReports: https://github.com/ikosmidis/detectseparation/issues
 Imports:
     ROI,
     ROI.plugin.lpsolve,
-    ROI.plugin.glpk,
     lpSolveAPI
 Depends:
     R (>= 3.3.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Suggests:
-    testthat,
-    knitr,
-    rmarkdown,
-    covr,
-    brglm2,
-    AER
+    testthat, knitr, rmarkdown, covr, brglm2, AER,
+    ROI.plugin.alabama, ROI.plugin.deoptim, ROI.plugin.ecos, 
+    ROI.plugin.neos, ROI.plugin.optimx, ROI.plugin.alabama, ROI.plugin.cplex,
+    ROI.plugin.deoptim, ROI.plugin.ecos, ROI.plugin.glpk, ROI.plugin.gurobi,
+    ROI.plugin.ipop, ROI.plugin.lpsolve, ROI.plugin.mosek, ROI.plugin.msbinlp,
+    ROI.plugin.neos, ROI.plugin.nloptr, ROI.plugin.optimx, ROI.plugin.qpoases,
+    ROI.plugin.quadprog, ROI.plugin.scs, ROI.plugin.symphony, ROI.plugin.cbc,
+    ROI.plugin.clp, ROI.plugin.gurobi, ROI.plugin.mosekR
 VignetteBuilder: knitr

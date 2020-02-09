@@ -42,7 +42,7 @@ infinity.
 }
 \examples{
 
-## endometrial data from Heinze \\& Schemper (2002) (see ?endometrial)
+## endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
 data("endometrial", package = "detectseparation")
 endometrialML <- glm(HG ~ NV + PI + EH, data = endometrial,
                      family = binomial("probit"))

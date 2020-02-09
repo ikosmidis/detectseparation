@@ -6,13 +6,21 @@
 \title{Auxiliary function for the \code{\link{glm}} interface when
 \code{method} is \code{\link{detect_separation}}.}
 \usage{
-detect_separation_control(implementation = c("ROI", "lpSolveAPI"),
-  solver = c("lpsolve", "glpk"), linear_program = c("primal", "dual"),
-  purpose = c("find", "test"), tolerance = sqrt(.Machine$double.eps))
+detect_separation_control(
+  implementation = c("ROI", "lpSolveAPI"),
+  solver = "lpsolve",
+  linear_program = c("primal", "dual"),
+  purpose = c("find", "test"),
+  tolerance = sqrt(.Machine$double.eps)
+)
 
-detectSeparationControl(implementation = c("ROI", "lpSolveAPI"),
-  solver = c("lpsolve", "glpk"), linear_program = c("primal", "dual"),
-  purpose = c("find", "test"), tolerance = sqrt(.Machine$double.eps))
+detectSeparationControl(
+  implementation = c("ROI", "lpSolveAPI"),
+  solver = "lpsolve",
+  linear_program = c("primal", "dual"),
+  purpose = c("find", "test"),
+  tolerance = sqrt(.Machine$double.eps)
+)
 }
 \arguments{
 \item{implementation}{should the implementation using \code{ROI} or

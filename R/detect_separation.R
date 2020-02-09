@@ -243,15 +243,21 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
 #'
 #' @export
 detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
-                                      solver = c("lpsolve", "glpk"),
+                                      solver = "lpsolve",
                                       linear_program = c("primal", "dual"),
                                       purpose = c("find", "test"),
                                       tolerance = sqrt(.Machine$double.eps)) {
     implementation <- match.arg(implementation)
-    separator <- match.fun(paste("separator", implementation, sep = "_"))
-    linear_program <- match.arg(linear_program)
     purpose <- match.arg(purpose)
-    solver <- match.arg(solver)    
+    separator <- match.fun(paste("separator", implementation, sep = "_"))
+    
+    ## ensure the solver is loaded using the ROI plugin mechanism
+    if (solver != "lpsolve") {
+        roi_plugin_name <- paste0("ROI.plugin.", solver)
+        pkgload::check_suggested(roi_plugin_name, path = inst("detectseparation"))
+        requireNamespace(roi_plugin_name, quietly = TRUE)
+    }
+    
     list(linear_program = linear_program,
          solver = solver,
          purpose = purpose,

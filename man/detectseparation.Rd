@@ -3,7 +3,6 @@
 \docType{package}
 \name{detectseparation}
 \alias{detectseparation}
-\alias{detectseparation-package}
 \title{detectseparation: Detect or check for separation and infinite maximum likelihood esitmates in generalized linear models with categorical responses}
 \description{
 [SHORT DESCRIPTION HERE]

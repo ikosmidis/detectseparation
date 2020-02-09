@@ -8,15 +8,33 @@
 finds which parameters have infinite maximum likelihood estimates
 in generalized linear models with binomial responses}
 \usage{
-detect_separation(x, y, weights = rep(1, nobs), start = NULL,
-  etastart = NULL, mustart = NULL, offset = rep(0, nobs),
-  family = gaussian(), control = list(), intercept = TRUE,
-  singular.ok = TRUE)
+detect_separation(
+  x,
+  y,
+  weights = rep(1, nobs),
+  start = NULL,
+  etastart = NULL,
+  mustart = NULL,
+  offset = rep(0, nobs),
+  family = gaussian(),
+  control = list(),
+  intercept = TRUE,
+  singular.ok = TRUE
+)
 
-detectSeparation(x, y, weights = rep(1, nobs), start = NULL,
-  etastart = NULL, mustart = NULL, offset = rep(0, nobs),
-  family = gaussian(), control = list(), intercept = TRUE,
-  singular.ok = TRUE)
+detectSeparation(
+  x,
+  y,
+  weights = rep(1, nobs),
+  start = NULL,
+  etastart = NULL,
+  mustart = NULL,
+  offset = rep(0, nobs),
+  family = gaussian(),
+  control = list(),
+  intercept = TRUE,
+  singular.ok = TRUE
+)
 }
 \arguments{
 \item{x}{\code{x} is a design matrix of dimension \code{n * p}.}
@@ -35,15 +53,15 @@ detectSeparation(x, y, weights = rep(1, nobs), start = NULL,
 \item{offset}{this can be used to specify an \emph{a priori} known
     component to be included in the linear predictor during fitting.
     This should be \code{NULL} or a numeric vector of length equal to
-    the number of cases.  One or more \code{\link{offset}} terms can be
+    the number of cases.  One or more \code{\link[stats]{offset}} terms can be
     included in the formula instead or as well, and if more than one is
-    specified their sum is used.  See \code{\link{model.offset}}.}
+    specified their sum is used.  See \code{\link[stats]{model.offset}}.}
 
 \item{family}{a description of the error distribution and link
     function to be used in the model.  For \code{glm} this can be a
     character string naming a family function, a family function or the
     result of a call to a family function.  For \code{glm.fit} only the
-    third option is supported.  (See \code{\link{family}} for details of
+    third option is supported.  (See \code{\link[stats]{family}} for details of
     family functions.)}
 
 \item{control}{a list of parameters controlling separation
@@ -95,7 +113,7 @@ detecting separation.
 }
 \examples{
 
-## endometrial data from Heinze \\& Schemper (2002) (see ?endometrial)
+## endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
 data("endometrial", package = "detectseparation")
 endometrial_sep <- glm(HG ~ NV + PI + EH, data = endometrial,
                        family = binomial("logit"),
