@@ -2,6 +2,8 @@
 #' maximum likelihood estimates in generalized linear models with
 #' categorical responses
 #'
+#' @seealso \code{\link{detect_separation}}, \code{\link{check_infinite_estimates}}
+#'
 #' @docType package
 #' @name detectseparation
 #' @import ROI.plugin.lpsolve

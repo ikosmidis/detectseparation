@@ -72,7 +72,7 @@
 #'
 #' @author Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Dirk Schumacher [aut] \email{mail@dirk-schumacher.net}, Kjell Konis [ctb] \email{kjell.konis@me.com}
 #'
-#' @seealso \code{\link[brglm2]{brglm_fit}}, \code{\link{glm.fit}} and \code{\link{glm}}
+#' @seealso \code{\link{glm.fit}} and \code{\link{glm}}, \code{\link{check_infinite_estimates}}, \code{\link[brglm2]{brglm_fit}}, 
 #'
 #' @references
 #'
