@@ -23,7 +23,6 @@ separator_ROI <- function(x, y,
   # sections 4.2, 4.4.3 and 4.4.4
 
   # build the ROI model
-
   # transform the model matrix so that all constraints are >=
   # that should also work with doubles
   y[y == 0] <- -1
@@ -60,13 +59,13 @@ separator_ROI <- function(x, y,
   names(solution) <- betas_names
   has_seperation <- any(non_zero, na.rm = TRUE)
   
-  ## an optimal solution should always exists
+  # an optimal solution should always exists
   if (!isTRUE(identical(result$status$code, 0L))) {
       has_separation <- NA
   }
   
   list(
-    separation = has_seperation,
-    beta = solution
+      separation = has_seperation,
+      beta = solution
   )
 }

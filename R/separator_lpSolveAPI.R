@@ -26,7 +26,7 @@ separator_lpSolveAPI <- function(x, y,
     p <- dim(x)[2L]
     p_seq <- seq.int(p)
     zeros <- rep.int(0, n)
-    dimnames(x) <- NULL ## FIXME: do we really need that?
+    dimnames(x) <- NULL
     y.bar <- -sign(y - 0.5)
     x.bar <- y.bar * x
     ans <- list()
@@ -44,7 +44,6 @@ separator_lpSolveAPI <- function(x, y,
         control <- lpSolveAPI::lp.control(lp, pivoting = "firstindex", sense = "max",
                                           simplextype = c("primal", "primal"))
         status <- lpSolveAPI::solve.lpExtPtr(lp)
-        ## end work
         if (status == 0) {
             ans$separation <- FALSE
         }
@@ -53,8 +52,6 @@ separator_lpSolveAPI <- function(x, y,
                 ans$separation <- TRUE
             }
             else {
-                ## IK, 16 January 2020: if status is unexpected return separation = NA
-                ## stop("unexpected result from lpSolveAPI for primal test")
                 ans$separation <- NA
             }
         }
@@ -72,8 +69,6 @@ separator_lpSolveAPI <- function(x, y,
                               simplextype = c("primal", "primal"))
         status <- lpSolveAPI::solve.lpExtPtr(lp)
         if (status != 0) {
-            ## IK, 16 January 2020: if status is unexpected return separation = NA           
-            ## stop("unexpected result from lpSolveAPI for primal test")
             ans$separation <- NA
         }
         beta <- lpSolveAPI::get.variables(lp)
@@ -105,8 +100,6 @@ separator_lpSolveAPI <- function(x, y,
                 ans$separation <- TRUE
             }
             else {
-                ## IK, 16 January 2020: if status is unexpected return separation = NA
-                ## stop("unexpected result from lpSolveAPI for dual test")}
                 ans$separation <- NA
             }
         }
@@ -119,8 +112,8 @@ separator_lpSolveAPI <- function(x, y,
         for (j in p_seq) {
             status <- lpSolveAPI::set.column(lp, n+j, -1.0, j)
         }
-        ## IK, 12 April 2017: p_seq instead 1:n below;
-        ## safeBinaryRegression:::separator (version 0.1-3) has 1:n
+        # IK, 12 April 2017: p_seq instead 1:n below;
+        # safeBinaryRegression:::separator (version 0.1-3) has 1:n
         for (j in p_seq) {
             status <- lpSolveAPI::set.column(lp, n+p+j, 1.0, j)
         }

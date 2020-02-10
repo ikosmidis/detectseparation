@@ -284,7 +284,3 @@ print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L
         cat("0: finite value, Inf: infinity, -Inf: -infinity\n")
     }
 }
-
-
-
-
