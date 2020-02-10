@@ -122,7 +122,7 @@ endometrial_sep
 ## The maximum likelihood estimate for NV is infinite
 summary(update(endometrial_sep, method = "glm.fit"))
 
-\dontrun{
+\donttest{
 ## Example inspired by unpublished microeconometrics lecture notes by
 ## Achim Zeileis https://eeecon.uibk.ac.at/~zeileis/
 ## The maximum likelihood estimate of sourhernyes is infinite

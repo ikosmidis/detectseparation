@@ -48,11 +48,11 @@ endometrial_ml <- glm(HG ~ NV + PI + EH, data = endometrial,
                       family = binomial("probit"))
 ## clearly the maximum likelihood estimate for the coefficient of
 ## NV is infinite
-(estimates <- check_infinite_estimates(endometrialML))
+(estimates <- check_infinite_estimates(endometrial_ml))
 plot(estimates)
 
 
-\dontrun{
+\donttest{
 ## Aligator data (Agresti, 2002, Table~7.1)
 if (requireNamespace("brglm2", quietly = TRUE)) {
     data("alligators", package = "brglm2")
