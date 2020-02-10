@@ -1,6 +1,6 @@
-#' detectseparation: Detect or check for separation and infinite maximum likelihood estimates in generalized linear models with categorical responses
-#'
-#' [SHORT DESCRIPTION HERE]
+#' detectseparation: Detect or check for separation and infinite
+#' maximum likelihood estimates in generalized linear models with
+#' categorical responses
 #'
 #' @docType package
 #' @name detectseparation
