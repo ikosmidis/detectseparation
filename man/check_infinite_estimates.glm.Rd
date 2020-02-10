@@ -70,5 +70,7 @@ Discrimination. *Journal of the Royal Statistical Society. Series B
 (Methodological)*, **51**, 109-116
 }
 \seealso{
-\code{\link[nnet]{multinom}}, \code{\link[brglm2]{brmultinom}}
+\code{\link[nnet]{multinom}},
+    \code{\link{detect_separation}},
+    \code{\link[brglm2]{brmultinom}}
 }

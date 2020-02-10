@@ -46,7 +46,9 @@
 #' estimate for the corresponding parameter has value minus or plus
 #' infinity.
 #'
-#' @seealso \code{\link[nnet]{multinom}}, \code{\link[brglm2]{brmultinom}}
+#' @seealso \code{\link[nnet]{multinom}},
+#'     \code{\link{detect_separation}},
+#'     \code{\link[brglm2]{brmultinom}}
 #'
 #' @references
 #'
