@@ -224,7 +224,7 @@ detect_separation <- function (x, y, weights = rep(1, nobs),
 #'
 #' @aliases detectSeparationControl
 #' @param implementation should the implementation using \code{ROI} or
-#'     the implementation usinf \code{lpSolveAPI} be used? Default is
+#'     the implementation using \code{lpSolveAPI} be used? Default is
 #'     \code{ROI}.
 #' @param tolerance maximum absolute variable value from the linear
 #'     program, before separation is declared.

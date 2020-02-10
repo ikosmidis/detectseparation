@@ -24,7 +24,7 @@ detectSeparationControl(
 }
 \arguments{
 \item{implementation}{should the implementation using \code{ROI} or
-the implementation usinf \code{lpSolveAPI} be used? Default is
+the implementation using \code{lpSolveAPI} be used? Default is
 \code{ROI}.}
 
 \item{solver}{should the linear program be solved using the
