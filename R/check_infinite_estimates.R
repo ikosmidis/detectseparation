@@ -60,12 +60,13 @@
 #'
 #' ## endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
 #' data("endometrial", package = "detectseparation")
-#' endometrialML <- glm(HG ~ NV + PI + EH, data = endometrial,
-#'                      family = binomial("probit"))
+#' endometrial_ml <- glm(HG ~ NV + PI + EH, data = endometrial,
+#'                       family = binomial("probit"))
 #' ## clearly the maximum likelihood estimate for the coefficient of
 #' ## NV is infinite
-#' ests <- check_infinite_estimates(endometrialML)
-#' plot(ests)
+#' (estimates <- check_infinite_estimates(endometrialML))
+#' plot(estimates)
+#' 
 #'
 #' \dontrun{
 #' ## Aligator data (Agresti, 2002, Table~7.1)
@@ -75,20 +76,24 @@
 #'                          data = alligators, type = "ML", ref = 1)
 #'     ## Clearly some estimated standard errors diverge as the number of
 #'     ## Fisher scoring iterations increases
-#'     matplot(check_infinite_estimates(all_ml), type = "l", lty = 1,
-#'             ylim = c(0.5, 1.5))
+#'     plot(check_infinite_estimates(all_ml))
+#'     ## Bias reduction the brglm2 R packages can be used to get finite estimates
+#'     all_br <- brglm2::brmultinom(foodchoice ~ size + lake , weights = round(freq/3),
+#'                          data = alligators, ref = 1)
+#'     plot(check_infinite_estimates(all_br))
 #' }
 #' }
 #' @export
 check_infinite_estimates.glm <- function(object, nsteps = 20, ...)
 {
+    valid_classes <- c("glm", "brglmFit", "brmultinom")
     is_brmultinom <- inherits(object, "brmultinom")
-
-    if ((class(object)[1] != "glm") & (!is_brmultinom)) {
-        warning("check_infinite_estimates has been designed for objects of class 'glm'")
+        
+    if (!inherits(object, valid_classes)) {
+        warning("check_infinite_estimates has been designed for objects of class 'glm', 'brglmFit', 'brmultinom'")
     }
     if ((object$family$family != "binomial") & (!is_brmultinom)) {
-        warning("check_infinite_estimates has been designed for binomial-response models")
+        warning("check_infinite_estimates has been designed for binomial- or multinomial-response models")
     }
 
     if (is_brmultinom) {
@@ -108,7 +113,7 @@ check_infinite_estimates.glm <- function(object, nsteps = 20, ...)
     start <- NULL
     for (i in 1:nsteps) {
         if (is_brmultinom) {
-            suppressWarnings(temp.object <- update(object, control = list(maxit = i, epsilon = eps, type = "ML"), start = start))
+            suppressWarnings(temp.object <- update(object, control = list(maxit = i, epsilon = eps, type = object$type), start = start))
             stdErrors[i, noNA] <- sqrt(diag(vcov(temp.object))[noNA])
         }
         else {

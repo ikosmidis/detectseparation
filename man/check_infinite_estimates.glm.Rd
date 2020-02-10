@@ -44,12 +44,13 @@ infinity.
 
 ## endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
 data("endometrial", package = "detectseparation")
-endometrialML <- glm(HG ~ NV + PI + EH, data = endometrial,
-                     family = binomial("probit"))
+endometrial_ml <- glm(HG ~ NV + PI + EH, data = endometrial,
+                      family = binomial("probit"))
 ## clearly the maximum likelihood estimate for the coefficient of
 ## NV is infinite
-ests <- check_infinite_estimates(endometrialML)
-plot(ests)
+(estimates <- check_infinite_estimates(endometrialML))
+plot(estimates)
+
 
 \dontrun{
 ## Aligator data (Agresti, 2002, Table~7.1)
@@ -59,8 +60,11 @@ if (requireNamespace("brglm2", quietly = TRUE)) {
                          data = alligators, type = "ML", ref = 1)
     ## Clearly some estimated standard errors diverge as the number of
     ## Fisher scoring iterations increases
-    matplot(check_infinite_estimates(all_ml), type = "l", lty = 1,
-            ylim = c(0.5, 1.5))
+    plot(check_infinite_estimates(all_ml))
+    ## Bias reduction the brglm2 R packages can be used to get finite estimates
+    all_br <- brglm2::brmultinom(foodchoice ~ size + lake , weights = round(freq/3),
+                         data = alligators, ref = 1)
+    plot(check_infinite_estimates(all_br))
 }
 }
 }
