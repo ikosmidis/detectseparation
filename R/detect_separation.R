@@ -263,7 +263,7 @@ detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
     ## ensure the solver is loaded using the ROI plugin mechanism
     if (solver != "lpsolve") {
         roi_plugin_name <- paste0("ROI.plugin.", solver)
-        pkgload::check_suggested(roi_plugin_name, path = inst("detectseparation"))
+        pkgload::check_suggested(roi_plugin_name, path = pkgload::inst("detectseparation"))
         requireNamespace(roi_plugin_name, quietly = TRUE)
     }
     

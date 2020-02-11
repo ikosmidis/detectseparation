@@ -10,7 +10,8 @@ BugReports: https://github.com/ikosmidis/detectseparation/issues
 Imports:
     ROI,
     ROI.plugin.lpsolve,
-    lpSolveAPI
+    lpSolveAPI,
+    pkgload
 Depends:
     R (>= 3.3.0)
 License: GPL-3
