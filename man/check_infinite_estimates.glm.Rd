@@ -17,6 +17,9 @@ nsteps}. Default value is 30.}
 
 \item{...}{currently not used.}
 }
+\value{
+An object of class \code{inf_check} that has a \code{plot} method.
+}
 \description{
 A simple diagnostic of whether the maximum likelihood estimates are
 infinite
@@ -39,15 +42,17 @@ infinity.
 }
 \examples{
 
-## endometrial data from Heinze \\& Schemper (2002) (see ?endometrial)
+## endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
 data("endometrial", package = "detectseparation")
-endometrialML <- glm(HG ~ NV + PI + EH, data = endometrial,
-                     family = binomial("probit"))
+endometrial_ml <- glm(HG ~ NV + PI + EH, data = endometrial,
+                      family = binomial("probit"))
 ## clearly the maximum likelihood estimate for the coefficient of
 ## NV is infinite
-check_infinite_estimates(endometrialML)
+(estimates <- check_infinite_estimates(endometrial_ml))
+plot(estimates)
 
-\dontrun{
+
+\donttest{
 ## Aligator data (Agresti, 2002, Table~7.1)
 if (requireNamespace("brglm2", quietly = TRUE)) {
     data("alligators", package = "brglm2")
@@ -55,8 +60,11 @@ if (requireNamespace("brglm2", quietly = TRUE)) {
                          data = alligators, type = "ML", ref = 1)
     ## Clearly some estimated standard errors diverge as the number of
     ## Fisher scoring iterations increases
-    matplot(check_infinite_estimates(all_ml), type = "l", lty = 1,
-            ylim = c(0.5, 1.5))
+    plot(check_infinite_estimates(all_ml))
+    ## Bias reduction the brglm2 R packages can be used to get finite estimates
+    all_br <- brglm2::brmultinom(foodchoice ~ size + lake , weights = round(freq/3),
+                         data = alligators, ref = 1)
+    plot(check_infinite_estimates(all_br))
 }
 }
 }
@@ -66,5 +74,7 @@ Discrimination. *Journal of the Royal Statistical Society. Series B
 (Methodological)*, **51**, 109-116
 }
 \seealso{
-\code{\link[nnet]{multinom}}, \code{\link[brglm2]{brmultinom}}
+\code{\link[nnet]{multinom}},
+    \code{\link{detect_separation}},
+    \code{\link[brglm2]{brmultinom}}
 }

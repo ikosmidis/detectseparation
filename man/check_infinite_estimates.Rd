@@ -15,3 +15,6 @@ check_infinite_estimates(object, ...)
 \description{
 Generic method for checking for infinite estimates
 }
+\seealso{
+check_infinite_estimates.glm
+}

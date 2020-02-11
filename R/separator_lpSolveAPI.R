@@ -17,13 +17,16 @@
 #  A copy of the GNU General Public License is available at
 #  http://www.r-project.org/Licenses/
 
-separator_konis <- function(x, y, linear_program = c("primal", "dual"), purpose = c("test", "find"),
-                            tolerance = 1e-03) {
+separator_lpSolveAPI <- function(x, y,
+                                 linear_program = c("primal", "dual"),
+                                 purpose = c("test", "find"),
+                                 tolerance = 1e-03,
+                                 ...) {
     n <- dim(x)[1L]
     p <- dim(x)[2L]
     p_seq <- seq.int(p)
     zeros <- rep.int(0, n)
-    dimnames(x) <- NULL ## FIXME: do we really need that?
+    dimnames(x) <- NULL
     y.bar <- -sign(y - 0.5)
     x.bar <- y.bar * x
     ans <- list()
@@ -41,7 +44,6 @@ separator_konis <- function(x, y, linear_program = c("primal", "dual"), purpose 
         control <- lpSolveAPI::lp.control(lp, pivoting = "firstindex", sense = "max",
                                           simplextype = c("primal", "primal"))
         status <- lpSolveAPI::solve.lpExtPtr(lp)
-        ## end work
         if (status == 0) {
             ans$separation <- FALSE
         }
@@ -50,7 +52,7 @@ separator_konis <- function(x, y, linear_program = c("primal", "dual"), purpose 
                 ans$separation <- TRUE
             }
             else {
-                stop("unexpected result from lpSolveAPI for primal test")
+                ans$separation <- NA
             }
         }
     }
@@ -67,7 +69,7 @@ separator_konis <- function(x, y, linear_program = c("primal", "dual"), purpose 
                               simplextype = c("primal", "primal"))
         status <- lpSolveAPI::solve.lpExtPtr(lp)
         if (status != 0) {
-            stop("unexpected result from lpSolveAPI for primal test")
+            ans$separation <- NA
         }
         beta <- lpSolveAPI::get.variables(lp)
         if (any(abs(beta) > tolerance)) {
@@ -98,7 +100,8 @@ separator_konis <- function(x, y, linear_program = c("primal", "dual"), purpose 
                 ans$separation <- TRUE
             }
             else {
-                stop("unexpected result from lpSolveAPI for dual test")}
+                ans$separation <- NA
+            }
         }
     }
     if (linear_program == "dual" && purpose == "find") {
@@ -109,8 +112,8 @@ separator_konis <- function(x, y, linear_program = c("primal", "dual"), purpose 
         for (j in p_seq) {
             status <- lpSolveAPI::set.column(lp, n+j, -1.0, j)
         }
-        ## IK, 12 April 2017: p_seq instead 1:n below;
-        ## safeBinaryRegression:::separator (version 0.1-3) has 1:n
+        # IK, 12 April 2017: p_seq instead 1:n below;
+        # safeBinaryRegression:::separator (version 0.1-3) has 1:n
         for (j in p_seq) {
             status <- lpSolveAPI::set.column(lp, n+p+j, 1.0, j)
         }
@@ -126,7 +129,7 @@ separator_konis <- function(x, y, linear_program = c("primal", "dual"), purpose 
         status <- lpSolveAPI::set.basis(lp, -(n + p + basis))
         status <- lpSolveAPI::solve.lpExtPtr(lp)
         beta <- lpSolveAPI::get.dual.solution(lp)[2:(p+1)]
-        if (all(abs(beta) > tolerance)) {
+        if (any(abs(beta) > tolerance)) {
             ans$separation <- TRUE
         }
         else {

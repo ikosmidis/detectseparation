@@ -8,15 +8,33 @@
 finds which parameters have infinite maximum likelihood estimates
 in generalized linear models with binomial responses}
 \usage{
-detect_separation(x, y, weights = rep(1, nobs), start = NULL,
-  etastart = NULL, mustart = NULL, offset = rep(0, nobs),
-  family = gaussian(), control = list(), intercept = TRUE,
-  singular.ok = TRUE)
+detect_separation(
+  x,
+  y,
+  weights = rep(1, nobs),
+  start = NULL,
+  etastart = NULL,
+  mustart = NULL,
+  offset = rep(0, nobs),
+  family = gaussian(),
+  control = list(),
+  intercept = TRUE,
+  singular.ok = TRUE
+)
 
-detectSeparation(x, y, weights = rep(1, nobs), start = NULL,
-  etastart = NULL, mustart = NULL, offset = rep(0, nobs),
-  family = gaussian(), control = list(), intercept = TRUE,
-  singular.ok = TRUE)
+detectSeparation(
+  x,
+  y,
+  weights = rep(1, nobs),
+  start = NULL,
+  etastart = NULL,
+  mustart = NULL,
+  offset = rep(0, nobs),
+  family = gaussian(),
+  control = list(),
+  intercept = TRUE,
+  singular.ok = TRUE
+)
 }
 \arguments{
 \item{x}{\code{x} is a design matrix of dimension \code{n * p}.}
@@ -35,15 +53,15 @@ detectSeparation(x, y, weights = rep(1, nobs), start = NULL,
 \item{offset}{this can be used to specify an \emph{a priori} known
     component to be included in the linear predictor during fitting.
     This should be \code{NULL} or a numeric vector of length equal to
-    the number of cases.  One or more \code{\link{offset}} terms can be
+    the number of cases.  One or more \code{\link[stats]{offset}} terms can be
     included in the formula instead or as well, and if more than one is
-    specified their sum is used.  See \code{\link{model.offset}}.}
+    specified their sum is used.  See \code{\link[stats]{model.offset}}.}
 
 \item{family}{a description of the error distribution and link
     function to be used in the model.  For \code{glm} this can be a
     character string naming a family function, a family function or the
     result of a call to a family function.  For \code{glm.fit} only the
-    third option is supported.  (See \code{\link{family}} for details of
+    third option is supported.  (See \code{\link[stats]{family}} for details of
     family functions.)}
 
 \item{control}{a list of parameters controlling separation
@@ -72,21 +90,38 @@ For the definition of complete and quasi-complete separation, see
 Albert and Anderson (1984).
 
 \code{\link{detect_separation}} is a wrapper to the
-\code{separator_konis} function (a modified version of the
-\code{separator} function from the **safeBinaryRegression** R
+\code{separator_ROI} function and \code{separator_lpSolveAPI}
+function (a modified version of the \code{separator} function from
+the **safeBinaryRegression** R
 package). \code{\link{detect_separation}} can be passed directly as
 a method to the \code{\link{glm}} function. See, examples.
 
-The interface to \code{separator_konis} was designed by Ioannis Kosmidis
-after correspondence with Kjell Konis, and a port of
-\code{separator_konis} has been included in **detectseparation** under the
-permission of Kjell Konis.
+The \code{\link{coefficients}} method extracts a vector of values
+for each of the model parameters under the following convention:
+\code{0} if the maximum likelihood estimate of the parameter is
+finite, and \code{Inf} or \code{-Inf} if the maximum likelihood
+estimate of the parameter if plus or minus infinity. This
+convention makes it easy to adjust the maximum likelihood estimates
+to their actual values by element-wise addition.
+}
+\note{
+\code{\link{detect_separation}} was designed in 2017 by Ioannis
+Kosmidis for the **brglm2** R package, after correspondence with
+Kjell Konis, and a port of the \code{separator} function had been
+included in **brglm2** under the permission of Kjell Konis.
+
+In 2020, \code{\link{detect_separation}} and
+\code{\link{check_infinite_estimates}} were moved outside
+**brglm2** into the dedicated **detectseparation** package. Dirk Schumacher
+authored the \code{separator_ROI} function, which depends on the
+**ROI** R package and is now the default implementation used for
+detecting separation.
 
 \code{detectSeparation} is an alias for \code{detect_separation}.
 }
 \examples{
 
-## endometrial data from Heinze \\& Schemper (2002) (see ?endometrial)
+## endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
 data("endometrial", package = "detectseparation")
 endometrial_sep <- glm(HG ~ NV + PI + EH, data = endometrial,
                        family = binomial("logit"),
@@ -95,7 +130,7 @@ endometrial_sep
 ## The maximum likelihood estimate for NV is infinite
 summary(update(endometrial_sep, method = "glm.fit"))
 
-\dontrun{
+\donttest{
 ## Example inspired by unpublished microeconometrics lecture notes by
 ## Achim Zeileis https://eeecon.uibk.ac.at/~zeileis/
 ## The maximum likelihood estimate of sourhernyes is infinite
@@ -110,7 +145,7 @@ if (requireNamespace("AER", quietly = TRUE)) {
     summary(murder_glm)
     ## and is also reveal by the divergence of the NV column of the
     ## result from the more computationally intensive check
-    check_infinite_estimates(murder_glm)
+    plot(check_infinite_estimates(murder_glm))
     ## Mean bias reduction via adjusted scores results in finite estimates
     if (requireNamespace("brglm2", quietly = TRUE)) 
         update(murder_glm, method = brglm2::brglm_fit)
@@ -128,8 +163,8 @@ package version 0.1-3.
 \url{https://CRAN.R-project.org/package=safeBinaryRegression}
 }
 \seealso{
-\code{\link[brglm2]{brglm_fit}}, \code{\link{glm.fit}} and \code{\link{glm}}
+\code{\link{glm.fit}} and \code{\link{glm}}, \code{\link{check_infinite_estimates}}, \code{\link[brglm2]{brglm_fit}},
 }
 \author{
-Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Kjell Konis [ctb] \email{kjell.konis@me.com}
+Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Dirk Schumacher [aut] \email{mail@dirk-schumacher.net}, Kjell Konis [ctb] \email{kjell.konis@me.com}
 }

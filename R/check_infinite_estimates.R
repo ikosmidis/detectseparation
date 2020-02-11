@@ -25,6 +25,9 @@
 #'     nsteps}. Default value is 30.
 #' @param ... currently not used.
 #'
+#' @return
+#'
+#' An object of class \code{inf_check} that has a \code{plot} method.
 #'
 #' @details
 #'
@@ -43,7 +46,9 @@
 #' estimate for the corresponding parameter has value minus or plus
 #' infinity.
 #'
-#' @seealso \code{\link[nnet]{multinom}}, \code{\link[brglm2]{brmultinom}}
+#' @seealso \code{\link[nnet]{multinom}},
+#'     \code{\link{detect_separation}},
+#'     \code{\link[brglm2]{brmultinom}}
 #'
 #' @references
 #'
@@ -55,13 +60,15 @@
 #'
 #' ## endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
 #' data("endometrial", package = "detectseparation")
-#' endometrialML <- glm(HG ~ NV + PI + EH, data = endometrial,
-#'                      family = binomial("probit"))
+#' endometrial_ml <- glm(HG ~ NV + PI + EH, data = endometrial,
+#'                       family = binomial("probit"))
 #' ## clearly the maximum likelihood estimate for the coefficient of
 #' ## NV is infinite
-#' check_infinite_estimates(endometrialML)
+#' (estimates <- check_infinite_estimates(endometrial_ml))
+#' plot(estimates)
+#' 
 #'
-#' \dontrun{
+#' \donttest{
 #' ## Aligator data (Agresti, 2002, Table~7.1)
 #' if (requireNamespace("brglm2", quietly = TRUE)) {
 #'     data("alligators", package = "brglm2")
@@ -69,22 +76,23 @@
 #'                          data = alligators, type = "ML", ref = 1)
 #'     ## Clearly some estimated standard errors diverge as the number of
 #'     ## Fisher scoring iterations increases
-#'     matplot(check_infinite_estimates(all_ml), type = "l", lty = 1,
-#'             ylim = c(0.5, 1.5))
+#'     plot(check_infinite_estimates(all_ml))
+#'     ## Bias reduction the brglm2 R packages can be used to get finite estimates
+#'     all_br <- brglm2::brmultinom(foodchoice ~ size + lake , weights = round(freq/3),
+#'                          data = alligators, ref = 1)
+#'     plot(check_infinite_estimates(all_br))
 #' }
 #' }
 #' @export
-check_infinite_estimates.glm <- function(object, nsteps = 20, ...)
-{
-    is_brmultinom <- inherits(object, "brmultinom")
-
-    if ((class(object)[1] != "glm") & (!is_brmultinom)) {
-        warning("check_infinite_estimates has been designed for objects of class 'glm'")
+check_infinite_estimates.glm <- function(object, nsteps = 20, ...) {
+    valid_classes <- c("glm", "brglmFit", "brmultinom")
+    is_brmultinom <- inherits(object, "brmultinom")       
+    if (!inherits(object, valid_classes)) {
+        warning("check_infinite_estimates has been designed for objects of class 'glm', 'brglmFit', 'brmultinom'")
     }
     if ((object$family$family != "binomial") & (!is_brmultinom)) {
-        warning("check_infinite_estimates has been designed for binomial-response models")
+        warning("check_infinite_estimates has been designed for binomial- or multinomial-response models")
     }
-
     if (is_brmultinom) {
         betas <- coef(object)
         dims <- dim(betas)
@@ -102,19 +110,25 @@ check_infinite_estimates.glm <- function(object, nsteps = 20, ...)
     start <- NULL
     for (i in 1:nsteps) {
         if (is_brmultinom) {
-            suppressWarnings(temp.object <- update(object, control = list(maxit = i, epsilon = eps, type = "ML"), start = start))
+            suppressWarnings(temp.object <- update(object, control = list(maxit = i, epsilon = eps, type = object$type), start = start))
             stdErrors[i, noNA] <- sqrt(diag(vcov(temp.object))[noNA])
         }
         else {
             suppressWarnings(temp.object <- update(object, control = list(maxit = i, epsilon = eps), start = start))
-
             stdErrors[i, noNA] <- summary(temp.object)$coef[betasNames[noNA], "Std. Error"]
         }
         start <- c(coef(temp.object))
     }
     res <- sweep(stdErrors, 2, stdErrors[1, ], "/")
     colnames(res) <- betasNames
+    class(res) <- "inf_check"
     res
 }
 
-
+#' @export
+plot.inf_check <- function(x, tol = 1e+2, ...) {
+    ## heuristic for determining ploting ranges
+    sds <- apply(x, 2, sd)    
+    matplot(x, type = "l", lty = 1, ylim = range(x[, sds < tol]) * c(1, 1.5),
+            ylab = "estimate", xlab = "number of iterations")
+}

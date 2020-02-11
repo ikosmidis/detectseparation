@@ -1,24 +1,25 @@
 Package: detectseparation
 Title: Detect or check for separation and infinite maximum likelihood estimates in generalized linear models with categorical responses
 Version: 0.0.900
-Authors@R: c(person(given = "Ioannis", family = "Kosmidis", role = c("aut", "cre"), email = "ioannis.kosmidis@warwick.ac.uk", comment = c(ORCID = "0000-0003-1556-0302")),	     person(given = "Dirk", family = "Schumacher", role = "aut", email = "mail@dirk-schumacher.net"))
+Authors@R: c(person(given = "Ioannis", family = "Kosmidis", role = c("aut", "cre"), email = "ioannis.kosmidis@warwick.ac.uk", comment = c(ORCID = "0000-0003-1556-0302")),
+             person(given = "Dirk", family = "Schumacher", role = "aut", email = "mail@dirk-schumacher.net"),
+             person(given = "Kjell", family = "Konis", role = "ctb", email = "kjell.konis@me.com"))
 Description: Provides pre-fit and post-fit methods for detecting separation and infinite maximum likelihood estimates in binomial response generalized linear models.
 URL: https://github.com/ikosmidis/detectseparation
 BugReports: https://github.com/ikosmidis/detectseparation/issues
-Depends: R (>= 3.3.0)
 Imports:
+    ROI,
+    ROI.plugin.lpsolve,
     lpSolveAPI,
-    ROI
+    pkgload
+Depends:
+    R (>= 3.3.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Suggests:
-    testthat,
-    knitr,
-    rmarkdown,
-    covr,
-    brglm2,
-    AER,
-    ROI.plugin.lpsolve
+    testthat, knitr, rmarkdown, covr, brglm2, AER,
+    ROI.plugin.cbc, ROI.plugin.clp, ROI.plugin.cplex, ROI.plugin.ecos,
+    ROI.plugin.glpk, ROI.plugin.gurobi, ROI.plugin.scs, ROI.plugin.symphony
 VignetteBuilder: knitr
