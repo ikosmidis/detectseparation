@@ -95,6 +95,14 @@ function (a modified version of the \code{separator} function from
 the **safeBinaryRegression** R
 package). \code{\link{detect_separation}} can be passed directly as
 a method to the \code{\link{glm}} function. See, examples.
+
+The \code{\link{coefficients}} method extracts a vector of values
+for each of the model parameters under the following convention:
+\code{0} if the maximum likelihood estimate of the parameter is
+finite, and \code{Inf} or \code{-Inf} if the maximum likelihood
+estimate of the parameter if plus or minus infinity. This
+convention makes it easy to adjust the maximum likelihood estimates
+to their actual values by element-wise addition.
 }
 \note{
 \code{\link{detect_separation}} was designed in 2017 by Ioannis
@@ -104,7 +112,7 @@ included in **brglm2** under the permission of Kjell Konis.
 
 In 2020, \code{\link{detect_separation}} and
 \code{\link{check_infinite_estimates}} were moved outside
-**brglm2** into the **detectseparation** package. Dirk Schumacher
+**brglm2** into the dedicated **detectseparation** package. Dirk Schumacher
 authored the \code{separator_ROI} function, which depends on the
 **ROI** R package and is now the default implementation used for
 detecting separation.

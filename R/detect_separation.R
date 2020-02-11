@@ -54,6 +54,14 @@
 #' package). \code{\link{detect_separation}} can be passed directly as
 #' a method to the \code{\link{glm}} function. See, examples.
 #'
+#' The \code{\link{coefficients}} method extracts a vector of values
+#' for each of the model parameters under the following convention:
+#' \code{0} if the maximum likelihood estimate of the parameter is
+#' finite, and \code{Inf} or \code{-Inf} if the maximum likelihood
+#' estimate of the parameter if plus or minus infinity. This
+#' convention makes it easy to adjust the maximum likelihood estimates
+#' to their actual values by element-wise addition.
+#' 
 #' @note
 #' 
 #' \code{\link{detect_separation}} was designed in 2017 by Ioannis
@@ -63,7 +71,7 @@
 #'
 #' In 2020, \code{\link{detect_separation}} and
 #' \code{\link{check_infinite_estimates}} were moved outside
-#' **brglm2** into the **detectseparation** package. Dirk Schumacher
+#' **brglm2** into the dedicated **detectseparation** package. Dirk Schumacher
 #' authored the \code{separator_ROI} function, which depends on the
 #' **ROI** R package and is now the default implementation used for
 #' detecting separation.
@@ -118,10 +126,10 @@
 #' }
 #' }
 #' @export
-detect_separation <- function (x, y, weights = rep(1, nobs),
-                               start = NULL, etastart = NULL,  mustart = NULL,
-                               offset = rep(0, nobs), family = gaussian(),
-                               control = list(), intercept = TRUE, singular.ok = TRUE) {
+detect_separation <- function(x, y, weights = rep(1, nobs),
+                              start = NULL, etastart = NULL,  mustart = NULL,
+                              offset = rep(0, nobs), family = gaussian(),
+                              control = list(), intercept = TRUE, singular.ok = TRUE) {
     if (family$family != "binomial") {
         warning("detect_separation has been developed for use with binomial-response models")
     }
@@ -249,6 +257,7 @@ detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
                                       tolerance = sqrt(.Machine$double.eps)) {
     implementation <- match.arg(implementation)
     purpose <- match.arg(purpose)
+    linear_program <- match.arg(linear_program)
     separator <- match.fun(paste("separator", implementation, sep = "_"))
     
     ## ensure the solver is loaded using the ROI plugin mechanism

@@ -18,26 +18,20 @@ separator_ROI <- function(x, y,
                           tolerance = 1e-03,
                           ...) {
   betas_names <- dimnames(x)[[2L]]
-
   # the model here is based on Konis (2007), chapter 4. In particular
   # sections 4.2, 4.4.3 and 4.4.4
-
   # build the ROI model
   # transform the model matrix so that all constraints are >=
   # that should also work with doubles
   y[y == 0] <- -1
   X_bar <- x * y
-
   m <- ncol(X_bar)
   n <- nrow(X_bar)
-
   constraints <- ROI::L_constraint(X_bar, rep.int(">=", n), rep.int(0, n))
-
   bounds <- ROI::V_bound(
     li = seq_len(m), lb = rep.int(-1, m),
     ui = seq_len(m), ub = rep.int(1, m)
   )
-
   # max t(rep.int(1, n)) %*% X_bar %*% beta = colSums(X_bar) %*% beta
   # subject to X_bar >= 0
   # beta between -1 and 1
@@ -47,23 +41,19 @@ separator_ROI <- function(x, y,
     types = rep.int("C", m),
     bounds = bounds,
     maximum = TRUE
-  )
-  
+  )  
   # if the LP is unbounded, seperation exists. Otherwise an optiomal solution
   # with obj. value 0 exists.
-  result <- ROI::ROI_solve(opt_model, solver = solver) 
-  
+  result <- ROI::ROI_solve(opt_model, solver = solver)  
   # compare to 0 zero with tolerance
   solution <- ROI::solution(result, "primal")
   non_zero <- abs(solution) > tolerance
   names(solution) <- betas_names
-  has_seperation <- any(non_zero, na.rm = TRUE)
-  
+  has_seperation <- any(non_zero, na.rm = TRUE) 
   # an optimal solution should always exists
   if (!isTRUE(identical(result$status$code, 0L))) {
       has_separation <- NA
-  }
-  
+  }  
   list(
       separation = has_seperation,
       beta = solution

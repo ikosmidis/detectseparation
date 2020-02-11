@@ -19,6 +19,28 @@ test_that("infinte estimates have been found as expected", {
 })
 
 
+endometrial_separation_lpsolve <- glm(HG ~ I(-NV) + PI + EH, data = endometrial,
+                                      family = binomial("cloglog"),
+                                      method = "detect_separation",
+                                      implementation = "lpSolveAPI")
+
+endometrial_separation_lpsolve2 <- update(endometrial_separation_lpsolve,
+                                          linear_program = "dual",
+                                          purpose = "test")
+
+
+test_that("output is as expected", {
+    expect_output(print(endometrial_separation), "ROI \\| Solver: lpsolve")
+    expect_output(print(endometrial_separation), "0: finite value, Inf: infinity, -Inf: -infinity")
+    expect_output(print(endometrial_separation), "Separation: TRUE")
+    expect_output(print(lizards_separation), "ROI \\| Solver: lpsolve")
+    expect_output(print(lizards_separation), "0: finite value, Inf: infinity, -Inf: -infinity")
+    expect_output(print(endometrial_separation_lpsolve), "Implementation: lpSolveAPI \\| Linear program: primal \\| Purpose: find")
+    expect_output(print(endometrial_separation_lpsolve), "Separation: TRUE")
+    expect_output(print(endometrial_separation_lpsolve2), "Implementation: lpSolveAPI \\| Linear program: dual \\| Purpose: test \\nSeparation: TRUE")
+})
+
+
 ## ## hepatitis
 ## data("hepatitis", package = "pmlr")
 ## hepat <- hepatitis
