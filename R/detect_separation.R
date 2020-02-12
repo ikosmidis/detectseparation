@@ -245,9 +245,13 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
 #'     parameters are infinite? Only relevant if \code{implementation
 #'     = "lpSolveAPI"}.
 #' @param solver should the linear program be solved using the
-#'     \code{"lpsolve"} (using the **ROI.plugin.lpsolve** package;
-#'     default) or the \code{"glpk"} (using the **ROI.plugin.glpk**
-#'     package) solver?
+#'     \code{"lpsolve"} (using the \pkg{ROI.plugin.lpsolve} package;
+#'     default) or another solver? Alternative solvers are
+#'     \code{"glpk"}, \code{"cbc"}, \code{"clp"}, \code{"cplex"},
+#'     \code{"ecos"}, \code{"gurobi"}, \code{"scs"},
+#'     \code{"symphony"}. If \pkg{ROI.plugin.[solver]} is not
+#'     installed then the user will be prompted to install it before
+#'     continuing.
 #'
 #' @export
 detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
