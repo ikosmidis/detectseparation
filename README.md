@@ -28,11 +28,11 @@ And the development version from [GitHub](https://github.com/) with:
 Detecting and checking for Infinite maximum likelihood estimates
 ----------------------------------------------------------------
 
-@heinze+schemper:2002 used a logistic regression model to analyze data
-from a study on endometrial cancer \[see, @agresti:2015, Section 5.7 or
-\`?endometrial\` for more details on the data set\]. Below, we refit the
-model in @heinze+schemper:2002 in order to demonstrate the functionality
-that **detectseparation** provides.
+Heinze and Schemper (2002) used a logistic regression model to analyze
+data from a study on endometrial cancer (see, Agresti 2015, Section 5.7
+or `?endometrial` for more details on the data set). Below, we refit the
+model in Heinze and Schemper (2002) in order to demonstrate the
+functionality that **detectseparation** provides.
 
     library("detectseparation")
     data("endometrial", package = "detectseparation")
@@ -103,7 +103,7 @@ and the estimated standard errors are
 
 ### `check_infinite_estimates`
 
-@lesaffre+albert:1989 \[, Section 4\] describe a procedure that can hint
+Lesaffre and Albert (1989, Section 4) describe a procedure that can hint
 on the occurrence of infinite estimates. In particular, the model is
 successively refitted, by increasing the maximum number of allowed
 iteratively re-weighted least squares iterations at east step. The
@@ -140,3 +140,14 @@ this process to `endo_glm`.
     plot(inf_check)
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+
+Agresti, A. 2015. *Foundations of Linear and Generalized Linear Models*.
+Wiley Series in Probability and Statistics. Wiley.
+
+Heinze, G., and M. Schemper. 2002. “A Solution to the Problem of
+Separation in Logistic Regression.” *Statistics in Medicine* 21:
+2409–19.
+
+Lesaffre, E., and A. Albert. 1989. “Partial Separation in Logistic
+Discrimination.” *Journal of the Royal Statistical Society. Series B
+(Methodological)* 51 (1): 109–16. <http://www.jstor.org/stable/2345845>.

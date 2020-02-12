@@ -1,6 +1,8 @@
 ---
 output: github_document
+bibliography: vignettes/detectseparation.bib
 ---
+
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
