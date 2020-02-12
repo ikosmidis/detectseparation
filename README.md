@@ -141,6 +141,9 @@ this process to `endo_glm`.
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
+References
+==========
+
 Agresti, A. 2015. *Foundations of Linear and Generalized Linear Models*.
 Wiley Series in Probability and Statistics. Wiley.
 

@@ -107,3 +107,5 @@ chunk applies this process to `endo_glm`.
 (inf_check <- check_infinite_estimates(endo_glm))
 plot(inf_check)
 ```
+
+# References
