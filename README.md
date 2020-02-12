@@ -2,6 +2,11 @@ detectseparation
 ================
 
 <!-- badges: start -->
+
+[![Travis build
+status](https://travis-ci.org/ikosmidis/detectseparation.svg?branch=master)](https://travis-ci.org/ikosmidis/detectseparation)
+[![Codecov test
+coverage](https://codecov.io/gh/ikosmidis/detectseparation/branch/master/graph/badge.svg)](https://codecov.io/gh/ikosmidis/detectseparation?branch=master)
 <!-- badges: end -->
 
 [**detectseparation**](https://github.com/ikosmidis/detectseparation)

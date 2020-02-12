@@ -2,3 +2,5 @@
 ^\.Rproj\.user$
 inst/scratch
 ^README\.Rmd$
+^\.travis\.yml$
+^codecov\.yml$
