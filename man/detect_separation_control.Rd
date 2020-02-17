@@ -28,9 +28,13 @@ the implementation using \code{lpSolveAPI} be used? Default is
 \code{ROI}.}
 
 \item{solver}{should the linear program be solved using the
-\code{"lpsolve"} (using the **ROI.plugin.lpsolve** package;
-default) or the \code{"glpk"} (using the **ROI.plugin.glpk**
-package) solver?}
+\code{"lpsolve"} (using the \pkg{ROI.plugin.lpsolve} package;
+default) or another solver? Alternative solvers are
+\code{"glpk"}, \code{"cbc"}, \code{"clp"}, \code{"cplex"},
+\code{"ecos"}, \code{"gurobi"}, \code{"scs"},
+\code{"symphony"}. If \pkg{ROI.plugin.[solver]} is not
+installed then the user will be prompted to install it before
+continuing.}
 
 \item{linear_program}{should \code{\link{detect_separation}} solve
 the \code{"primal"} or \code{"dual"} linear program for

@@ -86,9 +86,6 @@ maximum likelihood estimates. \code{\link{detect_separation}}
 relies on the linear programming methods developed in Konis (2007).
 }
 \details{
-For the definition of complete and quasi-complete separation, see
-Albert and Anderson (1984).
-
 \code{\link{detect_separation}} is a wrapper to the
 \code{separator_ROI} function and \code{separator_lpSolveAPI}
 function (a modified version of the \code{separator} function from
@@ -103,8 +100,18 @@ finite, and \code{Inf} or \code{-Inf} if the maximum likelihood
 estimate of the parameter if plus or minus infinity. This
 convention makes it easy to adjust the maximum likelihood estimates
 to their actual values by element-wise addition.
+
+\code{detectSeparation} is an alias for \code{detect_separation}.
 }
 \note{
+For the definition of complete and quasi-complete separation, see
+Albert and Anderson (1984). Kosmidis and Firth (2019) prove that
+the reduced-bias estimator that results by the penalization of the
+logistic regression log-likelihood by Jeffreys prior takes always
+finite values, even when some of the maximum likelihood estimates
+are infinite. The reduced-bias estimates can be computed using the
+\pkg{brglm2} R package.
+
 \code{\link{detect_separation}} was designed in 2017 by Ioannis
 Kosmidis for the **brglm2** R package, after correspondence with
 Kjell Konis, and a port of the \code{separator} function had been
@@ -116,8 +123,6 @@ In 2020, \code{\link{detect_separation}} and
 authored the \code{separator_ROI} function, which depends on the
 **ROI** R package and is now the default implementation used for
 detecting separation.
-
-\code{detectSeparation} is an alias for \code{detect_separation}.
 }
 \examples{
 
@@ -161,6 +166,11 @@ Models*. DPhil. University of Oxford.
 Kjell K. (2013). safeBinaryRegression: Safe Binary Regression. R
 package version 0.1-3.
 \url{https://CRAN.R-project.org/package=safeBinaryRegression}
+
+Kosmidis I. and Firth D. (2019). Jeffreys-prior penalty, finiteness
+and shrinkage in binomial-response generalized linear
+models. arXiv:1812.01938.
+\url{https://arxiv.org/abs/1812.01938v3}
 }
 \seealso{
 \code{\link{glm.fit}} and \code{\link{glm}}, \code{\link{check_infinite_estimates}}, \code{\link[brglm2]{brglm_fit}},

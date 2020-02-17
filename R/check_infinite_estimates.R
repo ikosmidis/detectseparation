@@ -46,6 +46,16 @@
 #' estimate for the corresponding parameter has value minus or plus
 #' infinity.
 #'
+#' @note
+#'
+#' For the definition of complete and quasi-complete separation, see
+#' Albert and Anderson (1984). Kosmidis and Firth (2019) prove that
+#' the reduced-bias estimator that results by the penalization of the
+#' logistic regression log-likelihood by Jeffreys prior takes always
+#' finite values, even when some of the maximum likelihood estimates
+#' are infinite. The reduced-bias estimates can be computed using the
+#' \pkg{brglm2} R package.
+#'
 #' @seealso \code{\link[nnet]{multinom}},
 #'     \code{\link{detect_separation}},
 #'     \code{\link[brglm2]{brmultinom}}
@@ -55,6 +65,11 @@
 #' Lesaffre, E., & Albert, A. (1989). Partial Separation in Logistic
 #' Discrimination. *Journal of the Royal Statistical Society. Series B
 #' (Methodological)*, **51**, 109-116
+#'
+#' Kosmidis I. and Firth D. (2019). Jeffreys-prior penalty, finiteness
+#' and shrinkage in binomial-response generalized linear
+#' models. arXiv:1812.01938.
+#' \url{https://arxiv.org/abs/1812.01938v3}
 #'
 #' @examples
 #'
