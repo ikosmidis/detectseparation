@@ -23,7 +23,7 @@ if (requireNamespace("AER", quietly = TRUE)) {
                             implementation = "lpSolveAPI")
     murder_sep_lpsolve <- update(murder_sep_konis,
                                  implementation = "ROI",
-                                 solve = "lpsolve")
+                                 solver = "lpsolve")
     
     test_that("ROI implementation returns the same result as lpSolveAPI implementation [2]", {
         expect_identical(murder_sep_konis$separation, murder_sep_lpsolve$separation)
