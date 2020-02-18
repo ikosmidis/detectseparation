@@ -142,7 +142,7 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
                               control = list(), intercept = TRUE, singular.ok = TRUE) {
     if (family$family != "binomial") {
         warning("detect_separation has been developed for use with binomial-response models")
-    }
+    }    
     control <- do.call("detect_separation_control", control)
     separator <- control$separator
     ## ensure x is a matrix
@@ -203,7 +203,8 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
                          linear_program = control$linear_program,
                          purpose = control$purpose,
                          tolerance = control$tolerance,
-                         solver = control$solver)       
+                         solver = control$solver,
+                         solver_control = control$solver_control)       
         if (is.na(out$separation)) {
             if (identical(control$implementation, "ROI")) {
                 warning("unexpected result from implementation ", control$implementation, " with solver: ", control$solver, "\n")
@@ -268,7 +269,8 @@ detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
                                       solver = "lpsolve",
                                       linear_program = c("primal", "dual"),
                                       purpose = c("find", "test"),
-                                      tolerance = sqrt(.Machine$double.eps)) {
+                                      tolerance = sqrt(.Machine$double.eps),
+                                      solver_control = list()) {
     implementation <- match.arg(implementation)
     purpose <- match.arg(purpose)
     linear_program <- match.arg(linear_program)
@@ -280,9 +282,9 @@ detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
         pkgload::check_suggested(roi_plugin_name, path = pkgload::inst("detectseparation"), version = "*")
         requireNamespace(roi_plugin_name, quietly = TRUE)
     }
-    
     list(linear_program = linear_program,
          solver = solver,
+         solver_control = solver_control,
          purpose = purpose,
          tolerance = tolerance,
          separator = separator,

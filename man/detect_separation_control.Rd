@@ -11,7 +11,8 @@ detect_separation_control(
   solver = "lpsolve",
   linear_program = c("primal", "dual"),
   purpose = c("find", "test"),
-  tolerance = sqrt(.Machine$double.eps)
+  tolerance = sqrt(.Machine$double.eps),
+  solver_control = list()
 )
 
 detectSeparationControl(
@@ -19,7 +20,8 @@ detectSeparationControl(
   solver = "lpsolve",
   linear_program = c("primal", "dual"),
   purpose = c("find", "test"),
-  tolerance = sqrt(.Machine$double.eps)
+  tolerance = sqrt(.Machine$double.eps),
+  solver_control = list()
 )
 }
 \arguments{

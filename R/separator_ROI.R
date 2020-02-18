@@ -16,6 +16,7 @@
 separator_ROI <- function(x, y,
                           solver = "lpsolve",
                           tolerance = 1e-03,
+                          solver_control = list(),
                           ...) {
   betas_names <- dimnames(x)[[2L]]
   # the model here is based on Konis (2007), chapter 4. In particular
@@ -41,10 +42,11 @@ separator_ROI <- function(x, y,
     types = rep.int("C", m),
     bounds = bounds,
     maximum = TRUE
-  )  
+    )
+  
   # if the LP is unbounded, seperation exists. Otherwise an optiomal solution
   # with obj. value 0 exists.
-  result <- ROI::ROI_solve(opt_model, solver = solver)  
+  result <- ROI::ROI_solve(opt_model, solver = solver, control = solver_control)  
   # compare to 0 zero with tolerance
   solution <- ROI::solution(result, "primal")
   non_zero <- abs(solution) > tolerance
