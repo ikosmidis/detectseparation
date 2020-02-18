@@ -230,7 +230,7 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
     }   
     out$control <- control
     out$class <- "detect_separation"
-    class(out) <- "detect_separation"
+    class(out) <- "detect_separation"    
     return(out)
 }
 
@@ -276,8 +276,8 @@ detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
     
     ## ensure the solver is loaded using the ROI plugin mechanism
     if (solver != "lpsolve") {
-        roi_plugin_name <- paste0("ROI.plugin.", solver)
-        pkgload::check_suggested(roi_plugin_name, path = pkgload::inst("detectseparation"))
+        roi_plugin_name <- paste0("ROI.plugin.", solver)        
+        pkgload::check_suggested(roi_plugin_name, path = pkgload::inst("detectseparation"), version = "*")
         requireNamespace(roi_plugin_name, quietly = TRUE)
     }
     
