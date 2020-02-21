@@ -29,35 +29,31 @@ separator_ROI <- function(x, y,
   m <- ncol(X_bar)
   n <- nrow(X_bar)
   constraints <- ROI::L_constraint(X_bar, rep.int(">=", n), rep.int(0, n))
-  bounds <- ROI::V_bound(
-    li = seq_len(m), lb = rep.int(-1, m),
-    ui = seq_len(m), ub = rep.int(1, m)
-  )
-  # max t(rep.int(1, n)) %*% X_bar %*% beta = colSums(X_bar) %*% beta
-  # subject to X_bar >= 0
-  # beta between -1 and 1
-  opt_model <- ROI::OP(
-    objective = colSums(X_bar),
-    constraints = constraints,
-    types = rep.int("C", m),
-    bounds = bounds,
-    maximum = TRUE
-    )
+  bounds <- ROI::V_bound(li = seq_len(m),
+                         lb = rep.int(-1, m),
+                         ui = seq_len(m),
+                         ub = rep.int(1, m))
+  ## max t(rep.int(1, n)) %*% X_bar %*% beta = colSums(X_bar) %*% beta
+  ## subject to X_bar >= 0
+  ## beta between -1 and 1
+  opt_model <- ROI::OP(objective = colSums(X_bar),
+                       constraints = constraints,
+                       types = rep.int("C", m),
+                       bounds = bounds,
+                       maximum = TRUE)
   
-  # if the LP is unbounded, seperation exists. Otherwise an optiomal solution
-  # with obj. value 0 exists.
+  ## if the LP is unbounded, seperation exists. Otherwise an optiomal solution
+  ## with obj. value 0 exists.  
   result <- ROI::ROI_solve(opt_model, solver = solver, control = solver_control)  
-  # compare to 0 zero with tolerance
+  ## compare to 0 zero with tolerance
   solution <- ROI::solution(result, "primal")
   non_zero <- abs(solution) > tolerance
   names(solution) <- betas_names
   has_seperation <- any(non_zero, na.rm = TRUE) 
-  # an optimal solution should always exists
+  ## an optimal solution should always exists
   if (!isTRUE(identical(result$status$code, 0L))) {
       has_separation <- NA
   }  
-  list(
-      separation = has_seperation,
-      beta = solution
-  )
+  list(separation = has_seperation,
+       beta = solution)
 }

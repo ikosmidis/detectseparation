@@ -165,8 +165,8 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
     }
     else {
         if (control$solver == "alabama" & is.null(control$solver_control$start)) {
-            control$solver_control$start <- rep(0, p)
-        }        
+            control$solver_control$start <- rep(0, nvars)
+        }
         ## as in brglmFit
         boundary <- converged <- FALSE
         ## Detect aliasing
