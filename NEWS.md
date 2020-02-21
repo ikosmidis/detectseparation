@@ -1,3 +1,3 @@
-# detectseparation 0.1
+# detectseparation 0.1.0
 
 * First public release
