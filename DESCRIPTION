@@ -1,6 +1,6 @@
 Package: detectseparation
 Title: Detect or check for separation and infinite maximum likelihood estimates in generalized linear models with categorical responses
-Version: 0.0.900
+Version: 0.1
 Authors@R: c(person(given = "Ioannis", family = "Kosmidis", role = c("aut", "cre"), email = "ioannis.kosmidis@warwick.ac.uk", comment = c(ORCID = "0000-0003-1556-0302")),
              person(given = "Dirk", family = "Schumacher", role = "aut", email = "mail@dirk-schumacher.net"),
              person(given = "Kjell", family = "Konis", role = "ctb", email = "kjell.konis@me.com"))
@@ -20,6 +20,5 @@ LazyData: true
 RoxygenNote: 7.0.2
 Suggests:
     testthat, knitr, rmarkdown, covr, brglm2, AER,
-    ROI.plugin.cbc, ROI.plugin.clp, ROI.plugin.cplex, ROI.plugin.ecos,
-    ROI.plugin.glpk, ROI.plugin.gurobi, ROI.plugin.scs, ROI.plugin.symphony
+    ROI.plugin.ecos, ROI.plugin.glpk, ROI.plugin.neos, ROI.plugin.alabama
 VignetteBuilder: knitr

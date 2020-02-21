@@ -11,7 +11,8 @@ detect_separation_control(
   solver = "lpsolve",
   linear_program = c("primal", "dual"),
   purpose = c("find", "test"),
-  tolerance = sqrt(.Machine$double.eps)
+  tolerance = 1e-04,
+  solver_control = list()
 )
 
 detectSeparationControl(
@@ -19,7 +20,8 @@ detectSeparationControl(
   solver = "lpsolve",
   linear_program = c("primal", "dual"),
   purpose = c("find", "test"),
-  tolerance = sqrt(.Machine$double.eps)
+  tolerance = 1e-04,
+  solver_control = list()
 )
 }
 \arguments{
@@ -37,17 +39,24 @@ installed then the user will be prompted to install it before
 continuing.}
 
 \item{linear_program}{should \code{\link{detect_separation}} solve
-the \code{"primal"} or \code{"dual"} linear program for
-separation detection? Only relevant if \code{implementation =
-"lpSolveAPI"}.}
-
-\item{purpose}{should \code{\link{detect_separation}} simply
-\code{"test"} for separation or also \code{"find"} which
-parameters are infinite? Only relevant if \code{implementation
+the \code{"primal"} (default) or \code{"dual"} linear program
+for separation detection? Only relevant if \code{implementation
 = "lpSolveAPI"}.}
 
+\item{purpose}{should \code{\link{detect_separation}} simply
+\code{"test"} for separation or also \code{"find"} (default)
+which parameters are infinite? Only relevant if
+\code{implementation = "lpSolveAPI"}.}
+
 \item{tolerance}{maximum absolute variable value from the linear
-program, before separation is declared.}
+program, before separation is declared. Default is
+\code{1e-04}.}
+
+\item{solver_control}{a list with additional control parameters for
+the \code{"solver"}. This is solver specific, so consult the
+corresponding documentation. Default is \code{list()} unless
+\code{solver} is \code{"alabama"} when the default is \code{list(start
+= rep(0, p))}, where p is the number of parameters.}
 }
 \description{
 Typically only used internally by \code{\link{detect_separation}}

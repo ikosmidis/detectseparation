@@ -14,9 +14,19 @@ if (requireNamespace("AER", quietly = TRUE)) {
                               implementation = "ROI",
                               solver = "glpk")
 
+    murder_sep_alabama <- update(murder_sep_lpsolve,
+                                 implementation = "ROI",
+                                 solver = "alabama")
+
+    murder_sep_alabama1 <- update(murder_sep_lpsolve,
+                                  implementation = "ROI",
+                                  solver = "alabama",
+                                  solver_control = list(start = rep(1, 6)))
+
     
     test_that("ROI implementation returns the same result with solver lpsolve and solve glpk", {
-        expect_equal(coef(murder_sep_lpsolve), coef(murder_sep_glpk))    
+        expect_equal(coef(murder_sep_lpsolve), coef(murder_sep_glpk))
+        expect_equal(coef(murder_sep_lpsolve), coef(murder_sep_alabama))
     })    
 
 }

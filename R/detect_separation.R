@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2020 Ioannis Kosmidis
+# Copyright (C) 2017-2020 Ioannis Kosmidis; Dirk Schumacher
 
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -142,7 +142,7 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
                               control = list(), intercept = TRUE, singular.ok = TRUE) {
     if (family$family != "binomial") {
         warning("detect_separation has been developed for use with binomial-response models")
-    }
+    }    
     control <- do.call("detect_separation_control", control)
     separator <- control$separator
     ## ensure x is a matrix
@@ -164,6 +164,9 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
         out <- list(separation = FALSE)
     }
     else {
+        if (control$solver == "alabama" & is.null(control$solver_control$start)) {
+            control$solver_control$start <- rep(0, nvars)
+        }
         ## as in brglmFit
         boundary <- converged <- FALSE
         ## Detect aliasing
@@ -203,7 +206,8 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
                          linear_program = control$linear_program,
                          purpose = control$purpose,
                          tolerance = control$tolerance,
-                         solver = control$solver)       
+                         solver = control$solver,
+                         solver_control = control$solver_control)       
         if (is.na(out$separation)) {
             if (identical(control$implementation, "ROI")) {
                 warning("unexpected result from implementation ", control$implementation, " with solver: ", control$solver, "\n")
@@ -230,7 +234,7 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
     }   
     out$control <- control
     out$class <- "detect_separation"
-    class(out) <- "detect_separation"
+    class(out) <- "detect_separation"    
     return(out)
 }
 
@@ -245,15 +249,16 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
 #'     the implementation using \code{lpSolveAPI} be used? Default is
 #'     \code{ROI}.
 #' @param tolerance maximum absolute variable value from the linear
-#'     program, before separation is declared.
+#'     program, before separation is declared. Default is
+#'     \code{1e-04}.
 #' @param linear_program should \code{\link{detect_separation}} solve
-#'     the \code{"primal"} or \code{"dual"} linear program for
-#'     separation detection? Only relevant if \code{implementation =
-#'     "lpSolveAPI"}.
-#' @param purpose should \code{\link{detect_separation}} simply
-#'     \code{"test"} for separation or also \code{"find"} which
-#'     parameters are infinite? Only relevant if \code{implementation
+#'     the \code{"primal"} (default) or \code{"dual"} linear program
+#'     for separation detection? Only relevant if \code{implementation
 #'     = "lpSolveAPI"}.
+#' @param purpose should \code{\link{detect_separation}} simply
+#'     \code{"test"} for separation or also \code{"find"} (default)
+#'     which parameters are infinite? Only relevant if
+#'     \code{implementation = "lpSolveAPI"}.
 #' @param solver should the linear program be solved using the
 #'     \code{"lpsolve"} (using the \pkg{ROI.plugin.lpsolve} package;
 #'     default) or another solver? Alternative solvers are
@@ -262,13 +267,18 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
 #'     \code{"symphony"}. If \pkg{ROI.plugin.[solver]} is not
 #'     installed then the user will be prompted to install it before
 #'     continuing.
-#'
+#' @param solver_control a list with additional control parameters for
+#'     the \code{"solver"}. This is solver specific, so consult the
+#'     corresponding documentation. Default is \code{list()} unless
+#'     \code{solver} is \code{"alabama"} when the default is \code{list(start
+#'     = rep(0, p))}, where p is the number of parameters.
 #' @export
 detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
                                       solver = "lpsolve",
                                       linear_program = c("primal", "dual"),
                                       purpose = c("find", "test"),
-                                      tolerance = sqrt(.Machine$double.eps)) {
+                                      tolerance = 1e-04,
+                                      solver_control = list()) {
     implementation <- match.arg(implementation)
     purpose <- match.arg(purpose)
     linear_program <- match.arg(linear_program)
@@ -276,13 +286,13 @@ detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
     
     ## ensure the solver is loaded using the ROI plugin mechanism
     if (solver != "lpsolve") {
-        roi_plugin_name <- paste0("ROI.plugin.", solver)
-        pkgload::check_suggested(roi_plugin_name, path = pkgload::inst("detectseparation"))
+        roi_plugin_name <- paste0("ROI.plugin.", solver)        
+        pkgload::check_suggested(roi_plugin_name, path = pkgload::inst("detectseparation"), version = "*")
         requireNamespace(roi_plugin_name, quietly = TRUE)
     }
-    
     list(linear_program = linear_program,
          solver = solver,
+         solver_control = solver_control,
          purpose = purpose,
          tolerance = tolerance,
          separator = separator,
