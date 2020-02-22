@@ -6,7 +6,9 @@ cache: packages
 addons:
    apt:
     packages:
-     - glpk
+     - glpk-utils
+     - libglpk-dev
+     - glpk-doc
 
 after_success:
   - Rscript -e 'cor::codecov()'
