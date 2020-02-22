@@ -3,5 +3,10 @@
 language: R
 sudo: false
 cache: packages
+addons:
+   apt:
+    packages:
+     - glpk
+
 after_success:
   - Rscript -e 'cor::codecov()'
