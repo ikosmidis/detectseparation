@@ -11,4 +11,4 @@ addons:
      - glpk-doc
 
 after_success:
-  - Rscript -e 'cor::codecov()'
+  - Rscript -e 'covr::codecov()'
