@@ -73,9 +73,6 @@ details.}
 
 \item{singular.ok}{logical. If \code{FALSE}, a singular model is an
 error.}
-
-\item{...}{arguments to be used to form the default 'control'
-argument if it is not supplied directly.}
 }
 \description{
 \code{\link{detect_separation}} is a method for \code{\link{glm}}
