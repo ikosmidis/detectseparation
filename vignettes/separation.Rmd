@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 ```
 
 
-# The **brglm2** package
+# The **detectseparation** package
 
 [**detectseparation**](https://github.com/ikosmidis/detectseparation)
 provides *pre-fit* and *post-fit* methods for the detection of
@@ -124,9 +124,7 @@ See `?detect_separation_control` for more options.
 
 As proven in [@kosmidis+firth:2018], an estimator that is always
 finite, regardless whether separation occurs on not, is the
-reduced-bias estimator of [@firth:1993].
-
-which is implemented in the
+reduced-bias estimator of [@firth:1993], which is implemented in the
 [**brglm2**](https://CRAN.R-project.org/package=brglm2) R package.
 
 ```{r, echo = TRUE, eval = TRUE}
