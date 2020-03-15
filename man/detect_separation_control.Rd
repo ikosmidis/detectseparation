@@ -58,6 +58,12 @@ corresponding documentation. Default is \code{list()} unless
 \code{solver} is \code{"alabama"} when the default is \code{list(start
 = rep(0, p))}, where p is the number of parameters.}
 }
+\value{
+A list with the supplied \code{linear_program}, \code{solver},
+\code{solver_control}, \code{purpose}, \code{tolerance},
+\code{implementation}, and the matched \code{separator} function
+(according to the value of \code{implementation}).
+}
 \description{
 Typically only used internally by \code{\link{detect_separation}}
 but may be used to construct a \code{control} argument.

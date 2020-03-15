@@ -46,6 +46,14 @@
 #' estimate for the corresponding parameter has value minus or plus
 #' infinity.
 #'
+#' @return
+#'
+#' A matrix inheriting from class \code{inf_check}, with \code{nsteps}
+#' rows and \code{p} columns, where \code{p} is the number of model
+#' parameters. A \code{plot} method is provided for \code{inf_check}
+#' objects for the easy inspection of the ratios of the standard
+#' errors.
+#' 
 #' @note
 #'
 #' For the definition of complete and quasi-complete separation, see

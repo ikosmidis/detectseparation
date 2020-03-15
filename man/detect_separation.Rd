@@ -74,6 +74,11 @@ details.}
 \item{singular.ok}{logical. If \code{FALSE}, a singular model is an
 error.}
 }
+\value{
+A list that inherits from class \code{detect_separation},
+\code{glm} and \code{lm}. A \code{print} method is provided for
+\code{detect_separation} objects.
+}
 \description{
 \code{\link{detect_separation}} is a method for \code{\link{glm}}
 that tests for the occurrence of complete or quasi-complete
@@ -155,12 +160,12 @@ if (requireNamespace("AER", quietly = TRUE)) {
 }
 }
 \references{
-Kjell K. (2007). *Linear Programming Algorithms for Detecting
+Konis K. (2007). *Linear Programming Algorithms for Detecting
 Separated Data in Binary Logistic Regression
 Models*. DPhil. University of Oxford.
 \url{https://ora.ox.ac.uk/objects/uuid:8f9ee0d0-d78e-4101-9ab4-f9cbceed2a2a}
 
-Kjell K. (2013). safeBinaryRegression: Safe Binary Regression. R
+Konis K. (2013). safeBinaryRegression: Safe Binary Regression. R
 package version 0.1-3.
 \url{https://CRAN.R-project.org/package=safeBinaryRegression}
 
