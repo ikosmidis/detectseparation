@@ -3,10 +3,10 @@
 \docType{package}
 \name{detectseparation}
 \alias{detectseparation}
-\title{detectseparation: Methods for Detecting and Cheking for Separation
+\title{detectseparation: Methods for Detecting and Checking for Separation
 and Infinite Maximum Likelihood Estimates}
 \description{
-detectseparation: Methods for Detecting and Cheking for Separation
+detectseparation: Methods for Detecting and Checking for Separation
 and Infinite Maximum Likelihood Estimates
 }
 \seealso{

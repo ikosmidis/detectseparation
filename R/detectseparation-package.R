@@ -1,4 +1,4 @@
-#' detectseparation: Methods for Detecting and Cheking for Separation
+#' detectseparation: Methods for Detecting and Checking for Separation
 #' and Infinite Maximum Likelihood Estimates
 #'
 #' @seealso \code{\link{detect_separation}}, \code{\link{check_infinite_estimates}}
