@@ -3,13 +3,11 @@
 \docType{package}
 \name{detectseparation}
 \alias{detectseparation}
-\title{detectseparation: Detect or check for separation and infinite
-maximum likelihood estimates in generalized linear models with
-categorical responses}
+\title{detectseparation: Methods for Detecting and Checking for Separation
+and Infinite Maximum Likelihood Estimates}
 \description{
-detectseparation: Detect or check for separation and infinite
-maximum likelihood estimates in generalized linear models with
-categorical responses
+detectseparation: Methods for Detecting and Checking for Separation
+and Infinite Maximum Likelihood Estimates
 }
 \seealso{
 \code{\link{detect_separation}}, \code{\link{check_infinite_estimates}}

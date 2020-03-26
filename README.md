@@ -1,12 +1,15 @@
-detectseparation
-================
+detectseparation <img src="man/figures/hex_detectseparation.svg" width="320" align="right">
+===========================================================================================
 
 <!-- badges: start -->
 
+[![CRAN
+status](https://www.r-pkg.org/badges/version/detectseparation)](https://CRAN.R-project.org/package=detectseparation)
 [![Travis build
 status](https://travis-ci.org/ikosmidis/detectseparation.svg?branch=master)](https://travis-ci.org/ikosmidis/detectseparation)
 [![Codecov test
 coverage](https://codecov.io/gh/ikosmidis/detectseparation/branch/master/graph/badge.svg)](https://codecov.io/gh/ikosmidis/detectseparation?branch=master)
+[![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 <!-- badges: end -->
 
 [**detectseparation**](https://github.com/ikosmidis/detectseparation)
@@ -14,8 +17,7 @@ provides *pre-fit* and *post-fit* methods for the detection of
 separation and of infinite maximum likelihood estimates in binomial
 response generalized linear models.
 
-The key methods are `detect_separation` and `check_infinite_estimates`
-and this vignettes describes their use.
+The key methods are `detect_separation` and `check_infinite_estimates`.
 
 Installation
 ------------

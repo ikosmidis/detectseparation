@@ -19,6 +19,12 @@ nsteps}. Default value is 30.}
 }
 \value{
 An object of class \code{inf_check} that has a \code{plot} method.
+
+A matrix inheriting from class \code{inf_check}, with \code{nsteps}
+rows and \code{p} columns, where \code{p} is the number of model
+parameters. A \code{plot} method is provided for \code{inf_check}
+objects for the easy inspection of the ratios of the standard
+errors.
 }
 \description{
 A simple diagnostic of whether the maximum likelihood estimates are
