@@ -3,10 +3,13 @@ detectseparation
 
 <!-- badges: start -->
 
+[![CRAN
+status](https://www.r-pkg.org/badges/version/detectseparation)](https://CRAN.R-project.org/package=detectseparation)
 [![Travis build
 status](https://travis-ci.org/ikosmidis/detectseparation.svg?branch=master)](https://travis-ci.org/ikosmidis/detectseparation)
 [![Codecov test
 coverage](https://codecov.io/gh/ikosmidis/detectseparation/branch/master/graph/badge.svg)](https://codecov.io/gh/ikosmidis/detectseparation?branch=master)
+[![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 <!-- badges: end -->
 
 [**detectseparation**](https://github.com/ikosmidis/detectseparation)
