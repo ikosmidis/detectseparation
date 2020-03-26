@@ -1,5 +1,5 @@
-detectseparation <img src="README_files/hex_detectseparation.svg" width="320" align="right">
-============================================================================================
+detectseparation <img src="man/figures/hex_detectseparation.svg" width="320" align="right">
+===========================================================================================
 
 <!-- badges: start -->
 

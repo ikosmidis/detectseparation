@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# detectseparation <img src="README_files/hex_detectseparation.svg" width="320" align="right">
+# detectseparation <img src="man/figures/hex_detectseparation.svg" width="320" align="right">
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/detectseparation)](https://CRAN.R-project.org/package=detectseparation)
