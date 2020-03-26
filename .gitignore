@@ -66,7 +66,7 @@ vignettes/*.pdf
 
 ### R.Bookdown Stack ###
 # R package: bookdown caching files
-/*_files/
+# /*_files/
 
 ### Emacs ###
 # -*- mode: gitignore; -*-
