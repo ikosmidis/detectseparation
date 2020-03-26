@@ -1,5 +1,5 @@
-detectseparation
-================
+detectseparation <img src="README_files/hex_detectseparation.svg" width="320" align="right">
+============================================================================================
 
 <!-- badges: start -->
 
@@ -17,8 +17,7 @@ provides *pre-fit* and *post-fit* methods for the detection of
 separation and of infinite maximum likelihood estimates in binomial
 response generalized linear models.
 
-The key methods are `detect_separation` and `check_infinite_estimates`
-and this vignettes describes their use.
+The key methods are `detect_separation` and `check_infinite_estimates`.
 
 Installation
 ------------
