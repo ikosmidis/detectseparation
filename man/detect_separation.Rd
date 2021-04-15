@@ -154,7 +154,7 @@ if (requireNamespace("AER", quietly = TRUE)) {
     ## result from the more computationally intensive check
     plot(check_infinite_estimates(murder_glm))
     ## Mean bias reduction via adjusted scores results in finite estimates
-    if (requireNamespace("brglm2", quietly = TRUE)) 
+    if (requireNamespace("brglm2", quietly = TRUE))
         update(murder_glm, method = brglm2::brglm_fit)
 }
 }

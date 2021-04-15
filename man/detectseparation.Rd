@@ -5,10 +5,6 @@
 \alias{detectseparation}
 \title{detectseparation: Methods for Detecting and Checking for Separation
 and Infinite Maximum Likelihood Estimates}
-\description{
-detectseparation: Methods for Detecting and Checking for Separation
-and Infinite Maximum Likelihood Estimates
-}
 \seealso{
 \code{\link{detect_separation}}, \code{\link{check_infinite_estimates}}
 }
