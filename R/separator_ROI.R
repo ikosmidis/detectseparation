@@ -1,4 +1,4 @@
-#  Copyright (C) 2020 Dirk Schumacher; Ioannis Kosmidis
+#  Copyright (C) 2021 Dirk Schumacher, Ioannis Kosmidis
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -41,19 +41,19 @@ separator_ROI <- function(x, y,
                        types = rep.int("C", m),
                        bounds = bounds,
                        maximum = TRUE)
-  
+
   ## if the LP is unbounded, seperation exists. Otherwise an optiomal solution
-  ## with obj. value 0 exists.  
-  result <- ROI::ROI_solve(opt_model, solver = solver, control = solver_control)  
+  ## with obj. value 0 exists.
+  result <- ROI::ROI_solve(opt_model, solver = solver, control = solver_control)
   ## compare to 0 zero with tolerance
   solution <- ROI::solution(result, "primal")
   non_zero <- abs(solution) > tolerance
   names(solution) <- betas_names
-  has_seperation <- any(non_zero, na.rm = TRUE) 
+  has_seperation <- any(non_zero, na.rm = TRUE)
   ## an optimal solution should always exists
   if (!isTRUE(identical(result$status$code, 0L))) {
       has_separation <- NA
-  }  
+  }
   list(separation = has_seperation,
        beta = solution)
 }

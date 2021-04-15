@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2020 Ioannis Kosmidis
+# Copyright (C) 2016-2021 Ioannis Kosmidis
 
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@
 #' parameters. A \code{plot} method is provided for \code{inf_check}
 #' objects for the easy inspection of the ratios of the standard
 #' errors.
-#' 
+#'
 #' @note
 #'
 #' For the definition of complete and quasi-complete separation, see
@@ -89,7 +89,7 @@
 #' ## NV is infinite
 #' (estimates <- check_infinite_estimates(endometrial_ml))
 #' plot(estimates)
-#' 
+#'
 #'
 #' \donttest{
 #' ## Aligator data (Agresti, 2002, Table~7.1)
@@ -109,7 +109,7 @@
 #' @export
 check_infinite_estimates.glm <- function(object, nsteps = 20, ...) {
     valid_classes <- c("glm", "brglmFit", "brmultinom")
-    is_brmultinom <- inherits(object, "brmultinom")       
+    is_brmultinom <- inherits(object, "brmultinom")
     if (!inherits(object, valid_classes)) {
         warning("check_infinite_estimates has been designed for objects of class 'glm', 'brglmFit', 'brmultinom'")
     }
@@ -151,7 +151,7 @@ check_infinite_estimates.glm <- function(object, nsteps = 20, ...) {
 #' @export
 plot.inf_check <- function(x, tol = 1e+2, ...) {
     ## heuristic for determining ploting ranges
-    sds <- apply(x, 2, sd)    
+    sds <- apply(x, 2, sd)
     matplot(x, type = "l", lty = 1, ylim = range(x[, sds < tol]) * c(1, 1.5),
             ylab = "estimate", xlab = "number of iterations")
 }
