@@ -1,5 +1,4 @@
-detectseparation <img src="man/figures/hex_detectseparation.svg" width="320" align="right">
-===========================================================================================
+# detectseparation <img src="man/figures/hex_detectseparation.svg" width="320" align="right">
 
 <!-- badges: start -->
 
@@ -7,6 +6,7 @@ detectseparation <img src="man/figures/hex_detectseparation.svg" width="320" ali
 status](https://www.r-pkg.org/badges/version/detectseparation)](https://CRAN.R-project.org/package=detectseparation)
 [![Travis build
 status](https://travis-ci.org/ikosmidis/detectseparation.svg?branch=master)](https://travis-ci.org/ikosmidis/detectseparation)
+[![R-CMD-check](https://github.com/ikosmidis/detectseparation/workflows/R-CMD-check/badge.svg)](https://github.com/ikosmidis/detectseparation/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/ikosmidis/detectseparation/branch/master/graph/badge.svg)](https://codecov.io/gh/ikosmidis/detectseparation?branch=master)
 [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
@@ -19,8 +19,7 @@ response generalized linear models.
 
 The key methods are `detect_separation` and `check_infinite_estimates`.
 
-Installation
-------------
+## Installation
 
 You can install the released version of detectseparation from
 [CRAN](https://CRAN.R-project.org) with:
@@ -32,8 +31,7 @@ And the development version from [GitHub](https://github.com/) with:
     # install.packages("devtools")
     devtools::install_github("ikosmidis/detectseparation")
 
-Detecting and checking for Infinite maximum likelihood estimates
-----------------------------------------------------------------
+## Detecting and checking for Infinite maximum likelihood estimates
 
 Heinze and Schemper (2002) used a logistic regression model to analyze
 data from a study on endometrial cancer (see, Agresti 2015, Section 5.7
@@ -148,8 +146,7 @@ this process to `endo_glm`.
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
-References
-==========
+# References
 
 Agresti, A. 2015. *Foundations of Linear and Generalized Linear Models*.
 Wiley Series in Probability and Statistics. Wiley.
