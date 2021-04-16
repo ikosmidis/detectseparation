@@ -5,10 +5,9 @@
 * `detect_separation()` returns a warnings if the link function is not
   one of `logit`, `probit`, `cloglog`, `cauchit`
   
-* Documentation updates
+* Documentation and citations updates
 
 * Added new tests
-
 
 # detectseparation 0.1
 

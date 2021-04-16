@@ -122,7 +122,7 @@ update(endo_sep, implementation = "lpSolveAPI")
 ```
 See `?detect_separation_control` for more options.
 
-As proven in [@kosmidis+firth:2018], an estimator that is always
+As proven in [@kosmidis+firth:2021], an estimator that is always
 finite, regardless whether separation occurs on not, is the
 reduced-bias estimator of [@firth:1993], which is implemented in the
 [**brglm2**](https://CRAN.R-project.org/package=brglm2) R package.

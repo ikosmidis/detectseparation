@@ -62,7 +62,7 @@
 #' @note
 #'
 #' For the definition of complete and quasi-complete separation, see
-#' Albert and Anderson (1984). Kosmidis and Firth (2019) prove that
+#' Albert and Anderson (1984). Kosmidis and Firth (2021) prove that
 #' the reduced-bias estimator that results by the penalization of the
 #' logistic regression log-likelihood by Jeffreys prior takes always
 #' finite values, even when some of the maximum likelihood estimates
@@ -103,10 +103,9 @@
 #' package version 0.1-3.
 #' \url{https://CRAN.R-project.org/package=safeBinaryRegression}
 #'
-#' Kosmidis I. and Firth D. (2019). Jeffreys-prior penalty, finiteness
+#' Kosmidis I. and Firth D. (2021). Jeffreys-prior penalty, finiteness
 #' and shrinkage in binomial-response generalized linear
-#' models. arXiv:1812.01938.
-#' \url{https://arxiv.org/abs/1812.01938v3}
+#' models. *Biometrika*, **108**, 71–82
 #'
 #' @examples
 #'
