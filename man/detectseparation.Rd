@@ -5,6 +5,15 @@
 \alias{detectseparation}
 \title{detectseparation: Methods for Detecting and Checking for Separation
 and Infinite Maximum Likelihood Estimates}
+\description{
+\pkg{detectseparation} provides pre-fit and post-fit methods for
+the detection of separation and of infinite maximum likelihood
+estimates in binomial response generalized linear models.
+}
+\details{
+The key methods are \code{\link{detect_separation}} and
+\code{\link{check_infinite_estimates}}.
+}
 \seealso{
 \code{\link{detect_separation}}, \code{\link{check_infinite_estimates}}
 }
