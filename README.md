@@ -155,4 +155,5 @@ Separation in Logistic Regression.” *Statistics in Medicine* 21:
 
 Lesaffre, E., and A. Albert. 1989. “Partial Separation in Logistic
 Discrimination.” *Journal of the Royal Statistical Society. Series B
-(Methodological)* 51 (1): 109–16. <http://www.jstor.org/stable/2345845>.
+(Methodological)* 51 (1): 109–16.
+<https://www.jstor.org/stable/2345845>.

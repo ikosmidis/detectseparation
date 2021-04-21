@@ -110,4 +110,5 @@ chunk applies this process to `endo_glm`.
 plot(inf_check)
 ```
 
+
 # References
