@@ -5,3 +5,4 @@ inst/scratch
 ^\.travis\.yml$
 ^codecov\.yml$
 ^CRAN-RELEASE$
+^\.github$

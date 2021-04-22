@@ -107,7 +107,7 @@ to their actual values by element-wise addition.
 }
 \note{
 For the definition of complete and quasi-complete separation, see
-Albert and Anderson (1984). Kosmidis and Firth (2019) prove that
+Albert and Anderson (1984). Kosmidis and Firth (2021) prove that
 the reduced-bias estimator that results by the penalization of the
 logistic regression log-likelihood by Jeffreys prior takes always
 finite values, even when some of the maximum likelihood estimates
@@ -154,7 +154,7 @@ if (requireNamespace("AER", quietly = TRUE)) {
     ## result from the more computationally intensive check
     plot(check_infinite_estimates(murder_glm))
     ## Mean bias reduction via adjusted scores results in finite estimates
-    if (requireNamespace("brglm2", quietly = TRUE)) 
+    if (requireNamespace("brglm2", quietly = TRUE))
         update(murder_glm, method = brglm2::brglm_fit)
 }
 }
@@ -169,10 +169,9 @@ Konis K. (2013). safeBinaryRegression: Safe Binary Regression. R
 package version 0.1-3.
 \url{https://CRAN.R-project.org/package=safeBinaryRegression}
 
-Kosmidis I. and Firth D. (2019). Jeffreys-prior penalty, finiteness
+Kosmidis I. and Firth D. (2021). Jeffreys-prior penalty, finiteness
 and shrinkage in binomial-response generalized linear
-models. arXiv:1812.01938.
-\url{https://arxiv.org/abs/1812.01938v3}
+models. *Biometrika*, **108**, 71–82
 }
 \seealso{
 \code{\link{glm.fit}} and \code{\link{glm}}, \code{\link{check_infinite_estimates}}, \code{\link[brglm2]{brglm_fit}},

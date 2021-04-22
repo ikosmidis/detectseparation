@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2020 Ioannis Kosmidis; Dirk Schumacher
+# Copyright (C) 2017-2021 Ioannis Kosmidis, Dirk Schumacher
 
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -58,11 +58,11 @@
 #' to their actual values by element-wise addition.
 #'
 #' \code{detectSeparation} is an alias for \code{detect_separation}.
-#' 
+#'
 #' @note
 #'
 #' For the definition of complete and quasi-complete separation, see
-#' Albert and Anderson (1984). Kosmidis and Firth (2019) prove that
+#' Albert and Anderson (1984). Kosmidis and Firth (2021) prove that
 #' the reduced-bias estimator that results by the penalization of the
 #' logistic regression log-likelihood by Jeffreys prior takes always
 #' finite values, even when some of the maximum likelihood estimates
@@ -86,11 +86,11 @@
 #' A list that inherits from class \code{detect_separation},
 #' \code{glm} and \code{lm}. A \code{print} method is provided for
 #' \code{detect_separation} objects.
-#' 
+#'
 #'
 #' @author Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Dirk Schumacher [aut] \email{mail@dirk-schumacher.net}, Kjell Konis [ctb] \email{kjell.konis@me.com}
 #'
-#' @seealso \code{\link{glm.fit}} and \code{\link{glm}}, \code{\link{check_infinite_estimates}}, \code{\link[brglm2]{brglm_fit}}, 
+#' @seealso \code{\link{glm.fit}} and \code{\link{glm}}, \code{\link{check_infinite_estimates}}, \code{\link[brglm2]{brglm_fit}},
 #'
 #' @references
 #'
@@ -103,10 +103,9 @@
 #' package version 0.1-3.
 #' \url{https://CRAN.R-project.org/package=safeBinaryRegression}
 #'
-#' Kosmidis I. and Firth D. (2019). Jeffreys-prior penalty, finiteness
+#' Kosmidis I. and Firth D. (2021). Jeffreys-prior penalty, finiteness
 #' and shrinkage in binomial-response generalized linear
-#' models. arXiv:1812.01938.
-#' \url{https://arxiv.org/abs/1812.01938v3}
+#' models. *Biometrika*, **108**, 71–82
 #'
 #' @examples
 #'
@@ -136,7 +135,7 @@
 #'     ## result from the more computationally intensive check
 #'     plot(check_infinite_estimates(murder_glm))
 #'     ## Mean bias reduction via adjusted scores results in finite estimates
-#'     if (requireNamespace("brglm2", quietly = TRUE)) 
+#'     if (requireNamespace("brglm2", quietly = TRUE))
 #'         update(murder_glm, method = brglm2::brglm_fit)
 #' }
 #' }
@@ -145,9 +144,12 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
                               start = NULL, etastart = NULL,  mustart = NULL,
                               offset = rep(0, nobs), family = gaussian(),
                               control = list(), intercept = TRUE, singular.ok = TRUE) {
-    if (family$family != "binomial") {
-        warning("detect_separation has been developed for use with binomial-response models")
-    }    
+    if (isTRUE(family$family != "binomial")) {
+        warning("`detect_separation` has been developed for use with binomial-response GLMs")
+    }
+    if (!isTRUE(family$link %in% c("logit", "probit", "cauchit", "cloglog"))) {
+        warning("`detect_separation` results may be unreliable for binomial-response GLMs with links other than 'logit', 'probit', 'cauchit', 'cloglog'")
+    }
     control <- do.call("detect_separation_control", control)
     separator <- control$separator
     ## ensure x is a matrix
@@ -177,7 +179,7 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
         ## Detect aliasing
         qrx <- qr(x)
         rank <- qrx$rank
-        is_full_rank <- rank == nvars        
+        is_full_rank <- rank == nvars
         if (!singular.ok && !is_full_rank) {
             stop("singular fit encountered")
         }
@@ -203,16 +205,16 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
         ## 1) with one zero and one 1
         ones <- y == 1
         zeros <- y == 0
-        non_boundary <- !(ones | zeros)        
+        non_boundary <- !(ones | zeros)
         x <- x[c(which(ones), which(zeros), rep(which(non_boundary), 2)), , drop = FALSE]
-        y <- c(y[ones], y[zeros], rep(c(0., 1.), each = sum(non_boundary)))       
+        y <- c(y[ones], y[zeros], rep(c(0., 1.), each = sum(non_boundary)))
         ## Run linear program
         out <- separator(x = x, y = y,
                          linear_program = control$linear_program,
                          purpose = control$purpose,
                          tolerance = control$tolerance,
                          solver = control$solver,
-                         solver_control = control$solver_control)       
+                         solver_control = control$solver_control)
         if (is.na(out$separation)) {
             if (identical(control$implementation, "ROI")) {
                 warning("unexpected result from implementation ", control$implementation, " with solver: ", control$solver, "\n")
@@ -236,10 +238,10 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
                     y = y,
                     coefficients = betas_all,
                     separation = out$separation)
-    }   
+    }
     out$control <- control
     out$class <- "detect_separation"
-    class(out) <- "detect_separation"    
+    class(out) <- "detect_separation"
     return(out)
 }
 
@@ -284,7 +286,7 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
 #' \code{solver_control}, \code{purpose}, \code{tolerance},
 #' \code{implementation}, and the matched \code{separator} function
 #' (according to the value of \code{implementation}).
-#' 
+#'
 #' @export
 detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
                                       solver = "lpsolve",
@@ -296,10 +298,10 @@ detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
     purpose <- match.arg(purpose)
     linear_program <- match.arg(linear_program)
     separator <- match.fun(paste("separator", implementation, sep = "_"))
-    
+
     ## ensure the solver is loaded using the ROI plugin mechanism
     if (solver != "lpsolve") {
-        roi_plugin_name <- paste0("ROI.plugin.", solver)        
+        roi_plugin_name <- paste0("ROI.plugin.", solver)
         pkgload::check_suggested(roi_plugin_name, path = pkgload::inst("detectseparation"), version = "*")
         requireNamespace(roi_plugin_name, quietly = TRUE)
     }

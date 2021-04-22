@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2020 Ioannis Kosmidis
+# Copyright (C) 2016-2021 Ioannis Kosmidis
 
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #'
 #' @details
 #'
-#' \code{check_infinite_estimates} attempts to identify the occurence
+#' \code{check_infinite_estimates} attempts to identify the occurrence
 #' of infinite estimates in GLMs with binomial responses by
 #' successively refitting the model. At each iteration the maximum
 #' number of allowed IWLS iterations is fixed starting from 1 to
@@ -46,6 +46,13 @@
 #' estimate for the corresponding parameter has value minus or plus
 #' infinity.
 #'
+#' \code{check_infinite_estimates} can also be used to identify the
+#' occurrence of infinite estimates in baseline category logit models
+#' for nominal responses (see \code{\link[brglm2]{brmultinom}} from the
+#' \pkg{brglm2} R package), and adjacent category logit models for
+#' ordinal responses (see \code{\link[brglm2]{bracl}} from the
+#' \pkg{brglm2} R package).
+#'
 #' @return
 #'
 #' A matrix inheriting from class \code{inf_check}, with \code{nsteps}
@@ -53,11 +60,11 @@
 #' parameters. A \code{plot} method is provided for \code{inf_check}
 #' objects for the easy inspection of the ratios of the standard
 #' errors.
-#' 
+#'
 #' @note
 #'
 #' For the definition of complete and quasi-complete separation, see
-#' Albert and Anderson (1984). Kosmidis and Firth (2019) prove that
+#' Albert and Anderson (1984). Kosmidis and Firth (2021) prove that
 #' the reduced-bias estimator that results by the penalization of the
 #' logistic regression log-likelihood by Jeffreys prior takes always
 #' finite values, even when some of the maximum likelihood estimates
@@ -66,7 +73,8 @@
 #'
 #' @seealso \code{\link[nnet]{multinom}},
 #'     \code{\link{detect_separation}},
-#'     \code{\link[brglm2]{brmultinom}}
+#'     \code{\link[brglm2]{brmultinom}},
+#'     \code{\link[brglm2]{bracl}}
 #'
 #' @references
 #'
@@ -74,10 +82,9 @@
 #' Discrimination. *Journal of the Royal Statistical Society. Series B
 #' (Methodological)*, **51**, 109-116
 #'
-#' Kosmidis I. and Firth D. (2019). Jeffreys-prior penalty, finiteness
+#' Kosmidis I. and Firth D. (2021). Jeffreys-prior penalty, finiteness
 #' and shrinkage in binomial-response generalized linear
-#' models. arXiv:1812.01938.
-#' \url{https://arxiv.org/abs/1812.01938v3}
+#' models. *Biometrika*, **108**, 71–82
 #'
 #' @examples
 #'
@@ -89,7 +96,7 @@
 #' ## NV is infinite
 #' (estimates <- check_infinite_estimates(endometrial_ml))
 #' plot(estimates)
-#' 
+#'
 #'
 #' \donttest{
 #' ## Aligator data (Agresti, 2002, Table~7.1)
@@ -109,7 +116,7 @@
 #' @export
 check_infinite_estimates.glm <- function(object, nsteps = 20, ...) {
     valid_classes <- c("glm", "brglmFit", "brmultinom")
-    is_brmultinom <- inherits(object, "brmultinom")       
+    is_brmultinom <- inherits(object, "brmultinom")
     if (!inherits(object, valid_classes)) {
         warning("check_infinite_estimates has been designed for objects of class 'glm', 'brglmFit', 'brmultinom'")
     }
@@ -151,7 +158,7 @@ check_infinite_estimates.glm <- function(object, nsteps = 20, ...) {
 #' @export
 plot.inf_check <- function(x, tol = 1e+2, ...) {
     ## heuristic for determining ploting ranges
-    sds <- apply(x, 2, sd)    
+    sds <- apply(x, 2, sd)
     matplot(x, type = "l", lty = 1, ylim = range(x[, sds < tol]) * c(1, 1.5),
             ylab = "estimate", xlab = "number of iterations")
 }

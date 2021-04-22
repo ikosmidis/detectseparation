@@ -40,6 +40,25 @@ test_that("output is as expected", {
     expect_output(print(endometrial_separation_lpsolve2), "Implementation: lpSolveAPI \\| Linear program: dual \\| Purpose: test \\nSeparation: TRUE")
 })
 
+## Test aliasing
+endometrial_separation_a <- glm(HG ~ NV + I(2 * NV) + PI + EH, data = endometrial,
+                                family = binomial("cloglog"),
+                                method = "detect_separation")
+
+test_that("models with aliased parameters are handled correctly", {
+    expect_equal(coef(endometrial_separation_a), c(0L, Inf, NA, 0L, 0L), check.attributes = FALSE)
+})
+
+## Test EMPTY fits
+endometrial_separation_n <- glm(HG ~ 0, data = endometrial,
+                                family = binomial("cloglog"),
+                                method = "detect_separation")
+test_that("empty modelss are handled correctly", {
+    expect_null(coef(endometrial_separation_n))
+    expect_false(endometrial_separation_n$separation)
+})
+
+
 
 ## ## hepatitis
 ## data("hepatitis", package = "pmlr")
