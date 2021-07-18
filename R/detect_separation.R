@@ -147,11 +147,21 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
     if (isTRUE(family$family != "binomial")) {
         warning("`detect_separation` has been developed for use with binomial-response GLMs")
     }
-    if (!isTRUE(family$link %in% c("logit", "probit", "cauchit", "cloglog"))) {
+    if (!isTRUE(family$link %in% c("logit", "probit", "cauchit", "cloglog", "log"))) {
         warning("`detect_separation` results may be unreliable for binomial-response GLMs with links other than 'logit', 'probit', 'cauchit', 'cloglog'")
     }
     control <- do.call("detect_separation_control", control)
     separator <- control$separator
+
+    if (isTRUE(family$link == "log")) {
+        if (isTRUE(control$implementation == "ROI")) {
+            separator <- separator_log_ROI
+        }
+        else {
+            stop("implementation ", control$implementation, " is not supported for binomial-response GLMs with log-link. Use `implementation =  'ROI'` (default) instead.")
+        }
+    }
+
     ## ensure x is a matrix
     x <- as.matrix(x)
     betas_names <- dimnames(x)[[2L]]

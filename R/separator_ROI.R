@@ -57,3 +57,19 @@ separator_ROI <- function(x, y,
   list(separation = has_seperation,
        beta = solution)
 }
+
+
+separator_log_ROI <- function(x, y,
+                              solver = "lpsolve",
+                              tolerance = 1e-03,
+                              solver_control = list(),
+                              ...) {
+    ## Use linear program from
+    ##
+    ## Schwendinger, F., Grün, B. & Hornik, K. A comparison of
+    ## optimization solvers for log binomial regression including
+    ## conic programming. Comput Stat 36, 1721–1754
+    ## (2021). https://doi.org/10.1007/s00180-021-01084-5
+
+    stop("NOT IMPLEMENTED YET")
+}
