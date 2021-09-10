@@ -89,10 +89,14 @@ relies on the linear programming methods developed in Konis (2007).
 }
 \details{
 \code{\link{detect_separation}} is a wrapper to the
-\code{separator_ROI} function and \code{separator_lpSolveAPI}
-function (a modified version of the \code{separator} function from
-the **safeBinaryRegression** R
-package). \code{\link{detect_separation}} can be passed directly as
+\code{separator_ROI} function, \code{separator_lpSolveAPI}
+function and \code{separator_log_ROI}.
+
+The \code{separator_lpSolveAPI} function is a modified version 
+of the \code{separator} function from the **safeBinaryRegression** R
+package. 
+
+\code{\link{detect_separation}} can be passed directly as
 a method to the \code{\link{glm}} function. See, examples.
 
 The \code{\link{coefficients}} method extracts a vector of values
@@ -125,6 +129,11 @@ In 2020, \code{\link{detect_separation}} and
 authored the \code{separator_ROI} function, which depends on the
 **ROI** R package and is now the default implementation used for
 detecting separation.
+
+In 2021, Florian Schwendinger added the \code{separator_log_ROI}
+function which allows to detect infinite components in 
+log-binomial regression models, for more deails see
+Schwendinger and Grün and Hornik (2021).
 }
 \examples{
 
@@ -172,6 +181,10 @@ package version 0.1-3.
 Kosmidis I. and Firth D. (2021). Jeffreys-prior penalty, finiteness
 and shrinkage in binomial-response generalized linear
 models. *Biometrika*, **108**, 71–82
+
+Schwendinger, F., Grün, B. & Hornik, K. A comparison of optimization solvers
+for log binomial regression including conic programming. 
+Comput Stat 36, 1721–1754 (2021). \url{https://doi.org/10.1007/s00180-021-01084-5}
 }
 \seealso{
 \code{\link{glm.fit}} and \code{\link{glm}}, \code{\link{check_infinite_estimates}}, \code{\link[brglm2]{brglm_fit}},

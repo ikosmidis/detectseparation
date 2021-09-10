@@ -138,7 +138,7 @@ check_infinite_estimates.glm <- function(object, nsteps = 20, ...) {
     noNA <- !is.na(betas)
     stdErrors <- matrix(0, nsteps, length(betas))
     start <- NULL
-    for (i in 1:nsteps) {
+    for (i in seq_len(nsteps)) {
         if (is_brmultinom) {
             suppressWarnings(temp.object <- update(object, control = list(maxit = i, epsilon = eps, type = object$type), start = start))
             stdErrors[i, noNA] <- sqrt(diag(vcov(temp.object))[noNA])

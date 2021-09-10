@@ -15,6 +15,8 @@
 #' @import ROI.plugin.lpsolve
 #' @importFrom stats coef coefficients gaussian update vcov sd
 #' @importFrom graphics matplot
+#' @importFrom utils modifyList
+#' @importFrom ROI L_constraint OP V_bound ROI_solve solution leq eq
 #'
 NULL
 
