@@ -13,10 +13,10 @@
 #' @docType package
 #' @name detectseparation
 #' @import ROI.plugin.lpsolve
-#' @importFrom stats coef coefficients gaussian update vcov sd
+#' @importFrom stats coef coefficients gaussian update vcov sd binomial
 #' @importFrom graphics matplot
 #' @importFrom utils modifyList
-#' @importFrom ROI L_constraint OP V_bound ROI_solve solution leq eq
+#' @importFrom ROI L_constraint OP V_bound ROI_solve solution leq eq ROI_registered_solvers ROI_installed_solvers
 #'
 NULL
 

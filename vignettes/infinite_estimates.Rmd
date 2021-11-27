@@ -1,0 +1,137 @@
+---
+title: "Detect/check infinite estimate in log-binomial regression models"
+author: "Florian Schwendinger"
+date: "`Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: detectseparation.bib
+vignette: >
+  %\VignetteIndexEntry{Detect/check infinite estimate in log-binomial regression models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 6,
+  fig.height = 6
+)
+```
+
+
+# The log-binomial case
+In log-binomial regression separation is not the only factor which
+decides if the maximum likelihood estimate (MLE) has infinite components or not.
+As we will see in the example below there exist data configurations
+which are separated but the MLE still exists.
+
+The MLE of the log-binomial regression model (LBRM) can be obtained by solving
+the following optimization problem.
+$$
+\begin{equation}
+    \begin{array}{rl}
+    \underset{\beta}{\textrm{maximize}} &
+    \ell(\beta) = \displaystyle\sum_{i = 1}^n y_i ~ X_{i*} \beta + (1 - y_i) ~  \log(1 - \exp(X_{i*} \beta)) \ \ \ \
+    \textrm{s.t.} &
+    X \beta \leq 0.
+    \end{array}
+\end{equation}
+$$
+
+From the optimization problem we can already guess that the different behavior 
+with regard to the existence of the MLE is caused by the linear constraint
+$X \beta \leq 0$.
+
+
+Let $X^0$ be the submatrix of $X$ obtained by keeping only the rows
+$I^0 = \{i|y_i = 0\}$ and $X^1$ the submatrix obtained by keeping only
+the rows $I^1 = \{i|y_i = 1\}$.
+@schwendinger+gruen+hornik:2021 pointed out that the recession cone of $\ell$ is given by 
+$$
+R = \{\beta | X^0 \beta \leq 0 \land X^1 \beta = 0\}
+$$
+
+and therefore the finiteness of the MLE can be checked by solving the following 
+linear optimization problem.
+
+$$
+\begin{equation}
+\begin{array}{rll}
+  \underset{\beta}{\text{maximize}}~~  &
+    - \sum_{i \in I^0} X_{i*} \beta \\
+  \text{subject to}~~  &
+    X^0 \beta \leq 0 \\
+  & X^1 \beta = 0.
+\end{array}
+\end{equation}
+$$
+The MLE has only finite components if the solution of this linear program is a
+zero vector. If the MLE contains infinite components, the linear programming problem
+is unbounded. The function `detect_infinite_estimates()` from the **detectseparation** 
+implements the LP problem described above and can therefore be used to detect
+infinite components in the MLE of the LBRM. 
+
+```{r, echo = TRUE, eval = TRUE}
+library("detectseparation")
+```
+
+## Tiny Example
+To show the different effect of separation on the logistic regression model
+compared to the LBRM consider the following data.
+```{r, tiny_example}
+data <- data.frame(a = c(1, 0, 3, 2, 3, 4), 
+                   b = c(2, 1, 1, 4, 6, 8),
+                   y = c(0, 0, 0, 1, 1, 1))
+```
+
+Clearly the data is separated, which can be verified by using the `detect_separation`
+method.
+
+```{r, tiny_example_sep}
+glm(y ~ a + b, data = data, family = binomial("logit"), method = "detect_separation")
+```
+
+For logistic regression model this means the MLE does not exist.
+
+```{r, tiny_example_inf_esti_logit}
+glm(y ~ a + b, data = data, family = binomial("logit"),  method = "detect_infinite_estimates")
+```
+
+However, due to the linear constraint the MLE does exist for the LBRM,
+
+```{r, tiny_example_inf_esti_log}
+glm(y ~ a + b, data = data, family = binomial("log"),  method = "detect_infinite_estimates")
+```
+
+despite the fact that the data is separated.
+Using `glm` to solve this problem we get the following error message.
+
+```{r, glm_fit}
+fit <- try(glm(y ~ a + b, data = data, family = binomial("log")))
+```
+
+The error message means that we should provide starting values.
+For the benchmark example reported in @schwendinger+gruen+hornik:2021 I experimented
+with different starting values and found that I could find that smarter starting
+values give better results. Interestingly the simplest strategy to choose starting
+values $(-1, 0, ..., 0)$ did work quite well and therefore is my personal favorite strategy.
+
+Since the constraint $X \beta \leq 0$ is by design binding the iteratively reweighted least
+squares (IRLS) method used by the `glm` function has convergence problems, which `glm` alerts us by issuing 
+some warnings.
+
+```{r, tiny_example_inf_esti_log_separation}
+formula <- y ~ a + b
+start <- c(-1, double(ncol(model.frame(formula, data = data)) - 1L))
+fit <- glm(formula, data = data, family = binomial("log"), start = start)
+summary(fit)
+```
+
+We can verify that one of the constraints $X_{i*} \beta \leq 0$ is binding by multiplying the
+coefficients with the model matrix.
+```{r}
+print(mm <- drop(model.matrix(formula, data) %*% coef(fit)))
+abs(drop(mm)) < 1e-6
+```
+
