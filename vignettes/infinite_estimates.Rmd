@@ -1,11 +1,11 @@
 ---
-title: "Detect/check infinite estimate in log-binomial regression models"
+title: "Detect Infinite Estimates in Log-Binomial Regression Models"
 author: "Florian Schwendinger"
 date: "`Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: detectseparation.bib
 vignette: >
-  %\VignetteIndexEntry{Detect/check infinite estimate in log-binomial regression models}
+  %\VignetteIndexEntry{Detect Infinite Estimates in Log-Binomial Regression Models}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
