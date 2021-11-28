@@ -1,11 +1,11 @@
 ---
-title: "Detect Infinite Estimates in Log-Binomial Regression Models"
+title: "Detecting separation and infinite estimates in log binomial regression"
 author: "Florian Schwendinger"
 date: "`Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: detectseparation.bib
 vignette: >
-  %\VignetteIndexEntry{Detect Infinite Estimates in Log-Binomial Regression Models}
+  %\VignetteIndexEntry{Detecting separation and infinite estimates in log binomial regression}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 # The log-binomial case
 In log-binomial regression separation is not the only factor which
-decides if the maximum likelihood estimate (MLE) has infinite components or not.
+decides if the maximum likelihood estimate (MLE) has infinite components.
 As we will see in the example below there exist data configurations
 which are separated but the MLE still exists.
 
@@ -47,13 +47,8 @@ $X \beta \leq 0$.
 Let $X^0$ be the submatrix of $X$ obtained by keeping only the rows
 $I^0 = \{i|y_i = 0\}$ and $X^1$ the submatrix obtained by keeping only
 the rows $I^1 = \{i|y_i = 1\}$.
-@schwendinger+gruen+hornik:2021 pointed out that the recession cone of $\ell$ is given by 
-$$
-R = \{\beta | X^0 \beta \leq 0 \land X^1 \beta = 0\}
-$$
-
-and therefore the finiteness of the MLE can be checked by solving the following 
-linear optimization problem.
+@schwendinger+gruen+hornik:2021 pointed out that the finiteness of the MLE 
+can be checked by solving the following linear optimization problem.
 
 $$
 \begin{equation}
@@ -111,20 +106,47 @@ Using `glm` to solve this problem we get the following error message.
 fit <- try(glm(y ~ a + b, data = data, family = binomial("log")))
 ```
 
-The error message means that we should provide starting values.
-For the benchmark example reported in @schwendinger+gruen+hornik:2021 I experimented
-with different starting values and found that I could find that smarter starting
-values give better results. Interestingly the simplest strategy to choose starting
-values $(-1, 0, ..., 0)$ did work quite well and therefore is my personal favorite strategy.
+The error message means that we should provide starting values, a simple
+but reliable approach is to use $(-1, 0, ..., 0)$ as starting value.
 
-Since the constraint $X \beta \leq 0$ is by design binding the iteratively reweighted least
-squares (IRLS) method used by the `glm` function has convergence problems, which `glm` alerts us by issuing 
-some warnings.
+Since in this example one of the constraints $X_{i*} \beta \leq 0$
+is by design binding, the iteratively re-weighted least squares (IRLS)
+method used by the `glm` function has convergence problems.
+The `glm` function informs us about the convergence problems by
+issuing some warnings. The warnings 
+
+```
+#> Warning: step size truncated: out of bounds
+#> Warning: glm.fit: algorithm stopped at boundary value
+```
+
+tell us that IRLS is not the best option for optimization problems with binding constraints.
+The warning 
+
+```
+#> Warning: glm.fit: algorithm did not converge
+```
+
+tell us that the algorithm did not converge. Practically in most cases this just means
+the default value for the maximum number of iterations should be increased.
+
+
+```{r}
+args(glm.control)
+```
+Since the default value for the maximum number of iterations is quite low (`maxit = 25`).
+However, `maxit = 25` is typically high enough for unbounded optimization problems 
+(almost all models supported by glm), but is often to low for the LBRM.
+I recommend to set `maxit = 10000` when estimating LBRMs.
+
 
 ```{r, tiny_example_inf_esti_log_separation}
 formula <- y ~ a + b
-start <- c(-1, double(ncol(model.frame(formula, data = data)) - 1L))
-fit <- glm(formula, data = data, family = binomial("log"), start = start)
+start <- c(-1, double(ncol(model.matrix(formula, data = data)) - 1L))
+ctrl = glm.control(epsilon = 1e-8, maxit = 10000, trace = FALSE)
+suppressWarnings(
+  fit <- glm(formula, data = data, family = binomial("log"), start = start, control = ctrl)
+)
 summary(fit)
 ```
 
@@ -135,3 +157,46 @@ print(mm <- drop(model.matrix(formula, data) %*% coef(fit)))
 abs(drop(mm)) < 1e-6
 ```
 
+## Choosing starting values
+`glm` will often require user specified starting values for the LBRM. Valid starting values
+have to reside in the interior of the feasible region ($X \beta < 0$).
+There have been different methods suggested for finding valid starting values.
+
+### Simple approach
+If an intercept is present in the estimation `(-1, 0, ..., 0)` will always provide 
+valid starting values.
+```{r}
+find_start_simple <- function(formula, data) {
+  c(-1, double(ncol(model.matrix(formula, data = data)) - 1L))  
+}
+
+find_start_simple(formula, data)
+max(model.matrix(formula, data = data) %*% find_start_simple(formula, data))
+```
+
+### Hot start via Poisson model
+@andrade+andrade2018 suggest a hot start method, by using the modified estimation result
+of a Poisson model with log link as starting values. Again this method only works if an
+intercept is used.
+```{r}
+find_start_poisson <- function(formula, data, delta = 1) {
+  b0 <- coef(glm(formula, data, family = poisson(link = "log")))
+  mX <- -model.matrix(formula, data = data)[, -1L, drop = FALSE]
+  b0[1] <- min(mX %*% b0[-1]) - delta
+  b0
+}
+
+find_start_poisson(formula, data)
+max(model.matrix(formula, data = data) %*% find_start_poisson(formula, data))
+```
+
+### Recommendation
+One can also solve an LP to find valid start values or think of other strategies.
+However, for the benchmark examples reported in @schwendinger+gruen+hornik:2021
+I found no conclusive evidence that one of these initialization methods outperforms
+the others. Therefore, my personal favorite is the simple approach `(-1, 0, ..., 0)`.
+
+
+---
+
+# References
