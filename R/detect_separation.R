@@ -147,8 +147,10 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
     if (isTRUE(family$family != "binomial")) {
         warning("`detect_separation` has been developed for use with binomial-response GLMs")
     }
-    if (!isTRUE(family$link %in% c("logit", "probit", "cauchit", "cloglog"))) {
-        warning("`detect_separation` results may be unreliable for binomial-response GLMs with links other than 'logit', 'probit', 'cauchit', 'cloglog'")
+    reliable_links <- c("logit", "log", "probit", "cauchit", "cloglog")
+    if (!isTRUE(family$link %in% reliable_links)) {
+        warning("`detect_separation` results may be unreliable for binomial-response GLMs",
+                " with links other than ", paste(shQuote(reliable_links), collapse = ", "))
     }
     control <- do.call("detect_separation_control", control)
     separator <- control$separator
