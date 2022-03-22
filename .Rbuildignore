@@ -6,3 +6,5 @@ inst/scratch
 ^codecov\.yml$
 ^CRAN-RELEASE$
 ^\.github$
+vignettes/Makefile
+work
