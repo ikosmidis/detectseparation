@@ -197,6 +197,12 @@ package version 0.1-3.
 Kosmidis I. and Firth D. (2021). Jeffreys-prior penalty, finiteness
 and shrinkage in binomial-response generalized linear
 models. *Biometrika*, **108**, 71–82
+
+
+Silvapulle, M. J. (1981).
+On the Existence of Maximum Likelihood Estimators for the Binomial Response Models.
+Journal of the Royal Statistical Society. Series B (Methodological), 43(3), 310–313.
+\url{http://www.jstor.org/stable/2984941}
 }
 \seealso{
 \code{\link{glm.fit}} and \code{\link{glm}}, \code{\link{check_infinite_estimates}}, \code{\link[brglm2]{brglm_fit}},

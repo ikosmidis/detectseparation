@@ -171,9 +171,9 @@
 #' }
 #' }
 #' @export
-detect_separation <- function(x, y, weights = rep(1, nobs),
+detect_separation <- function(x, y, weights = rep.int(1, nobs),
                               start = NULL, etastart = NULL,  mustart = NULL,
-                              offset = rep(0, nobs), family = gaussian(),
+                              offset = rep.int(0, nobs), family = gaussian(),
                               control = list(), intercept = TRUE, singular.ok = TRUE) {
     if (isTRUE(family$family != "binomial")) {
         warning("`detect_separation` has been developed for use with binomial-response GLMs")
@@ -184,7 +184,7 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
                 " with links other than ", paste(shQuote(reliable_links), collapse = ", "))
     }
     if (isTRUE(family$link == "log")) {
-        warning("Data separation does not necessarily result in infinite estimates in log-binomial models")
+        warning("Data separation in log-binomial models does not necessarily result in infinite estimates")
     }
     control <- do.call("detect_separation_control", control)
     separator <- control$separator

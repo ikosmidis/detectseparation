@@ -29,7 +29,7 @@ dielb_ROI <- function(x, y,
 }
 
 
-detect_infinite_estimates_log_binomial <- function(x, y, weights = rep(1, nobs),
+detect_infinite_estimates_log_binomial <- function(x, y, weights = rep.int(1, nobs),
                                                    start = NULL, etastart = NULL,  mustart = NULL,
                                                    offset = rep.int(0, nobs), family = gaussian(),
                                                    control = list(), intercept = TRUE, singular.ok = TRUE) {
@@ -186,7 +186,7 @@ detect_infinite_estimates_log_binomial <- function(x, y, weights = rep(1, nobs),
 #' glm(y ~ ghqs, data = silvapulle1981, family = binomial("log"), start = c(-1, 0))
 #'
 #' @export
-detect_infinite_estimates <- function(x, y, weights = rep(1, nobs),
+detect_infinite_estimates <- function(x, y, weights = rep.int(1, nobs),
                                       start = NULL, etastart = NULL,  mustart = NULL,
                                       offset = rep.int(0, nobs), family = gaussian(),
                                       control = list(), intercept = TRUE, singular.ok = TRUE) {

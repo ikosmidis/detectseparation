@@ -8,12 +8,12 @@
 detect_infinite_estimates(
   x,
   y,
-  weights,
+  weights = rep(1, nobs),
   start = NULL,
   etastart = NULL,
   mustart = NULL,
-  offset,
-  family = binomial(),
+  offset = rep.int(0, nobs),
+  family = gaussian(),
   control = list(),
   intercept = TRUE,
   singular.ok = TRUE
