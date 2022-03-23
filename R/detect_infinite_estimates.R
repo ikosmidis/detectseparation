@@ -15,10 +15,10 @@ dielb_ROI <- function(x, y,
   op <- OP(objective = -colSums(x), maximum = TRUE,
            constraints = L_constraint(x, direction, double(nrow(x))),
            bounds = V_bound(ld = -Inf, ud = Inf, nobj = ncol(x)))
-  
+
   if (isTRUE(solver == "lpsolve")) {
       control <- list(pivoting = "firstindex", simplextype = c("primal", "primal"))
-      solver_control <- modifyList(control, solver_control)    
+      solver_control <- modifyList(control, solver_control)
   }
 
   s <- ROI_solve(op, solver, control = solver_control)
@@ -29,10 +29,10 @@ dielb_ROI <- function(x, y,
 }
 
 
-detect_infinite_estimates_log_binomial <- function(x, y, weights, start = NULL, etastart = NULL, 
-                                                   mustart = NULL, offset, family = binomial(),
-                                                   control = list(), intercept = TRUE,
-                                                   singular.ok = TRUE) {
+detect_infinite_estimates_log_binomial <- function(x, y, weights = rep(1, nobs),
+                                                   start = NULL, etastart = NULL,  mustart = NULL,
+                                                   offset = rep.int(0, nobs), family = gaussian(),
+                                                   control = list(), intercept = TRUE, singular.ok = TRUE) {
     control <- do.call("detect_infinite_estimates_control", control)
     separator <- dielb_ROI
     ## ensure x is a matrix
@@ -44,10 +44,10 @@ detect_infinite_estimates_log_binomial <- function(x, y, weights, start = NULL, 
     if (nvars == 0) {
         return(list(separation = FALSE, control = control))
     }
-    if (missing(weights)) {
+    if (is.null(weights)) {
         weights <- rep.int(1, nobs)
     }
-    if (missing(offset)) {
+    if (missingOffset <- is.null(offset)) {
         offset <- rep.int(0, nobs)
     }
     ## Initialize as prescribed in family
@@ -113,25 +113,25 @@ detect_infinite_estimates_log_binomial <- function(x, y, weights, start = NULL, 
 
 
 #' @title Detect Infinite Estimates
-#' 
+#'
 #' @description
-#' Method for \code{\link{glm}} that detects infinite components in 
+#' Method for \code{\link{glm}} that detects infinite components in
 #' the MLE estimates of generalized linear models with binomial responses.
 #'
 #' For all links except the \code{"log"} link, function
-#' \code{detect_infinite_estimates} is a wrapper around 
+#' \code{detect_infinite_estimates} is a wrapper around
 #' \code{\link{detect_separation}}. For the \code{"log"}
 #' link separated data allocations not necessarily lead to
 #' infinite components in the MLE estimates, therefore another method is used.
 #'
 #' \code{\link{detect_infinite_estimates}} for the \code{"log"} link
-#' relies on the linear optimization model developed in 
-#' Schwendinger and Grün and Hornik (2021) and for all the other 
+#' relies on the linear optimization model developed in
+#' Schwendinger et al. (2021) and for all the other
 #' supported links it relies on the linear programming methods
 #' developed in Konis (2007).
 #'
 #' @inheritParams stats::glm.fit
-#' 
+#'
 #' @aliases detectInfiniteEstimates
 #'
 #' @param x \code{x} is a design matrix of dimension \code{n * p}.
@@ -147,7 +147,7 @@ detect_infinite_estimates_log_binomial <- function(x, y, weights, start = NULL, 
 #'
 #' @references
 #'
-#' Silvapulle, M. J. (1981). 
+#' Silvapulle, M. J. (1981).
 #' On the Existence of Maximum Likelihood Estimators for the Binomial Response Models.
 #' Journal of the Royal Statistical Society. Series B (Methodological), 43(3), 310–313.
 #' \url{http://www.jstor.org/stable/2984941}
@@ -164,9 +164,9 @@ detect_infinite_estimates_log_binomial <- function(x, y, weights, start = NULL, 
 #' Kosmidis I. and Firth D. (2021). Jeffreys-prior penalty, finiteness
 #' and shrinkage in binomial-response generalized linear
 #' models. *Biometrika*, **108**, 71–82
-#' 
+#'
 #' Schwendinger, F., Grün, B. & Hornik, K. A comparison of optimization solvers
-#' for log binomial regression including conic programming. 
+#' for log binomial regression including conic programming.
 #' Comput Stat 36, 1721–1754 (2021). \url{https://doi.org/10.1007/s00180-021-01084-5}
 #'
 #'
@@ -175,42 +175,34 @@ detect_infinite_estimates_log_binomial <- function(x, y, weights, start = NULL, 
 #' # to show that for the Log-Binomial model there exist data allocations
 #' # which are separated but produce finite estimates.
 #' data("silvapulle1981", package = "detectseparation")
-#' 
+#'
 #' # Since the data is separated the MLE does not exist for the logit link.
 #' glm(y ~ ghqs, data = silvapulle1981, family = binomial(),
 #'     method = "detect_infinite_estimates")
-#' 
+#'
 #' # However, for the log link all components of the MLE are finite.
 #' glm(y ~ ghqs, data = silvapulle1981, family = binomial("log"),
 #'     method = "detect_infinite_estimates")
 #' glm(y ~ ghqs, data = silvapulle1981, family = binomial("log"), start = c(-1, 0))
 #'
 #' @export
-detect_infinite_estimates <- function(x, y, weights, start = NULL, etastart = NULL,  mustart = NULL,
-                                      offset, family = binomial(), control = list(), intercept = TRUE,
-                                      singular.ok = TRUE) {
+detect_infinite_estimates <- function(x, y, weights = rep(1, nobs),
+                                      start = NULL, etastart = NULL,  mustart = NULL,
+                                      offset = rep.int(0, nobs), family = gaussian(),
+                                      control = list(), intercept = TRUE, singular.ok = TRUE) {
     if (isTRUE(family$family != "binomial")) {
         stop("`detect_infinite_estimates` has been developed for use with binomial-response GLMs")
     }
-    nobs <- NROW(y)
-    if (missing(weights)) {
-        weights <- rep(1, nobs)
-    }
-    if (missing(offset)) {
-        offset <- rep(0, nobs)
-    }
-    
     if (isTRUE(family$link == "log")) {
         .detect_infinite_estimates <- detect_infinite_estimates_log_binomial
     } else {
         .detect_infinite_estimates <- detect_separation
     }
-    out <- .detect_infinite_estimates(x = x, y = y, weights = weights, start = start, 
+    out <- .detect_infinite_estimates(x = x, y = y, weights = weights, start = start,
                                       etastart = etastart,  mustart = mustart,
                                       offset = offset, family = family, control = control,
                                       intercept = control, singular.ok = singular.ok)
     names(out)[names(out) == "separation"] <- "infinite_estimates"
-    
     class(out) <- out$class <- "detect_infinite_estimates"
     out
 }
@@ -280,10 +272,13 @@ detect_infinite_estimates_control <- function(solver = "lpsolve",
                      "(in `ROI_installed_solvers()`) please make sure that is installed.")
             }
         }
-        
     }
     list(solver = solver,
-         solver_control = solver_control, 
+         solver_control = solver_control,
          tolerance = tolerance,
          implementation = "ROI")
+}
+
+check_solver <- function(solver) {
+
 }
