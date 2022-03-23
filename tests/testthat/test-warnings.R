@@ -5,7 +5,7 @@ data("endometrial", package = "detectseparation")
 
 expect_warning(endometrial_separation <- glm(HG ~ I(-NV) + PI + EH, data = endometrial,
                                              family = binomial("log"),
-                                             method = "detect_separation"), regexp = "reliable")
+                                             method = "detect_separation"), regexp = "not necessarily")
 
 
 expect_warning(endometrial_separation <- glm(HG ~ I(-NV) + PI + EH, data = endometrial,
