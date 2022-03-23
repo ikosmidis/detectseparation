@@ -18,11 +18,11 @@
 #' finds which parameters have infinite maximum likelihood estimates
 #' in generalized linear models with binomial responses
 #'
-#' \code{\link{detect_separation}} is a method for \code{\link{glm}}
+#' \code{\link{detect_separation}()} is a method for \code{\link{glm}}
 #' that tests for the occurrence of complete or quasi-complete
 #' separation in datasets for binomial response generalized linear
 #' models, and finds which of the parameters will have infinite
-#' maximum likelihood estimates. \code{\link{detect_separation}}
+#' maximum likelihood estimates. \code{\link{detect_separation}()}
 #' relies on the linear programming methods developed in Konis (2007).
 #'
 #' @inheritParams stats::glm.fit
@@ -32,7 +32,7 @@
 #' @param x \code{x} is a design matrix of dimension \code{n * p}.
 #' @param y \code{y} is a vector of observations of length \code{n}.
 #' @param control a list of parameters controlling separation
-#'     detection. See \code{\link{detect_separation_control}} for
+#'     detection. See \code{\link{detect_separation_control}()} for
 #'     details.
 #' @param start currently not used.
 #' @param mustart currently not used.
@@ -42,11 +42,36 @@
 #'
 #' @details
 #'
-#' \code{\link{detect_separation}} is a wrapper to the
+#' According to the definitions in Albert and Anderson (1984), the
+#' data exhibits quasi-complete separation if there exists a parameter
+#' vector $\beta \ne 0$ such that $X^0 \beta \le 0$ and $X^1 \beta \ge
+#' 0$, where $X^0$ and $X^1$ are the matrices formed by the rows of
+#' the model matrix $X$ corresponding to zero and non-zero responses,
+#' respectively. The data exhibits complete separation if there exists
+#' a parameter vector $\beta$ such that the aforementioned conditions
+#' are satisfied with strict inequalities. If there are no vectors
+#' $\beta$ that can satisfy the conditions, then the data points are
+#' said to overlap.
+#'
+#' If the inverse link function $G(t)$ of a generalized linear models
+#' with binomial responses is such that $\log G(t)$ and $\log (1 -
+#' G(t))$ are convave and the model has an intercept parameter, then
+#' overlap is a necessary and sufficient condition for the maximum
+#' likelihood estimates to be finite (see Silvapulle, 1981 for a
+#' proof). Such link functions are, for example, the logit, probit and
+#' complementary log-log.
+#'
+#' \code{\link{detect_separation}()} determines whether or not the
+#' data exhibits (quasi-)complete separation. Then, if separation is
+#' detected and the link function $G(t)$ is such that $\log G(t)$ and
+#' $\log (1 - G(t))$ are concave, the maximum likelihood estimates
+#' has infinite components.
+#'
+#' \code{\link{detect_separation}()} is a wrapper to the
 #' \code{separator_ROI} function and \code{separator_lpSolveAPI}
 #' function (a modified version of the \code{separator} function from
 #' the **safeBinaryRegression** R
-#' package). \code{\link{detect_separation}} can be passed directly as
+#' package). \code{\link{detect_separation}()} can be passed directly as
 #' a method to the \code{\link{glm}} function. See, examples.
 #'
 #' The \code{\link{coefficients}} method extracts a vector of values
@@ -57,7 +82,7 @@
 #' convention makes it easy to adjust the maximum likelihood estimates
 #' to their actual values by element-wise addition.
 #'
-#' \code{detectSeparation} is an alias for \code{detect_separation}.
+#' \code{detectSeparation}() is an alias for \code{detect_separation}().
 #'
 #' @note
 #'
@@ -107,6 +132,12 @@
 #' and shrinkage in binomial-response generalized linear
 #' models. *Biometrika*, **108**, 71–82
 #'
+#'
+#' Silvapulle, M. J. (1981).
+#' On the Existence of Maximum Likelihood Estimators for the Binomial Response Models.
+#' Journal of the Royal Statistical Society. Series B (Methodological), 43(3), 310–313.
+#' \url{http://www.jstor.org/stable/2984941}
+
 #' @examples
 #'
 #' ## endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
@@ -151,6 +182,9 @@ detect_separation <- function(x, y, weights = rep(1, nobs),
     if (!isTRUE(family$link %in% reliable_links)) {
         warning("`detect_separation` results may be unreliable for binomial-response GLMs",
                 " with links other than ", paste(shQuote(reliable_links), collapse = ", "))
+    }
+    if (isTRUE(family$link == "log")) {
+        warning("Data separation does not necessarily result in infinite estimates in log-binomial models")
     }
     control <- do.call("detect_separation_control", control)
     separator <- control$separator
