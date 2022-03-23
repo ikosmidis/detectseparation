@@ -233,52 +233,22 @@ print.detect_infinite_estimates <- function(x, digits = max(5L, getOption("digit
 #' but may be used to construct a \code{control} argument.
 #'
 #' @aliases detectInfiniteEstimatesControl
-#' @param solver should the linear program be solved using the
-#'     \code{"lpsolve"} (using the \pkg{ROI.plugin.lpsolve} package;
-#'     default) or another solver? Alternative solvers are
-#'     \code{"glpk"}, \code{"cbc"}, \code{"clp"}, \code{"cplex"},
-#'     \code{"ecos"}, \code{"gurobi"}, \code{"scs"},
-#'     \code{"symphony"}. If \pkg{ROI.plugin.[solver]} is not
-#'     installed then the user will be prompted to install it before
-#'     continuing.
-#' @param tolerance maximum absolute variable value from the linear
-#'     program, before separation is declared. Default is
-#'     \code{1e-04}.
-#' @param solver_control a list with additional control parameters for
-#'     the \code{"solver"}. This is solver specific, so consult the
-#'     corresponding documentation. Default is \code{list()} unless
-#'     \code{solver} is \code{"alabama"} when the default is \code{list(start
-#'     = rep(0, p))}, where p is the number of parameters.
+#' @inheritParams detect_separation_control
 #'
 #' @return
 #'
-#' A list with the supplied \code{linear_program}, \code{solver},
-#' \code{solver_control}, \code{purpose}, \code{tolerance},
-#' \code{implementation}, and the matched \code{separator} function
-#' (according to the value of \code{implementation}).
+#' A list with the supplied \code{solver}, \code{solver_control},
+#' and \code{tolerance}.
 #'
 #' @export
 detect_infinite_estimates_control <- function(solver = "lpsolve",
                                               tolerance = 1e-04,
                                               solver_control = list()) {
-    ## ensure the solver is loaded using the ROI plugin mechanism
-    if (solver != "lpsolve") {
-        if (!solver %in% names(ROI_registered_solvers())) {
-            plugin_name <- sprintf("ROI.plugin.%s", gsub("\\..*", "", solver))
-            if (plugin_name %in% ROI_installed_solvers()) {
-                requireNamespace(plugin_name, quietly = TRUE)
-            } else {
-                stop(sprintf("'%s' can not be found among the installed solvers ", plugin_name),
-                     "(in `ROI_installed_solvers()`) please make sure that is installed.")
-            }
-        }
-    }
+    check_ROI_solver(solver)
     list(solver = solver,
          solver_control = solver_control,
          tolerance = tolerance,
          implementation = "ROI")
 }
 
-check_solver <- function(solver) {
 
-}

@@ -33,10 +33,8 @@ corresponding documentation. Default is \code{list()} unless
 = rep(0, p))}, where p is the number of parameters.}
 }
 \value{
-A list with the supplied \code{linear_program}, \code{solver},
-\code{solver_control}, \code{purpose}, \code{tolerance},
-\code{implementation}, and the matched \code{separator} function
-(according to the value of \code{implementation}).
+A list with the supplied \code{solver}, \code{solver_control},
+and \code{tolerance}.
 }
 \description{
 Typically only used internally by \code{\link{detect_infinite_estimates}}

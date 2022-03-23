@@ -8,7 +8,7 @@
 detect_infinite_estimates(
   x,
   y,
-  weights = rep(1, nobs),
+  weights = rep.int(1, nobs),
   start = NULL,
   etastart = NULL,
   mustart = NULL,

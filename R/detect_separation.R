@@ -334,13 +334,7 @@ detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
     purpose <- match.arg(purpose)
     linear_program <- match.arg(linear_program)
     separator <- match.fun(paste("separator", implementation, sep = "_"))
-
-    ## ensure the solver is loaded using the ROI plugin mechanism
-    if (solver != "lpsolve") {
-        roi_plugin_name <- paste0("ROI.plugin.", solver)
-        pkgload::check_suggested(roi_plugin_name, path = pkgload::inst("detectseparation"), version = "*")
-        requireNamespace(roi_plugin_name, quietly = TRUE)
-    }
+    check_ROI_solver(solver)
     list(linear_program = linear_program,
          solver = solver,
          solver_control = solver_control,
