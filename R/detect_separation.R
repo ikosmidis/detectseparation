@@ -42,29 +42,29 @@
 #' @details
 #'
 #' According to the definitions in Albert and Anderson (1984), the
-#' data exhibits quasi-complete separation if there exists a parameter
-#' vector $\beta \ne 0$ such that $X^0 \beta \le 0$ and $X^1 \beta \ge
-#' 0$, where $X^0$ and $X^1$ are the matrices formed by the rows of
-#' the model matrix $X$ corresponding to zero and non-zero responses,
-#' respectively. The data exhibits complete separation if there exists
-#' a parameter vector $\beta$ such that the aforementioned conditions
-#' are satisfied with strict inequalities. If there are no vectors
-#' $\beta$ that can satisfy the conditions, then the data points are
-#' said to overlap.
+#' data exhibits quasi-complete separation if there exists a non-zero
+#' parameter vector \eqn{\beta} such that \eqn{X^0 \beta \le 0}and
+#' \eqn{X^1 \beta \ge 0}, where \eqn{X^0} and \eqn{X^1} are the
+#' matrices formed by the rows of the model matrix $X$ corresponding
+#' to zero and non-zero responses, respectively. The data exhibits
+#' complete separation if there exists a parameter vector $\beta$ such
+#' that the aforementioned conditions are satisfied with strict
+#' inequalities. If there are no vectors $\beta$ that can satisfy the
+#' conditions, then the data points are said to overlap.
 #'
-#' If the inverse link function $G(t)$ of a generalized linear models
-#' with binomial responses is such that $\log G(t)$ and $\log (1 -
-#' G(t))$ are convave and the model has an intercept parameter, then
-#' overlap is a necessary and sufficient condition for the maximum
-#' likelihood estimates to be finite (see Silvapulle, 1981 for a
-#' proof). Such link functions are, for example, the logit, probit and
-#' complementary log-log.
+#' If the inverse link function \eqn{G(t)} of a generalized linear
+#' models with binomial responses is such that \eqn{\log G(t)} and
+#' \eqn{\log (1 - G(t))} are concave and the model has an intercept
+#' parameter, then overlap is a necessary and sufficient condition for
+#' the maximum likelihood estimates to be finite (see Silvapulle, 1981
+#' for a proof). Such link functions are, for example, the logit,
+#' probit and complementary log-log.
 #'
 #' \code{\link{detect_separation}()} determines whether or not the
 #' data exhibits (quasi-)complete separation. Then, if separation is
-#' detected and the link function $G(t)$ is such that $\log G(t)$ and
-#' $\log (1 - G(t))$ are concave, the maximum likelihood estimates
-#' has infinite components.
+#' detected and the link function \eqn{G(t)} is such that \eqn{\log
+#' G(t)} and \eqn{\log (1 - G(t))} are concave, the maximum likelihood
+#' estimates has infinite components.
 #'
 #' \code{\link{detect_separation}()} is a wrapper to the
 #' \code{separator_ROI} function and \code{separator_lpSolveAPI}
