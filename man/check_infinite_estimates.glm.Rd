@@ -64,26 +64,26 @@ are infinite. The reduced-bias estimates can be computed using the
 }
 \examples{
 
-## endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
+# endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
 data("endometrial", package = "detectseparation")
 endometrial_ml <- glm(HG ~ NV + PI + EH, data = endometrial,
                       family = binomial("probit"))
-## clearly the maximum likelihood estimate for the coefficient of
-## NV is infinite
+# clearly the maximum likelihood estimate for the coefficient of
+# NV is infinite
 (estimates <- check_infinite_estimates(endometrial_ml))
 plot(estimates)
 
 
 \donttest{
-## Aligator data (Agresti, 2002, Table~7.1)
+# Aligator data (Agresti, 2002, Table~7.1)
 if (requireNamespace("brglm2", quietly = TRUE)) {
     data("alligators", package = "brglm2")
     all_ml <- brglm2::brmultinom(foodchoice ~ size + lake , weights = round(freq/3),
                          data = alligators, type = "ML", ref = 1)
-    ## Clearly some estimated standard errors diverge as the number of
-    ## Fisher scoring iterations increases
+    # Clearly some estimated standard errors diverge as the number of
+    # Fisher scoring iterations increases
     plot(check_infinite_estimates(all_ml))
-    ## Bias reduction the brglm2 R packages can be used to get finite estimates
+    # Bias reduction the brglm2 R packages can be used to get finite estimates
     all_br <- brglm2::brmultinom(foodchoice ~ size + lake , weights = round(freq/3),
                          data = alligators, ref = 1)
     plot(check_infinite_estimates(all_br))
