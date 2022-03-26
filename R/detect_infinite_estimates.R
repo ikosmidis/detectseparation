@@ -1,34 +1,3 @@
-# detect infinite estimates log binomial (dielb)
-dielb_ROI <- function(x, y,
-                      solver = "lpsolve",
-                      tolerance = 1e-03,
-                      solver_control = list(),
-                      ...) {
-  ## Use linear program from
-  ##
-  ## Schwendinger, F., Grün, B. & Hornik, K. A comparison of
-  ## optimization solvers for log binomial regression including
-  ## conic programming. Comput Stat 36, 1721–1754
-  ## (2021). https://doi.org/10.1007/s00180-021-01084-5
-
-  direction <- ifelse(y == 0, leq(1), eq(1))
-  op <- OP(objective = -colSums(x), maximum = TRUE,
-           constraints = L_constraint(x, direction, double(nrow(x))),
-           bounds = V_bound(ld = -Inf, ud = Inf, nobj = ncol(x)))
-
-  if (isTRUE(solver == "lpsolve")) {
-      control <- list(pivoting = "firstindex", simplextype = c("primal", "primal"))
-      solver_control <- modifyList(control, solver_control)
-  }
-
-  s <- ROI_solve(op, solver, control = solver_control)
-  sol <- ROI::solution(s)
-  names(sol) <- colnames(x)
-  has_infinite_estimates <- !isTRUE(solution(s, "status_code") == 0L)
-  list(infinite_estimates = has_infinite_estimates, beta = sol)
-}
-
-
 detect_infinite_estimates_log_binomial <- function(x, y, weights = rep.int(1, nobs),
                                                    start = NULL, etastart = NULL,  mustart = NULL,
                                                    offset = rep.int(0, nobs), family = gaussian(),
