@@ -1,17 +1,17 @@
-## Copyright (C) 2022- Florian Schwendinger, Ioannis Kosmidis
+# Copyright (C) 2022- Florian Schwendinger, Ioannis Kosmidis
 
-##  This program is free software; you can redistribute it and/or modify
-##  it under the terms of the GNU General Public License as published by
-##  the Free Software Foundation; either version 2 or 3 of the License
-##  (at your option).
-##
-##  This program is distributed in the hope that it will be useful,
-##  but WITHOUT ANY WARRANTY; without even the implied warranty of
-##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##  GNU General Public License for more details.
-##
-##  A copy of the GNU General Public License is available at
-##  http://www.r-project.org/Licenses/
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 or 3 of the License
+#  (at your option).
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  A copy of the GNU General Public License is available at
+#  http://www.r-project.org/Licenses/
 
 #' @title Detect Infinite Estimates
 #'
@@ -117,7 +117,8 @@ print.detect_infinite_estimates <- function(x, digits = max(5L, getOption("digit
     cat("Implementation:", x$control$implementation, "| ")
     if (identical(x$control$implementation, "ROI")) {
         cat("Solver:", x$control$solver, "\n")
-    } else {
+    }
+    else {
         cat("Linear program:", x$control$linear_program, "| Purpose:", x$control$purpose, "\n")
     }
     cat("Infinite estimates:", x$infinite_estimates, "\n")
@@ -134,10 +135,10 @@ detect_infinite_estimates_log_binomial <- function(x, y, weights = rep.int(1, no
                                                    control = list(), intercept = TRUE, singular.ok = TRUE) {
     control <- do.call("detect_separation_control", control)
     lp <- dielb_ROI
-    ## ensure x is a matrix
+    # ensure x is a matrix
     x <- as.matrix(x)
     betas_names_all <- betas_names <- if (is.null(colnames(x))) make.names(seq_len(NCOL(x))) else colnames(x)
-    ##
+    #
     nobs <- NROW(y)
     nvars <- ncol(x)
     if (nvars == 0) {
@@ -149,12 +150,12 @@ detect_infinite_estimates_log_binomial <- function(x, y, weights = rep.int(1, no
     if (missingOffset <- is.null(offset)) {
         offset <- rep.int(0, nobs)
     }
-    ## Initialize as prescribed in family
+    # Initialize as prescribed in family
     eval(family$initialize)
     if (control$solver == "alabama" & is.null(control$solver_control$start)) {
         control$solver_control$start <- rep(0, nvars)
     }
-    ## Detect aliasing
+    # Detect aliasing
     qrx <- qr(x)
     rank <- qrx$rank
     is_full_rank <- rank == nvars
@@ -169,18 +170,18 @@ detect_infinite_estimates_log_binomial <- function(x, y, weights = rep.int(1, no
     }
 
     betas_all <- structure(rep(NA_real_, length(betas_names_all)), .Names = betas_names_all)
-    ## Observations with zero weight do not enter calculations so ignore
+    # Observations with zero weight do not enter calculations so ignore
     keep <- weights > 0
     x <- x[keep, , drop = FALSE]
     y <- y[keep]
-    ## Reshape data set: keep 0 and 1, and replace anything in (0,
-    ## 1) with one zero and one 1
+    # Reshape data set: keep 0 and 1, and replace anything in (0,
+    # 1) with one zero and one 1
     ones <- y == 1
     zeros <- y == 0
     non_boundary <- !(ones | zeros)
     x <- x[c(which(ones), which(zeros), rep(which(non_boundary), 2)), , drop = FALSE]
     y <- c(y[ones], y[zeros], rep(c(0., 1.), each = sum(non_boundary)))
-    ## Run linear program
+    # Run linear program
     out <- lp(x = x, y = y,
               linear_program = control$linear_program,
               purpose = control$purpose,
@@ -209,4 +210,3 @@ detect_infinite_estimates_log_binomial <- function(x, y, weights = rep.int(1, no
                 control = control)
     return(out)
 }
-

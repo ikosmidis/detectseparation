@@ -1,17 +1,17 @@
-## Copyright (C) 2017- Ioannis Kosmidis, Dirk Schumacher
+# Copyright (C) 2017- Ioannis Kosmidis, Dirk Schumacher
 
-##  This program is free software; you can redistribute it and/or modify
-##  it under the terms of the GNU General Public License as published by
-##  the Free Software Foundation; either version 2 or 3 of the License
-##  (at your option).
-##
-##  This program is distributed in the hope that it will be useful,
-##  but WITHOUT ANY WARRANTY; without even the implied warranty of
-##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##  GNU General Public License for more details.
-##
-##  A copy of the GNU General Public License is available at
-##  http://www.r-project.org/Licenses/
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 or 3 of the License
+#  (at your option).
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  A copy of the GNU General Public License is available at
+#  http://www.r-project.org/Licenses/
 
 #' Method for \code{\link{glm}} that tests for data separation and
 #' finds which parameters have infinite maximum likelihood estimates
@@ -139,32 +139,32 @@
 
 #' @examples
 #'
-#' ## endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
+#' # endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
 #' data("endometrial", package = "detectseparation")
 #' endometrial_sep <- glm(HG ~ NV + PI + EH, data = endometrial,
 #'                        family = binomial("logit"),
 #'                        method = "detect_separation")
 #' endometrial_sep
-#' ## The maximum likelihood estimate for NV is infinite
+#' # The maximum likelihood estimate for NV is infinite
 #' summary(update(endometrial_sep, method = "glm.fit"))
 #'
 #' \donttest{
-#' ## Example inspired by unpublished microeconometrics lecture notes by
-#' ## Achim Zeileis https://eeecon.uibk.ac.at/~zeileis/
-#' ## The maximum likelihood estimate of sourhernyes is infinite
+#' # Example inspired by unpublished microeconometrics lecture notes by
+#' # Achim Zeileis https://eeecon.uibk.ac.at/~zeileis/
+#' # The maximum likelihood estimate of sourhernyes is infinite
 #' if (requireNamespace("AER", quietly = TRUE)) {
 #'     data("MurderRates", package = "AER")
 #'     murder_sep <- glm(I(executions > 0) ~ time + income +
 #'                       noncauc + lfp + southern, data = MurderRates,
 #'                       family = binomial(), method = "detect_separation")
 #'     murder_sep
-#'     ## which is also evident by the large estimated standard error for NV
+#'     # which is also evident by the large estimated standard error for NV
 #'     murder_glm <- update(murder_sep, method = "glm.fit")
 #'     summary(murder_glm)
-#'     ## and is also reveal by the divergence of the NV column of the
-#'     ## result from the more computationally intensive check
+#'     # and is also reveal by the divergence of the NV column of the
+#'     # result from the more computationally intensive check
 #'     plot(check_infinite_estimates(murder_glm))
-#'     ## Mean bias reduction via adjusted scores results in finite estimates
+#'     # Mean bias reduction via adjusted scores results in finite estimates
 #'     if (requireNamespace("brglm2", quietly = TRUE))
 #'         update(murder_glm, method = brglm2::brglm_fit)
 #' }
@@ -193,7 +193,7 @@ detect_separation <- function(x, y, weights = rep.int(1, nobs),
                                               offset = offset, family = family, control = control,
                                               intercept = control, singular.ok = singular.ok)
     if (log_link) {
-        ## test for existence using detect_infinite_estimates_log_binomial
+        # test for existence using detect_infinite_estimates_log_binomial
         out$coefficients <- detect_infinite_estimates_log_binomial(x = x, y = y, weights = weights, start = start,
                                                                    etastart = etastart,  mustart = mustart,
                                                                    offset = offset, family = family, control = control,
@@ -293,10 +293,10 @@ detect_infinite_estimates_lc_links <- function(x, y, weights = rep.int(1, nobs),
                                                control = list(), intercept = TRUE, singular.ok = TRUE) {
     control <- do.call("detect_separation_control", control)
     lp <- control$separator
-    ## ensure x is a matrix
+    # ensure x is a matrix
     x <- as.matrix(x)
     betas_names_all <- betas_names <- if (is.null(colnames(x))) make.names(seq_len(NCOL(x))) else colnames(x)
-    ##
+    #
     nobs <- NROW(y)
     nvars <- ncol(x)
     if (nvars == 0) {
@@ -308,12 +308,12 @@ detect_infinite_estimates_lc_links <- function(x, y, weights = rep.int(1, nobs),
     if (missingOffset <- is.null(offset)) {
         offset <- rep.int(0, nobs)
     }
-    ## Initialize as prescribed in family
+    # Initialize as prescribed in family
     eval(family$initialize)
     if (control$solver == "alabama" & is.null(control$solver_control$start)) {
         control$solver_control$start <- rep(0, nvars)
     }
-    ## Detect aliasing
+    # Detect aliasing
     qrx <- qr(x)
     rank <- qrx$rank
     is_full_rank <- rank == nvars
@@ -327,18 +327,18 @@ detect_infinite_estimates_lc_links <- function(x, y, weights = rep.int(1, nobs),
         betas_names <- betas_names[-aliased]
     }
     betas_all <- structure(rep(NA_real_, length(betas_names_all)), .Names = betas_names_all)
-    ## Observations with zero weight do not enter calculations so ignore
+    # Observations with zero weight do not enter calculations so ignore
     keep <- weights > 0
     x <- x[keep, , drop = FALSE]
     y <- y[keep]
-    ## Reshape data set: keep 0 and 1, and replace anything in (0,
-    ## 1) with one zero and one 1
+    # Reshape data set: keep 0 and 1, and replace anything in (0,
+    # 1) with one zero and one 1
     ones <- y == 1
     zeros <- y == 0
     non_boundary <- !(ones | zeros)
     x <- x[c(which(ones), which(zeros), rep(which(non_boundary), 2)), , drop = FALSE]
     y <- c(y[ones], y[zeros], rep(c(0., 1.), each = sum(non_boundary)))
-    ## Run linear program
+    # Run linear program
     out <- lp(x = x, y = y,
               linear_program = control$linear_program,
               purpose = control$purpose,

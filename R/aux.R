@@ -1,5 +1,5 @@
-## ensure the solver is loaded using the ROI plugin mechanism; if
-## the plugin is not available then offer to install it
+# ensure the solver is loaded using the ROI plugin mechanism; if
+# the plugin is not available then offer to install it
 check_ROI_solver <- function(solver) {
     if (solver != "lpsolve") {
         roi_plugin_name <- paste0("ROI.plugin.", solver)

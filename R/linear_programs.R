@@ -1,49 +1,49 @@
-##  separator_ROI:
-##  Copyright (C) 2021- Dirk Schumacher, Ioannis Kosmidis
-##
-##  separator_lpSolveAPI: Port of the separator function from the safeBinaryRegression (version 0.1-3) R package (see safeBinaryRegression/R/separator.R)
-##  Copyright (C) 2009-2013 Kjell Konis; Copyright (C) 2017- Ioannis Kosmidis
-##
-##  dielb_ROI:
-##  Copyright (C) 2022- Florian Schwendinger, Ioannis Kosmidis
-##
-##  This program is free software; you can redistribute it and/or modify
-##  it under the terms of the GNU General Public License as published by
-##  the Free Software Foundation; either version 2 or 3 of the License
-##  (at your option).
-##
-##  This program is distributed in the hope that it will be useful,
-##  but WITHOUT ANY WARRANTY; without even the implied warranty of
-##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##  GNU General Public License for more details.
-##
-##  A copy of the GNU General Public License is available at
-##  http://www.r-project.org/Licenses/
+#  separator_ROI:
+#  Copyright (C) 2021- Dirk Schumacher, Ioannis Kosmidis
+#
+#  separator_lpSolveAPI: Port of the separator function from the safeBinaryRegression (version 0.1-3) R package (see safeBinaryRegression/R/separator.R)
+#  Copyright (C) 2009-2013 Kjell Konis; Copyright (C) 2017- Ioannis Kosmidis
+#
+#  dielb_ROI:
+#  Copyright (C) 2022- Florian Schwendinger, Ioannis Kosmidis
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 or 3 of the License
+#  (at your option).
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  A copy of the GNU General Public License is available at
+#  http://www.r-project.org/Licenses/
 
-##  This program is free software; you can redistribute it and/or modify
-##  it under the terms of the GNU General Public License as published by
-##  the Free Software Foundation; either version 2 or 3 of the License
-##  (at your option).
-##
-##  This program is distributed in the hope that it will be useful,
-##  but WITHOUT ANY WARRANTY; without even the implied warranty of
-##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-##  GNU General Public License for more details.
-##
-##  A copy of the GNU General Public License is available at
-##  http://www.r-project.org/Licenses/
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 or 3 of the License
+#  (at your option).
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  A copy of the GNU General Public License is available at
+#  http://www.r-project.org/Licenses/
 
 separator_ROI <- function(x, y,
                           solver = "lpsolve",
                           tolerance = 1e-03,
                           solver_control = list(),
                           ...) {
-    ## The model here is based on Konis (2007), chapter 4. In particular
-    ## sections 4.2, 4.4.3 and 4.4.4
-    ##
-    ## build the ROI model
-    ## transform the model matrix so that all constraints are >=
-    ## that should also work with doubles
+    # The model here is based on Konis (2007), chapter 4. In particular
+    # sections 4.2, 4.4.3 and 4.4.4
+    #
+    # build the ROI model
+    # transform the model matrix so that all constraints are >=
+    # that should also work with doubles
     y[y == 0] <- -1
     X_bar <- x * y
     m <- ncol(X_bar)
@@ -53,23 +53,23 @@ separator_ROI <- function(x, y,
                            lb = rep.int(-1, m),
                            ui = seq_len(m),
                            ub = rep.int(1, m))
-    ## max t(rep.int(1, n)) %*% X_bar %*% beta = colSums(X_bar) %*% beta
-    ## subject to X_bar >= 0
-    ## beta between -1 and 1
+    # max t(rep.int(1, n)) %*% X_bar %*% beta = colSums(X_bar) %*% beta
+    # subject to X_bar >= 0
+    # beta between -1 and 1
     opt_model <- ROI::OP(objective = colSums(X_bar),
                          constraints = constraints,
                          types = rep.int("C", m),
                          bounds = bounds,
                          maximum = TRUE)
 
-    ## if the LP is unbounded, seperation exists. Otherwise an optiomal solution
-    ## with obj. value 0 exists.
+    # if the LP is unbounded, seperation exists. Otherwise an optiomal solution
+    # with obj. value 0 exists.
     result <- ROI::ROI_solve(opt_model, solver = solver, control = solver_control)
-    ## compare to 0 zero with tolerance
+    # compare to 0 zero with tolerance
     sol <- ROI::solution(result, "primal")
     names(sol) <- colnames(x)
     has_seperation <- any(abs(sol) > tolerance, na.rm = TRUE)
-    ## an optimal solution should always exist
+    # an optimal solution should always exist
     if (!isTRUE(ROI::solution(result, "status_code") == 0L)) {
         has_separation <- NA
     }
@@ -77,18 +77,18 @@ separator_ROI <- function(x, y,
          beta = sol)
 }
 
-## detect infinite estimates log binomial (dielb)
+# detect infinite estimates log binomial (dielb)
 dielb_ROI <- function(x, y,
                       solver = "lpsolve",
                       tolerance = 1e-03,
                       solver_control = list(),
                       ...) {
-    ## Use linear program from
-    ##
-    ## Schwendinger, F., Grün, B. & Hornik, K. A comparison of
-    ## optimization solvers for log binomial regression including
-    ## conic programming. Comput Stat 36, 1721–1754
-    ## (2021). https://doi.org/10.1007/s00180-021-01084-5
+    # Use linear program from
+    #
+    # Schwendinger, F., Grün, B. & Hornik, K. A comparison of
+    # optimization solvers for log binomial regression including
+    # conic programming. Comput Stat 36, 1721–1754
+    # (2021). https://doi.org/10.1007/s00180-021-01084-5
 
     direction <- ifelse(y == 0, ROI::leq(1), ROI::eq(1))
     op <- ROI::OP(objective = -colSums(x), maximum = TRUE,
@@ -108,8 +108,8 @@ dielb_ROI <- function(x, y,
          beta = sol)
 }
 
-##  Port of the separator function from the safeBinaryRegression
-##  (version 0.1-3) R package (see safeBinaryRegression/R/separator.R)
+#  Port of the separator function from the safeBinaryRegression
+#  (version 0.1-3) R package (see safeBinaryRegression/R/separator.R)
 separator_lpSolveAPI <- function(x, y,
                                  linear_program = c("primal", "dual"),
                                  purpose = c("test", "find"),

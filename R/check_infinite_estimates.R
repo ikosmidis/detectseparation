@@ -88,26 +88,26 @@
 #'
 #' @examples
 #'
-#' ## endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
+#' # endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
 #' data("endometrial", package = "detectseparation")
 #' endometrial_ml <- glm(HG ~ NV + PI + EH, data = endometrial,
 #'                       family = binomial("probit"))
-#' ## clearly the maximum likelihood estimate for the coefficient of
-#' ## NV is infinite
+#' # clearly the maximum likelihood estimate for the coefficient of
+#' # NV is infinite
 #' (estimates <- check_infinite_estimates(endometrial_ml))
 #' plot(estimates)
 #'
 #'
 #' \donttest{
-#' ## Aligator data (Agresti, 2002, Table~7.1)
+#' # Aligator data (Agresti, 2002, Table~7.1)
 #' if (requireNamespace("brglm2", quietly = TRUE)) {
 #'     data("alligators", package = "brglm2")
 #'     all_ml <- brglm2::brmultinom(foodchoice ~ size + lake , weights = round(freq/3),
 #'                          data = alligators, type = "ML", ref = 1)
-#'     ## Clearly some estimated standard errors diverge as the number of
-#'     ## Fisher scoring iterations increases
+#'     # Clearly some estimated standard errors diverge as the number of
+#'     # Fisher scoring iterations increases
 #'     plot(check_infinite_estimates(all_ml))
-#'     ## Bias reduction the brglm2 R packages can be used to get finite estimates
+#'     # Bias reduction the brglm2 R packages can be used to get finite estimates
 #'     all_br <- brglm2::brmultinom(foodchoice ~ size + lake , weights = round(freq/3),
 #'                          data = alligators, ref = 1)
 #'     plot(check_infinite_estimates(all_br))
@@ -157,7 +157,7 @@ check_infinite_estimates.glm <- function(object, nsteps = 20, ...) {
 
 #' @export
 plot.inf_check <- function(x, tol = 1e+2, ...) {
-    ## heuristic for determining ploting ranges
+    # heuristic for determining ploting ranges
     sds <- apply(x, 2, sd)
     matplot(x, type = "l", lty = 1, ylim = range(x[, sds < tol]) * c(1, 1.5),
             ylab = "estimate", xlab = "number of iterations")
