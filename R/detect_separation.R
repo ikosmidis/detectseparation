@@ -182,19 +182,19 @@ detect_separation <- function(x, y, weights = rep.int(1, nobs),
                     " with links other than ", paste(shQuote(reliable_links), collapse = ", "))
         }
         if (log_link) {
-            warning("Data separation in log-binomial models does not necessarily result in infinite estimates")
+            message("Data separation in log-binomial models does not necessarily result in infinite estimates")
         }
     }
     else {
         warning("`detect_separation` has been developed for use with binomial-response GLMs")
     }
     out <- .detect_infinite_estimates(x = x, y = y, weights = weights, start = start,
-                                              etastart = etastart,  mustart = mustart,
-                                              offset = offset, family = family, control = control,
-                                              intercept = control, singular.ok = singular.ok,
-                                              log_link = FALSE)
+                                      etastart = etastart,  mustart = mustart,
+                                      offset = offset, family = family, control = control,
+                                      intercept = control, singular.ok = singular.ok,
+                                      log_link = FALSE)
     if (log_link) {
-        # test for existence using detect_infinite_estimates_log_binomial
+        # test for existence using the linear program in Schwendinger et al (2021)
         out$coefficients <- .detect_infinite_estimates(x = x, y = y, weights = weights, start = start,
                                                        etastart = etastart,  mustart = mustart,
                                                        offset = offset, family = family, control = control,
@@ -205,6 +205,23 @@ detect_separation <- function(x, y, weights = rep.int(1, nobs),
     out
 }
 
+#' @method print detect_separation
+#' @export
+print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L), ...) {
+    cat("Implementation:", x$control$implementation, "| ")
+    if (identical(x$control$implementation, "ROI")) {
+        cat("Solver:", x$control$solver, "\n")
+    }
+    else {
+        cat("Linear program:", x$control$linear_program, "| Purpose:", x$control$purpose, "\n")
+    }
+    cat("Separation:", x$outcome, "\n")
+    if (!is.null(x$coefficients)) {
+        cat("Existence of maximum likelihood estimates\n")
+        print(coefficients(x))
+        cat("0: finite value, Inf: infinity, -Inf: -infinity\n")
+    }
+}
 
 #' Auxiliary function for the \code{\link{glm}} interface when
 #' \code{method} is \code{\link{detect_separation}}.
@@ -267,109 +284,4 @@ detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
          tolerance = tolerance,
          separator = separator,
          implementation = implementation)
-}
-
-
-#' @method print detect_separation
-#' @export
-print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L), ...) {
-    cat("Implementation:", x$control$implementation, "| ")
-    if (identical(x$control$implementation, "ROI")) {
-        cat("Solver:", x$control$solver, "\n")
-    }
-    else {
-        cat("Linear program:", x$control$linear_program, "| Purpose:", x$control$purpose, "\n")
-    }
-    cat("Separation:", x$outcome, "\n")
-    if (!is.null(x$coefficients)) {
-        cat("Existence of maximum likelihood estimates\n")
-        print(coefficients(x))
-        cat("0: finite value, Inf: infinity, -Inf: -infinity\n")
-    }
-}
-
-.detect_infinite_estimates <- function(x, y, weights = rep.int(1, nobs),
-                                       start = NULL, etastart = NULL,  mustart = NULL,
-                                       offset = rep.int(0, nobs), family = gaussian(),
-                                       control = list(), intercept = TRUE, singular.ok = TRUE,
-                                       log_link = FALSE) {
-    control <- do.call("detect_separation_control", control)
-    lp <- if (log_link) dielb_ROI else control$separator
-    # ensure x is a matrix
-    x <- as.matrix(x)
-    betas_names_all <- betas_names <- if (is.null(colnames(x))) make.names(seq_len(NCOL(x))) else colnames(x)
-    #
-    nobs <- NROW(y)
-    nvars <- ncol(x)
-    if (nvars == 0) {
-        return(list(outcome = FALSE, control = control))
-    }
-    if (is.null(weights)) {
-        weights <- rep.int(1, nobs)
-    }
-    if (missingOffset <- is.null(offset)) {
-        offset <- rep.int(0, nobs)
-    }
-    # Initialize as prescribed in family
-    eval(family$initialize)
-    if (control$solver == "alabama" & is.null(control$solver_control$start)) {
-        control$solver_control$start <- rep(0, nvars)
-    }
-    # Detect aliasing
-    qrx <- qr(x)
-    rank <- qrx$rank
-    is_full_rank <- rank == nvars
-    if (!singular.ok && !is_full_rank) {
-        stop("singular fit encountered")
-    }
-    if (!isTRUE(is_full_rank)) {
-        aliased <- qrx$pivot[seq.int(qrx$rank + 1, nvars)]
-        X_all <- x
-        x <- x[, -aliased]
-        betas_names <- betas_names[-aliased]
-    }
-    betas_all <- structure(rep(NA_real_, length(betas_names_all)), .Names = betas_names_all)
-    # Observations with zero weight do not enter calculations so ignore
-    keep <- weights > 0
-    x <- x[keep, , drop = FALSE]
-    y <- y[keep]
-    # Reshape data set: keep 0 and 1, and replace anything in (0,
-    # 1) with one zero and one 1
-    ones <- y == 1
-    zeros <- y == 0
-    non_boundary <- !(ones | zeros)
-    x <- x[c(which(ones), which(zeros), rep(which(non_boundary), 2)), , drop = FALSE]
-    y <- c(y[ones], y[zeros], rep(c(0., 1.), each = sum(non_boundary)))
-    # Run linear program
-    out <- lp(x = x, y = y,
-              linear_program = control$linear_program,
-              purpose = control$purpose,
-              tolerance = control$tolerance,
-              solver = control$solver,
-              solver_control = control$solver_control)
-    if (is.na(out$outcome)) {
-        if (identical(control$implementation, "ROI")) {
-            warning("unexpected result from implementation ", control$implementation, " with solver: ", control$solver, "\n")
-        }
-        if (identical(control$implementation, "lsSolveAPI") & !log_link) {
-            warning("unexpected result from implementation ", control$implementation, " with linear_program: ", control$linear_program, " and purpose: ", control$purpose, "\n")
-        }
-    }
-    if (is.null(out$beta)) {
-        betas_all <- NULL
-    }
-    else {
-        betas <- out$beta
-        names(betas) <- betas_names
-        inds <- abs(betas) < control$tolerance
-        betas <- Inf * betas
-        betas[inds] <- 0
-        betas_all[betas_names] <- betas[betas_names]
-    }
-    out <- list(x = x,
-                y = y,
-                coefficients = betas_all,
-                outcome = out$outcome,
-                control = control)
-    return(out)
 }

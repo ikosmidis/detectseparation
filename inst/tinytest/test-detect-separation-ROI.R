@@ -53,7 +53,7 @@ expect_false(endometrial_separation_n$outcome)
 ## Test log-binomial models
 data("silvapulle1981", package = "detectseparation")
 
-expect_warning(m1sep <- glm(y ~ ghqs, data = silvapulle1981, family = binomial("log"),
+expect_message(m1sep <- glm(y ~ ghqs, data = silvapulle1981, family = binomial("log"),
                             method = "detect_separation"), pattern = "necessarily result in")
 
 m1inf <- glm(y ~ ghqs, data = silvapulle1981, family = binomial("log"),
