@@ -13,93 +13,6 @@
 ##  A copy of the GNU General Public License is available at
 ##  http://www.r-project.org/Licenses/
 
-detect_infinite_estimates_lc_links <- function(x, y, weights = rep.int(1, nobs),
-                                               start = NULL, etastart = NULL,  mustart = NULL,
-                                               offset = rep.int(0, nobs), family = gaussian(),
-                                               control = list(), intercept = TRUE, singular.ok = TRUE) {
-    control <- do.call("detect_separation_control", control)
-    lp <- control$separator
-    ## ensure x is a matrix
-    x <- as.matrix(x)
-    betas_names_all <- betas_names <- if (is.null(colnames(x))) make.names(seq_len(NCOL(x))) else colnames(x)
-    ##
-    nobs <- NROW(y)
-    nvars <- ncol(x)
-    if (nvars == 0) {
-        return(list(separation = FALSE, control = control))
-    }
-    if (is.null(weights)) {
-        weights <- rep.int(1, nobs)
-    }
-    if (missingOffset <- is.null(offset)) {
-        offset <- rep.int(0, nobs)
-    }
-    ## Initialize as prescribed in family
-    eval(family$initialize)
-    if (control$solver == "alabama" & is.null(control$solver_control$start)) {
-        control$solver_control$start <- rep(0, nvars)
-    }
-    ## Detect aliasing
-    qrx <- qr(x)
-    rank <- qrx$rank
-    is_full_rank <- rank == nvars
-    if (!singular.ok && !is_full_rank) {
-        stop("singular fit encountered")
-    }
-    if (!isTRUE(is_full_rank)) {
-        aliased <- qrx$pivot[seq.int(qrx$rank + 1, nvars)]
-        X_all <- x
-        x <- x[, -aliased]
-        betas_names <- betas_names[-aliased]
-    }
-    betas_all <- structure(rep(NA_real_, length(betas_names_all)), .Names = betas_names_all)
-    ## Observations with zero weight do not enter calculations so ignore
-    keep <- weights > 0
-    x <- x[keep, , drop = FALSE]
-    y <- y[keep]
-    ## Reshape data set: keep 0 and 1, and replace anything in (0,
-    ## 1) with one zero and one 1
-    ones <- y == 1
-    zeros <- y == 0
-    non_boundary <- !(ones | zeros)
-    x <- x[c(which(ones), which(zeros), rep(which(non_boundary), 2)), , drop = FALSE]
-    y <- c(y[ones], y[zeros], rep(c(0., 1.), each = sum(non_boundary)))
-    ## Run linear program
-    out <- lp(x = x, y = y,
-              linear_program = control$linear_program,
-              purpose = control$purpose,
-              tolerance = control$tolerance,
-              solver = control$solver,
-              solver_control = control$solver_control)
-    if (is.na(out$separation)) {
-        if (identical(control$implementation, "ROI")) {
-            warning("unexpected result from implementation ", control$implementation, " with solver: ", control$solver, "\n")
-        }
-        else {
-            warning("unexpected result from implementation ", control$implementation, " with linear_program: ", control$linear_program, " and purpose: ", control$purpose, "\n")
-        }
-    }
-    if (is.null(out$beta)) {
-        betas_all <- NULL
-    }
-    else {
-        betas <- out$beta
-        names(betas) <- betas_names
-        inds <- abs(betas) < control$tolerance
-        betas <- Inf * betas
-        betas[inds] <- 0
-        betas_all[betas_names] <- betas[betas_names]
-    }
-    out <- list(x = x,
-                y = y,
-                coefficients = betas_all,
-                separation = out$separation,
-                control = control)
-    return(out)
-}
-
-
-
 #' Method for \code{\link{glm}} that tests for data separation and
 #' finds which parameters have infinite maximum likelihood estimates
 #' in generalized linear models with binomial responses
@@ -371,4 +284,90 @@ print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L
         print(coefficients(x))
         cat("0: finite value, Inf: infinity, -Inf: -infinity\n")
     }
+}
+
+
+detect_infinite_estimates_lc_links <- function(x, y, weights = rep.int(1, nobs),
+                                               start = NULL, etastart = NULL,  mustart = NULL,
+                                               offset = rep.int(0, nobs), family = gaussian(),
+                                               control = list(), intercept = TRUE, singular.ok = TRUE) {
+    control <- do.call("detect_separation_control", control)
+    lp <- control$separator
+    ## ensure x is a matrix
+    x <- as.matrix(x)
+    betas_names_all <- betas_names <- if (is.null(colnames(x))) make.names(seq_len(NCOL(x))) else colnames(x)
+    ##
+    nobs <- NROW(y)
+    nvars <- ncol(x)
+    if (nvars == 0) {
+        return(list(separation = FALSE, control = control))
+    }
+    if (is.null(weights)) {
+        weights <- rep.int(1, nobs)
+    }
+    if (missingOffset <- is.null(offset)) {
+        offset <- rep.int(0, nobs)
+    }
+    ## Initialize as prescribed in family
+    eval(family$initialize)
+    if (control$solver == "alabama" & is.null(control$solver_control$start)) {
+        control$solver_control$start <- rep(0, nvars)
+    }
+    ## Detect aliasing
+    qrx <- qr(x)
+    rank <- qrx$rank
+    is_full_rank <- rank == nvars
+    if (!singular.ok && !is_full_rank) {
+        stop("singular fit encountered")
+    }
+    if (!isTRUE(is_full_rank)) {
+        aliased <- qrx$pivot[seq.int(qrx$rank + 1, nvars)]
+        X_all <- x
+        x <- x[, -aliased]
+        betas_names <- betas_names[-aliased]
+    }
+    betas_all <- structure(rep(NA_real_, length(betas_names_all)), .Names = betas_names_all)
+    ## Observations with zero weight do not enter calculations so ignore
+    keep <- weights > 0
+    x <- x[keep, , drop = FALSE]
+    y <- y[keep]
+    ## Reshape data set: keep 0 and 1, and replace anything in (0,
+    ## 1) with one zero and one 1
+    ones <- y == 1
+    zeros <- y == 0
+    non_boundary <- !(ones | zeros)
+    x <- x[c(which(ones), which(zeros), rep(which(non_boundary), 2)), , drop = FALSE]
+    y <- c(y[ones], y[zeros], rep(c(0., 1.), each = sum(non_boundary)))
+    ## Run linear program
+    out <- lp(x = x, y = y,
+              linear_program = control$linear_program,
+              purpose = control$purpose,
+              tolerance = control$tolerance,
+              solver = control$solver,
+              solver_control = control$solver_control)
+    if (is.na(out$separation)) {
+        if (identical(control$implementation, "ROI")) {
+            warning("unexpected result from implementation ", control$implementation, " with solver: ", control$solver, "\n")
+        }
+        else {
+            warning("unexpected result from implementation ", control$implementation, " with linear_program: ", control$linear_program, " and purpose: ", control$purpose, "\n")
+        }
+    }
+    if (is.null(out$beta)) {
+        betas_all <- NULL
+    }
+    else {
+        betas <- out$beta
+        names(betas) <- betas_names
+        inds <- abs(betas) < control$tolerance
+        betas <- Inf * betas
+        betas[inds] <- 0
+        betas_all[betas_names] <- betas[betas_names]
+    }
+    out <- list(x = x,
+                y = y,
+                coefficients = betas_all,
+                separation = out$separation,
+                control = control)
+    return(out)
 }
