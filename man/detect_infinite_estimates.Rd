@@ -63,9 +63,10 @@ the MLE estimates of generalized linear models with binomial responses.
 
 For all links except the \code{"log"} link, function
 \code{detect_infinite_estimates} is a wrapper around
-\code{\link{detect_separation}}. For the \code{"log"}
-link separated data allocations not necessarily lead to
-infinite components in the MLE estimates, therefore another method is used.
+\code{\link{detect_separation}}. For the \code{"log"} link
+separated data allocations do not necessarily lead to infinite
+components in the MLE estimates. For this reason another method is
+used.
 
 \code{\link{detect_infinite_estimates}} for the \code{"log"} link
 relies on the linear optimization model developed in
