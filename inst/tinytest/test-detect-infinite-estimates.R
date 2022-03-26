@@ -13,3 +13,5 @@ expect_equal(unname(coef(m_inf_logit)), c(-Inf, Inf))
 
 ## Empty model
 mempty <- update(m_inf_log, y ~ -1)
+expect_null(coef(mempty))
+expect_false(mempty$infinite_estimates)
