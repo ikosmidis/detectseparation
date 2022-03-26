@@ -1,5 +1,3 @@
-context("detect_separation output")
-
 ## endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
 data("endometrial", package = "detectseparation")
 endometrial_separation <- glm(HG ~ I(-NV) + PI + EH, data = endometrial,
@@ -12,51 +10,44 @@ lizards_separation <- glm(cbind(grahami, opalinus) ~ height + diameter +
                               light + time, family = binomial(logit), data = lizards,
                           method = "detect_separation")
 
+## Check that the coefficients are as expected
+expect_equal(coef(endometrial_separation), c(0L, -Inf, 0L, 0L), check.attributes = FALSE)
+expect_equal(coef(lizards_separation), rep(0L, 6), check.attributes = FALSE)
 
-test_that("infinte estimates have been found as expected", {
-    expect_equal(coef(endometrial_separation), c(0L, -Inf, 0L, 0L), check.attributes = FALSE)
-    expect_equal(coef(lizards_separation), rep(0L, 6), check.attributes = FALSE)
-})
-
-
+## endometrial using lpSolveAPI
 endometrial_separation_lpsolve <- glm(HG ~ I(-NV) + PI + EH, data = endometrial,
                                       family = binomial("cloglog"),
                                       method = "detect_separation",
                                       implementation = "lpSolveAPI")
 
+## testing lpSolveAPI implementation options
 endometrial_separation_lpsolve2 <- update(endometrial_separation_lpsolve,
                                           linear_program = "dual",
                                           purpose = "test")
 
-
-test_that("output is as expected", {
-    expect_output(print(endometrial_separation), "ROI \\| Solver: lpsolve")
-    expect_output(print(endometrial_separation), "0: finite value, Inf: infinity, -Inf: -infinity")
-    expect_output(print(endometrial_separation), "Separation: TRUE")
-    expect_output(print(lizards_separation), "ROI \\| Solver: lpsolve")
-    expect_output(print(lizards_separation), "0: finite value, Inf: infinity, -Inf: -infinity")
-    expect_output(print(endometrial_separation_lpsolve), "Implementation: lpSolveAPI \\| Linear program: primal \\| Purpose: find")
-    expect_output(print(endometrial_separation_lpsolve), "Separation: TRUE")
-    expect_output(print(endometrial_separation_lpsolve2), "Implementation: lpSolveAPI \\| Linear program: dual \\| Purpose: test \\nSeparation: TRUE")
-})
+## test output
+expect_stdout(print(endometrial_separation), "ROI \\| Solver: lpsolve")
+expect_stdout(print(endometrial_separation), "0: finite value, Inf: infinity, -Inf: -infinity")
+expect_stdout(print(endometrial_separation), "Separation: TRUE")
+expect_stdout(print(lizards_separation), "ROI \\| Solver: lpsolve")
+expect_stdout(print(lizards_separation), "0: finite value, Inf: infinity, -Inf: -infinity")
+expect_stdout(print(endometrial_separation_lpsolve), "Implementation: lpSolveAPI \\| Linear program: primal \\| Purpose: find")
+expect_stdout(print(endometrial_separation_lpsolve), "Separation: TRUE")
+expect_stdout(print(endometrial_separation_lpsolve2), "Implementation: lpSolveAPI \\| Linear program: dual \\| Purpose: test \\nSeparation: TRUE")
 
 ## Test aliasing
 endometrial_separation_a <- glm(HG ~ NV + I(2 * NV) + PI + EH, data = endometrial,
                                 family = binomial("cloglog"),
                                 method = "detect_separation")
+expect_equal(coef(endometrial_separation_a), c(0L, Inf, NA, 0L, 0L), check.attributes = FALSE)
 
-test_that("models with aliased parameters are handled correctly", {
-    expect_equal(coef(endometrial_separation_a), c(0L, Inf, NA, 0L, 0L), check.attributes = FALSE)
-})
 
 ## Test EMPTY fits
 endometrial_separation_n <- glm(HG ~ 0, data = endometrial,
                                 family = binomial("cloglog"),
                                 method = "detect_separation")
-test_that("empty modelss are handled correctly", {
-    expect_null(coef(endometrial_separation_n))
-    expect_false(endometrial_separation_n$separation)
-})
+expect_null(coef(endometrial_separation_n))
+expect_false(endometrial_separation_n$separation)
 
 
 
