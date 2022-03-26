@@ -20,6 +20,6 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.2
 Suggests: 
-    knitr, rmarkdown, covr, brglm2, AER, tinytest
+    knitr, rmarkdown, covr, brglm2, AER, tinytest,
     ROI.plugin.ecos, ROI.plugin.glpk, ROI.plugin.alabama, ROI.plugin.neos
 VignetteBuilder: knitr
