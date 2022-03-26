@@ -1,9 +1,25 @@
+## Copyright (C) 2022- Florian Schwendinger, Ioannis Kosmidis
+
+##  This program is free software; you can redistribute it and/or modify
+##  it under the terms of the GNU General Public License as published by
+##  the Free Software Foundation; either version 2 or 3 of the License
+##  (at your option).
+##
+##  This program is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU General Public License for more details.
+##
+##  A copy of the GNU General Public License is available at
+##  http://www.r-project.org/Licenses/
+
+
 detect_infinite_estimates_log_binomial <- function(x, y, weights = rep.int(1, nobs),
                                                    start = NULL, etastart = NULL,  mustart = NULL,
                                                    offset = rep.int(0, nobs), family = gaussian(),
                                                    control = list(), intercept = TRUE, singular.ok = TRUE) {
-    control <- do.call("detect_infinite_estimates_control", control)
-    separator <- dielb_ROI
+    control <- do.call("detect_separation_control", control)
+    lp <- dielb_ROI
     ## ensure x is a matrix
     x <- as.matrix(x)
     betas_names_all <- betas_names <- if (is.null(colnames(x))) make.names(seq_len(NCOL(x))) else colnames(x)
@@ -51,18 +67,19 @@ detect_infinite_estimates_log_binomial <- function(x, y, weights = rep.int(1, no
     x <- x[c(which(ones), which(zeros), rep(which(non_boundary), 2)), , drop = FALSE]
     y <- c(y[ones], y[zeros], rep(c(0., 1.), each = sum(non_boundary)))
     ## Run linear program
-    out <- separator(x = x, y = y,
-                     linear_program = control$linear_program,
-                     purpose = control$purpose,
-                     tolerance = control$tolerance,
-                     solver = control$solver,
-                     solver_control = control$solver_control)
+    out <- lp(x = x, y = y,
+              linear_program = control$linear_program,
+              purpose = control$purpose,
+              tolerance = control$tolerance,
+              solver = control$solver,
+              solver_control = control$solver_control)
     if (is.na(out$infinite_estimates)) {
         warning("unexpected result from implementation ", control$implementation, " with solver: ", control$solver, "\n")
     }
     if (is.null(out$beta)) {
         betas_all <- NULL
-    } else {
+    }
+    else {
         betas <- out$beta
         names(betas) <- betas_names
         inds <- abs(betas) < control$tolerance
@@ -89,9 +106,10 @@ detect_infinite_estimates_log_binomial <- function(x, y, weights = rep.int(1, no
 #'
 #' For all links except the \code{"log"} link, function
 #' \code{detect_infinite_estimates} is a wrapper around
-#' \code{\link{detect_separation}}. For the \code{"log"}
-#' link separated data allocations not necessarily lead to
-#' infinite components in the MLE estimates, therefore another method is used.
+#' \code{\link{detect_separation}}. For the \code{"log"} link
+#' separated data allocations do not necessarily lead to infinite
+#' components in the MLE estimates. For this reason another method is
+#' used.
 #'
 #' \code{\link{detect_infinite_estimates}} for the \code{"log"} link
 #' relies on the linear optimization model developed in
@@ -160,12 +178,13 @@ detect_infinite_estimates <- function(x, y, weights = rep.int(1, nobs),
                                       offset = rep.int(0, nobs), family = gaussian(),
                                       control = list(), intercept = TRUE, singular.ok = TRUE) {
     if (isTRUE(family$family != "binomial")) {
-        stop("`detect_infinite_estimates` has been developed for use with binomial-response GLMs")
+        warning("`detect_infinite_estimates` has been developed for use with binomial-response GLMs")
     }
     if (isTRUE(family$link == "log")) {
         .detect_infinite_estimates <- detect_infinite_estimates_log_binomial
-    } else {
-        .detect_infinite_estimates <- detect_separation
+    }
+    else {
+        .detect_infinite_estimates <- detect_infinite_estimates_lc_links
     }
     out <- .detect_infinite_estimates(x = x, y = y, weights = weights, start = start,
                                       etastart = etastart,  mustart = mustart,
@@ -193,31 +212,4 @@ print.detect_infinite_estimates <- function(x, digits = max(5L, getOption("digit
         cat("0: finite value, Inf: infinity, -Inf: -infinity\n")
     }
 }
-
-
-#' Auxiliary function for the \code{\link{glm}} interface when
-#' \code{method} is \code{\link{detect_infinite_estimates}}.
-#'
-#' Typically only used internally by \code{\link{detect_infinite_estimates}}
-#' but may be used to construct a \code{control} argument.
-#'
-#' @aliases detectInfiniteEstimatesControl
-#' @inheritParams detect_separation_control
-#'
-#' @return
-#'
-#' A list with the supplied \code{solver}, \code{solver_control},
-#' and \code{tolerance}.
-#'
-#' @export
-detect_infinite_estimates_control <- function(solver = "lpsolve",
-                                              tolerance = 1e-04,
-                                              solver_control = list()) {
-    check_ROI_solver(solver)
-    list(solver = solver,
-         solver_control = solver_control,
-         tolerance = tolerance,
-         implementation = "ROI")
-}
-
 
