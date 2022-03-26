@@ -73,7 +73,7 @@ separator_ROI <- function(x, y,
     if (!isTRUE(ROI::solution(result, "status_code") == 0L)) {
         has_separation <- NA
     }
-    list(separation = has_seperation,
+    list(outcome = has_seperation,
          beta = sol)
 }
 
@@ -104,7 +104,7 @@ dielb_ROI <- function(x, y,
     sol <- ROI::solution(result)
     names(sol) <- colnames(x)
     has_infinite_estimates <-  !isTRUE(ROI::solution(result, "status_code") == 0L)
-    list(infinite_estimates = has_infinite_estimates,
+    list(outcome = has_infinite_estimates,
          beta = sol)
 }
 
@@ -138,14 +138,14 @@ separator_lpSolveAPI <- function(x, y,
                                           simplextype = c("primal", "primal"))
         status <- lpSolveAPI::solve.lpExtPtr(lp)
         if (status == 0) {
-            ans$separation <- FALSE
+            ans$outcome <- FALSE
         }
         else {
             if (status == 3) {
-                ans$separation <- TRUE
+                ans$outcome <- TRUE
             }
             else {
-                ans$separation <- NA
+                ans$outcome <- NA
             }
         }
     }
@@ -162,14 +162,14 @@ separator_lpSolveAPI <- function(x, y,
                               simplextype = c("primal", "primal"))
         status <- lpSolveAPI::solve.lpExtPtr(lp)
         if (status != 0) {
-            ans$separation <- NA
+            ans$outcome <- NA
         }
         beta <- lpSolveAPI::get.variables(lp)
         if (any(abs(beta) > tolerance)) {
-            ans$separation <- TRUE
+            ans$outcome <- TRUE
         }
         else {
-            ans$separation <- FALSE
+            ans$outcome <- FALSE
         }
         ans$beta <- beta
     }
@@ -186,14 +186,14 @@ separator_lpSolveAPI <- function(x, y,
                                           simplextype = c("primal", "primal"))
         status <- lpSolveAPI::solve.lpExtPtr(lp)
         if (status == 0) {
-            ans$separation <- FALSE
+            ans$outcome <- FALSE
         }
         else {
             if (status == 2) {
-                ans$separation <- TRUE
+                ans$outcome <- TRUE
             }
             else {
-                ans$separation <- NA
+                ans$outcome <- NA
             }
         }
     }
@@ -223,10 +223,10 @@ separator_lpSolveAPI <- function(x, y,
         status <- lpSolveAPI::solve.lpExtPtr(lp)
         beta <- lpSolveAPI::get.dual.solution(lp)[2:(p+1)]
         if (any(abs(beta) > tolerance)) {
-            ans$separation <- TRUE
+            ans$outcome <- TRUE
         }
         else {
-            ans$separation <- FALSE
+            ans$outcome <- FALSE
         }
         ans$beta <- beta
     }

@@ -95,17 +95,11 @@ detect_infinite_estimates <- function(x, y, weights = rep.int(1, nobs),
     if (isTRUE(family$family != "binomial")) {
         warning("`detect_infinite_estimates` has been developed for use with binomial-response GLMs")
     }
-    if (isTRUE(family$link == "log")) {
-        .detect_infinite_estimates <- detect_infinite_estimates_log_binomial
-    }
-    else {
-        .detect_infinite_estimates <- detect_infinite_estimates_lc_links
-    }
     out <- .detect_infinite_estimates(x = x, y = y, weights = weights, start = start,
                                       etastart = etastart,  mustart = mustart,
                                       offset = offset, family = family, control = control,
-                                      intercept = control, singular.ok = singular.ok)
-    names(out)[names(out) == "separation"] <- "infinite_estimates"
+                                      intercept = control, singular.ok = singular.ok,
+                                      log_link = isTRUE(family$link == "log"))
     class(out) <- out$class <- "detect_infinite_estimates"
     out
 }
@@ -121,92 +115,10 @@ print.detect_infinite_estimates <- function(x, digits = max(5L, getOption("digit
     else {
         cat("Linear program:", x$control$linear_program, "| Purpose:", x$control$purpose, "\n")
     }
-    cat("Infinite estimates:", x$infinite_estimates, "\n")
+    cat("Infinite estimates:", x$outcome, "\n")
     if (!is.null(x$coefficients)) {
         cat("Existence of maximum likelihood estimates\n")
         print(coefficients(x))
         cat("0: finite value, Inf: infinity, -Inf: -infinity\n")
     }
-}
-
-detect_infinite_estimates_log_binomial <- function(x, y, weights = rep.int(1, nobs),
-                                                   start = NULL, etastart = NULL,  mustart = NULL,
-                                                   offset = rep.int(0, nobs), family = gaussian(),
-                                                   control = list(), intercept = TRUE, singular.ok = TRUE) {
-    control <- do.call("detect_separation_control", control)
-    lp <- dielb_ROI
-    # ensure x is a matrix
-    x <- as.matrix(x)
-    betas_names_all <- betas_names <- if (is.null(colnames(x))) make.names(seq_len(NCOL(x))) else colnames(x)
-    #
-    nobs <- NROW(y)
-    nvars <- ncol(x)
-    if (nvars == 0) {
-        return(list(separation = FALSE, control = control))
-    }
-    if (is.null(weights)) {
-        weights <- rep.int(1, nobs)
-    }
-    if (missingOffset <- is.null(offset)) {
-        offset <- rep.int(0, nobs)
-    }
-    # Initialize as prescribed in family
-    eval(family$initialize)
-    if (control$solver == "alabama" & is.null(control$solver_control$start)) {
-        control$solver_control$start <- rep(0, nvars)
-    }
-    # Detect aliasing
-    qrx <- qr(x)
-    rank <- qrx$rank
-    is_full_rank <- rank == nvars
-    if (!singular.ok && !is_full_rank) {
-        stop("singular fit encountered")
-    }
-    if (!isTRUE(is_full_rank)) {
-        aliased <- qrx$pivot[seq.int(qrx$rank + 1, nvars)]
-        X_all <- x
-        x <- x[, -aliased]
-        betas_names <- betas_names[-aliased]
-    }
-
-    betas_all <- structure(rep(NA_real_, length(betas_names_all)), .Names = betas_names_all)
-    # Observations with zero weight do not enter calculations so ignore
-    keep <- weights > 0
-    x <- x[keep, , drop = FALSE]
-    y <- y[keep]
-    # Reshape data set: keep 0 and 1, and replace anything in (0,
-    # 1) with one zero and one 1
-    ones <- y == 1
-    zeros <- y == 0
-    non_boundary <- !(ones | zeros)
-    x <- x[c(which(ones), which(zeros), rep(which(non_boundary), 2)), , drop = FALSE]
-    y <- c(y[ones], y[zeros], rep(c(0., 1.), each = sum(non_boundary)))
-    # Run linear program
-    out <- lp(x = x, y = y,
-              linear_program = control$linear_program,
-              purpose = control$purpose,
-              tolerance = control$tolerance,
-              solver = control$solver,
-              solver_control = control$solver_control)
-    if (is.na(out$infinite_estimates)) {
-        warning("unexpected result from implementation ", control$implementation, " with solver: ", control$solver, "\n")
-    }
-    if (is.null(out$beta)) {
-        betas_all <- NULL
-    }
-    else {
-        betas <- out$beta
-        names(betas) <- betas_names
-        inds <- abs(betas) < control$tolerance
-        betas <- Inf * betas
-        betas[inds] <- 0
-        # Why betas_all is indexed by the manes
-        betas_all[betas_names] <- betas[betas_names]
-    }
-    out <- list(x = x,
-                y = y,
-                coefficients = betas_all,
-                infinite_estimates = out$infinite_estimates,
-                control = control)
-    return(out)
 }

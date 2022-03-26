@@ -47,7 +47,7 @@ endometrial_separation_n <- glm(HG ~ 0, data = endometrial,
                                 family = binomial("cloglog"),
                                 method = "detect_separation")
 expect_null(coef(endometrial_separation_n))
-expect_false(endometrial_separation_n$separation)
+expect_false(endometrial_separation_n$outcome)
 
 
 ## Test log-binomial models

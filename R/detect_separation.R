@@ -188,16 +188,18 @@ detect_separation <- function(x, y, weights = rep.int(1, nobs),
     else {
         warning("`detect_separation` has been developed for use with binomial-response GLMs")
     }
-    out <- detect_infinite_estimates_lc_links(x = x, y = y, weights = weights, start = start,
+    out <- .detect_infinite_estimates(x = x, y = y, weights = weights, start = start,
                                               etastart = etastart,  mustart = mustart,
                                               offset = offset, family = family, control = control,
-                                              intercept = control, singular.ok = singular.ok)
+                                              intercept = control, singular.ok = singular.ok,
+                                              log_link = FALSE)
     if (log_link) {
         # test for existence using detect_infinite_estimates_log_binomial
-        out$coefficients <- detect_infinite_estimates_log_binomial(x = x, y = y, weights = weights, start = start,
-                                                                   etastart = etastart,  mustart = mustart,
-                                                                   offset = offset, family = family, control = control,
-                                                                   intercept = control, singular.ok = singular.ok)$coefficients
+        out$coefficients <- .detect_infinite_estimates(x = x, y = y, weights = weights, start = start,
+                                                       etastart = etastart,  mustart = mustart,
+                                                       offset = offset, family = family, control = control,
+                                                       intercept = control, singular.ok = singular.ok,
+                                                       log_link = TRUE)$coefficients
     }
     class(out) <- out$class <- "detect_separation"
     out
@@ -278,7 +280,7 @@ print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L
     else {
         cat("Linear program:", x$control$linear_program, "| Purpose:", x$control$purpose, "\n")
     }
-    cat("Separation:", x$separation, "\n")
+    cat("Separation:", x$outcome, "\n")
     if (!is.null(x$coefficients)) {
         cat("Existence of maximum likelihood estimates\n")
         print(coefficients(x))
@@ -286,13 +288,13 @@ print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L
     }
 }
 
-
-detect_infinite_estimates_lc_links <- function(x, y, weights = rep.int(1, nobs),
-                                               start = NULL, etastart = NULL,  mustart = NULL,
-                                               offset = rep.int(0, nobs), family = gaussian(),
-                                               control = list(), intercept = TRUE, singular.ok = TRUE) {
+.detect_infinite_estimates <- function(x, y, weights = rep.int(1, nobs),
+                                       start = NULL, etastart = NULL,  mustart = NULL,
+                                       offset = rep.int(0, nobs), family = gaussian(),
+                                       control = list(), intercept = TRUE, singular.ok = TRUE,
+                                       log_link = FALSE) {
     control <- do.call("detect_separation_control", control)
-    lp <- control$separator
+    lp <- if (log_link) dielb_ROI else control$separator
     # ensure x is a matrix
     x <- as.matrix(x)
     betas_names_all <- betas_names <- if (is.null(colnames(x))) make.names(seq_len(NCOL(x))) else colnames(x)
@@ -300,7 +302,7 @@ detect_infinite_estimates_lc_links <- function(x, y, weights = rep.int(1, nobs),
     nobs <- NROW(y)
     nvars <- ncol(x)
     if (nvars == 0) {
-        return(list(separation = FALSE, control = control))
+        return(list(outcome = FALSE, control = control))
     }
     if (is.null(weights)) {
         weights <- rep.int(1, nobs)
@@ -345,11 +347,11 @@ detect_infinite_estimates_lc_links <- function(x, y, weights = rep.int(1, nobs),
               tolerance = control$tolerance,
               solver = control$solver,
               solver_control = control$solver_control)
-    if (is.na(out$separation)) {
+    if (is.na(out$outcome)) {
         if (identical(control$implementation, "ROI")) {
             warning("unexpected result from implementation ", control$implementation, " with solver: ", control$solver, "\n")
         }
-        else {
+        if (identical(control$implementation, "lsSolveAPI") & !log_link) {
             warning("unexpected result from implementation ", control$implementation, " with linear_program: ", control$linear_program, " and purpose: ", control$purpose, "\n")
         }
     }
@@ -367,7 +369,7 @@ detect_infinite_estimates_lc_links <- function(x, y, weights = rep.int(1, nobs),
     out <- list(x = x,
                 y = y,
                 coefficients = betas_all,
-                separation = out$separation,
+                outcome = out$outcome,
                 control = control)
     return(out)
 }
