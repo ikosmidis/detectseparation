@@ -47,7 +47,7 @@
 #' }
 #'
 #' @source The packaged data set was downloaded in \code{.dat} format
-#'     from \url{http://www.stat.ufl.edu/~aa/glm/data}. The latter
+#'     from \url{https://www.stat.ufl.edu/~aa/glm/data}. The latter
 #'     link provides the data sets used in Agresti (2015).
 #'
 #'     The endometrial data set was first analyzed in Heinze and
@@ -89,6 +89,6 @@
 #' Silvapulle, M. J. (1981). 
 #' On the Existence of Maximum Likelihood Estimators for the Binomial Response Models.
 #' Journal of the Royal Statistical Society. Series B (Methodological), 43(3), 310–313.
-#' \url{http://www.jstor.org/stable/2984941}
+#' \url{https://www.jstor.org/stable/2984941}
 #'
 "silvapulle1981"

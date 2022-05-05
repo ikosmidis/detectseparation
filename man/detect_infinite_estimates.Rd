@@ -94,7 +94,7 @@ glm(y ~ ghqs, data = silvapulle1981, family = binomial("log"), start = c(-1, 0))
 Silvapulle, M. J. (1981).
 On the Existence of Maximum Likelihood Estimators for the Binomial Response Models.
 Journal of the Royal Statistical Society. Series B (Methodological), 43(3), 310–313.
-\url{http://www.jstor.org/stable/2984941}
+\url{https://www.jstor.org/stable/2984941}
 
 Konis K. (2007). *Linear Programming Algorithms for Detecting
 Separated Data in Binary Logistic Regression
@@ -111,5 +111,5 @@ models. *Biometrika*, **108**, 71–82
 
 Schwendinger, F., Grün, B. & Hornik, K. A comparison of optimization solvers
 for log binomial regression including conic programming.
-Comput Stat 36, 1721–1754 (2021). \url{https://doi.org/10.1007/s00180-021-01084-5}
+Comput Stat 36, 1721–1754 (2021). \doi{10.1007/s00180-021-01084-5}
 }

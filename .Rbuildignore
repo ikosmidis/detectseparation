@@ -8,3 +8,6 @@ inst/scratch
 ^\.github$
 vignettes/Makefile
 work
+^.*\.tar\.gz
+Manual.pdf
+Makefile
