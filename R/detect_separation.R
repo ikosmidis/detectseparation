@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2021 Ioannis Kosmidis, Dirk Schumacher
+# Copyright (C) 2017- Ioannis Kosmidis, Dirk Schumacher
 
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -13,16 +13,15 @@
 #  A copy of the GNU General Public License is available at
 #  http://www.r-project.org/Licenses/
 
-
 #' Method for \code{\link{glm}} that tests for data separation and
 #' finds which parameters have infinite maximum likelihood estimates
 #' in generalized linear models with binomial responses
 #'
-#' \code{\link{detect_separation}} is a method for \code{\link{glm}}
+#' \code{\link{detect_separation}()} is a method for \code{\link{glm}}
 #' that tests for the occurrence of complete or quasi-complete
 #' separation in datasets for binomial response generalized linear
 #' models, and finds which of the parameters will have infinite
-#' maximum likelihood estimates. \code{\link{detect_separation}}
+#' maximum likelihood estimates. \code{\link{detect_separation}()}
 #' relies on the linear programming methods developed in Konis (2007).
 #'
 #' @inheritParams stats::glm.fit
@@ -32,7 +31,7 @@
 #' @param x \code{x} is a design matrix of dimension \code{n * p}.
 #' @param y \code{y} is a vector of observations of length \code{n}.
 #' @param control a list of parameters controlling separation
-#'     detection. See \code{\link{detect_separation_control}} for
+#'     detection. See \code{\link{detect_separation_control}()} for
 #'     details.
 #' @param start currently not used.
 #' @param mustart currently not used.
@@ -42,11 +41,36 @@
 #'
 #' @details
 #'
-#' \code{\link{detect_separation}} is a wrapper to the
+#' According to the definitions in Albert and Anderson (1984), the
+#' data exhibits quasi-complete separation if there exists a non-zero
+#' parameter vector \eqn{\beta} such that \eqn{X^0 \beta \le 0}and
+#' \eqn{X^1 \beta \ge 0}, where \eqn{X^0} and \eqn{X^1} are the
+#' matrices formed by the rows of the model matrix $X$ corresponding
+#' to zero and non-zero responses, respectively. The data exhibits
+#' complete separation if there exists a parameter vector $\beta$ such
+#' that the aforementioned conditions are satisfied with strict
+#' inequalities. If there are no vectors $\beta$ that can satisfy the
+#' conditions, then the data points are said to overlap.
+#'
+#' If the inverse link function \eqn{G(t)} of a generalized linear
+#' models with binomial responses is such that \eqn{\log G(t)} and
+#' \eqn{\log (1 - G(t))} are concave and the model has an intercept
+#' parameter, then overlap is a necessary and sufficient condition for
+#' the maximum likelihood estimates to be finite (see Silvapulle, 1981
+#' for a proof). Such link functions are, for example, the logit,
+#' probit and complementary log-log.
+#'
+#' \code{\link{detect_separation}()} determines whether or not the
+#' data exhibits (quasi-)complete separation. Then, if separation is
+#' detected and the link function \eqn{G(t)} is such that \eqn{\log
+#' G(t)} and \eqn{\log (1 - G(t))} are concave, the maximum likelihood
+#' estimates has infinite components.
+#'
+#' \code{\link{detect_separation}()} is a wrapper to the
 #' \code{separator_ROI} function and \code{separator_lpSolveAPI}
 #' function (a modified version of the \code{separator} function from
 #' the **safeBinaryRegression** R
-#' package). \code{\link{detect_separation}} can be passed directly as
+#' package). \code{\link{detect_separation}()} can be passed directly as
 #' a method to the \code{\link{glm}} function. See, examples.
 #'
 #' The \code{\link{coefficients}} method extracts a vector of values
@@ -57,7 +81,7 @@
 #' convention makes it easy to adjust the maximum likelihood estimates
 #' to their actual values by element-wise addition.
 #'
-#' \code{detectSeparation} is an alias for \code{detect_separation}.
+#' \code{detectSeparation}() is an alias for \code{detect_separation}().
 #'
 #' @note
 #'
@@ -107,144 +131,96 @@
 #' and shrinkage in binomial-response generalized linear
 #' models. *Biometrika*, **108**, 71–82
 #'
+#'
+#' Silvapulle, M. J. (1981).
+#' On the Existence of Maximum Likelihood Estimators for the Binomial Response Models.
+#' Journal of the Royal Statistical Society. Series B (Methodological), 43(3), 310–313.
+#' \url{http://www.jstor.org/stable/2984941}
+
 #' @examples
 #'
-#' ## endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
+#' # endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
 #' data("endometrial", package = "detectseparation")
 #' endometrial_sep <- glm(HG ~ NV + PI + EH, data = endometrial,
 #'                        family = binomial("logit"),
 #'                        method = "detect_separation")
 #' endometrial_sep
-#' ## The maximum likelihood estimate for NV is infinite
+#' # The maximum likelihood estimate for NV is infinite
 #' summary(update(endometrial_sep, method = "glm.fit"))
 #'
 #' \donttest{
-#' ## Example inspired by unpublished microeconometrics lecture notes by
-#' ## Achim Zeileis https://eeecon.uibk.ac.at/~zeileis/
-#' ## The maximum likelihood estimate of sourhernyes is infinite
+#' # Example inspired by unpublished microeconometrics lecture notes by
+#' # Achim Zeileis https://eeecon.uibk.ac.at/~zeileis/
+#' # The maximum likelihood estimate of sourhernyes is infinite
 #' if (requireNamespace("AER", quietly = TRUE)) {
 #'     data("MurderRates", package = "AER")
 #'     murder_sep <- glm(I(executions > 0) ~ time + income +
 #'                       noncauc + lfp + southern, data = MurderRates,
 #'                       family = binomial(), method = "detect_separation")
 #'     murder_sep
-#'     ## which is also evident by the large estimated standard error for NV
+#'     # which is also evident by the large estimated standard error for NV
 #'     murder_glm <- update(murder_sep, method = "glm.fit")
 #'     summary(murder_glm)
-#'     ## and is also reveal by the divergence of the NV column of the
-#'     ## result from the more computationally intensive check
+#'     # and is also reveal by the divergence of the NV column of the
+#'     # result from the more computationally intensive check
 #'     plot(check_infinite_estimates(murder_glm))
-#'     ## Mean bias reduction via adjusted scores results in finite estimates
+#'     # Mean bias reduction via adjusted scores results in finite estimates
 #'     if (requireNamespace("brglm2", quietly = TRUE))
 #'         update(murder_glm, method = brglm2::brglm_fit)
 #' }
 #' }
 #' @export
-detect_separation <- function(x, y, weights = rep(1, nobs),
+detect_separation <- function(x, y, weights = rep.int(1, nobs),
                               start = NULL, etastart = NULL,  mustart = NULL,
-                              offset = rep(0, nobs), family = gaussian(),
+                              offset = rep.int(0, nobs), family = gaussian(),
                               control = list(), intercept = TRUE, singular.ok = TRUE) {
-    if (isTRUE(family$family != "binomial")) {
-        warning("`detect_separation` has been developed for use with binomial-response GLMs")
-    }
-    reliable_links <- c("logit", "log", "probit", "cauchit", "cloglog")
-    if (!isTRUE(family$link %in% reliable_links)) {
-        warning("`detect_separation` results may be unreliable for binomial-response GLMs",
-                " with links other than ", paste(shQuote(reliable_links), collapse = ", "))
-    }
-    control <- do.call("detect_separation_control", control)
-    separator <- control$separator
-    ## ensure x is a matrix
-    x <- as.matrix(x)
-    betas_names <- dimnames(x)[[2L]]
-    ##
-    nobs <- NROW(y)
-    nvars <- ncol(x)
-    EMPTY <- nvars == 0
-    if (is.null(weights)) {
-        weights <- rep.int(1, nobs)
-    }
-    if (missingOffset <- is.null(offset)) {
-        offset <- rep.int(0, nobs)
-    }
-    ## Initialize as prescribed in family
-    eval(family$initialize)
-    if (EMPTY) {
-        out <- list(separation = FALSE)
+    log_link <- isTRUE(family$link == "log")
+    if (isTRUE(family$family == "binomial")) {
+        reliable_links <- c("logit", "log", "probit", "cauchit", "cloglog")
+        if (!isTRUE(family$link %in% reliable_links)) {
+            warning("`detect_separation` results may be unreliable for binomial-response GLMs",
+                    " with links other than ", paste(shQuote(reliable_links), collapse = ", "))
+        }
+        if (log_link) {
+            message("Data separation in log-binomial models does not necessarily result in infinite estimates")
+        }
     }
     else {
-        if (control$solver == "alabama" & is.null(control$solver_control$start)) {
-            control$solver_control$start <- rep(0, nvars)
-        }
-        ## as in brglmFit
-        boundary <- converged <- FALSE
-        ## Detect aliasing
-        qrx <- qr(x)
-        rank <- qrx$rank
-        is_full_rank <- rank == nvars
-        if (!singular.ok && !is_full_rank) {
-            stop("singular fit encountered")
-        }
-        if (!isTRUE(is_full_rank)) {
-            aliased <- qrx$pivot[seq.int(qrx$rank + 1, nvars)]
-            X_all <- x
-            x <- x[, -aliased]
-            nvars_all <- nvars
-            nvars <- ncol(x)
-            betas_names_all <- betas_names
-            betas_names <- betas_names[-aliased]
-        }
-        else {
-            nvars_all <- nvars
-            betas_names_all <- betas_names
-        }
-        betas_all <- structure(rep(NA_real_, nvars_all), .Names = betas_names_all)
-        ## Observations with zero weight do not enter calculations so ignore
-        keep <- weights > 0
-        x <- x[keep, , drop = FALSE]
-        y <- y[keep]
-        ## Reshape data set: keep 0 and 1, and replace anything in (0,
-        ## 1) with one zero and one 1
-        ones <- y == 1
-        zeros <- y == 0
-        non_boundary <- !(ones | zeros)
-        x <- x[c(which(ones), which(zeros), rep(which(non_boundary), 2)), , drop = FALSE]
-        y <- c(y[ones], y[zeros], rep(c(0., 1.), each = sum(non_boundary)))
-        ## Run linear program
-        out <- separator(x = x, y = y,
-                         linear_program = control$linear_program,
-                         purpose = control$purpose,
-                         tolerance = control$tolerance,
-                         solver = control$solver,
-                         solver_control = control$solver_control)
-        if (is.na(out$separation)) {
-            if (identical(control$implementation, "ROI")) {
-                warning("unexpected result from implementation ", control$implementation, " with solver: ", control$solver, "\n")
-            }
-            else {
-                warning("unexpected result from implementation ", control$implementation, " with linear_program: ", control$linear_program, " and purpose: ", control$purpose, "\n")
-            }
-        }
-        if (is.null(out$beta)) {
-            betas_all <- NULL
-        }
-        else {
-            betas <- out$beta
-            names(betas) <- betas_names
-            inds <- abs(betas) < control$tolerance
-            betas <- Inf * betas
-            betas[inds] <- 0
-            betas_all[betas_names] <- betas
-        }
-        out <- list(x = x,
-                    y = y,
-                    coefficients = betas_all,
-                    separation = out$separation)
+        warning("`detect_separation` has been developed for use with binomial-response GLMs")
     }
-    out$control <- control
-    out$class <- "detect_separation"
-    class(out) <- "detect_separation"
-    return(out)
+    out <- .detect_infinite_estimates(x = x, y = y, weights = weights, start = start,
+                                      etastart = etastart,  mustart = mustart,
+                                      offset = offset, family = family, control = control,
+                                      intercept = control, singular.ok = singular.ok,
+                                      log_link = FALSE)
+    if (log_link) {
+        # test for existence using the linear program in Schwendinger et al (2021)
+        out$coefficients <- .detect_infinite_estimates(x = x, y = y, weights = weights, start = start,
+                                                       etastart = etastart,  mustart = mustart,
+                                                       offset = offset, family = family, control = control,
+                                                       intercept = control, singular.ok = singular.ok,
+                                                       log_link = TRUE)$coefficients
+    }
+    class(out) <- out$class <- "detect_separation"
+    out
+}
+
+#' @method print detect_separation
+#' @export
+print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L), ...) {
+    cat("Implementation:", x$control$implementation, "| ")
+    if (identical(x$control$implementation, "ROI")) {
+        cat("Solver:", x$control$solver, "\n")
+    }
+    else {
+        cat("Linear program:", x$control$linear_program, "| Purpose:", x$control$purpose, "\n")
+    }
+    cat("Separation:", x$outcome, "\n")
+    if (!is.null(x$coefficients)) {
+        cat("Existence of maximum likelihood estimates\n")
+        print(coefficients(x))
+        cat("0: finite value, Inf: infinity, -Inf: -infinity\n")
+    }
 }
 
 #' Auxiliary function for the \code{\link{glm}} interface when
@@ -300,13 +276,7 @@ detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
     purpose <- match.arg(purpose)
     linear_program <- match.arg(linear_program)
     separator <- match.fun(paste("separator", implementation, sep = "_"))
-
-    ## ensure the solver is loaded using the ROI plugin mechanism
-    if (solver != "lpsolve") {
-        roi_plugin_name <- paste0("ROI.plugin.", solver)
-        pkgload::check_suggested(roi_plugin_name, path = pkgload::inst("detectseparation"), version = "*")
-        requireNamespace(roi_plugin_name, quietly = TRUE)
-    }
+    check_ROI_solver(solver)
     list(linear_program = linear_program,
          solver = solver,
          solver_control = solver_control,
@@ -314,23 +284,4 @@ detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
          tolerance = tolerance,
          separator = separator,
          implementation = implementation)
-}
-
-
-#' @method print detect_separation
-#' @export
-print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L), ...) {
-    cat("Implementation:", x$control$implementation, "| ")
-    if (identical(x$control$implementation, "ROI")) {
-        cat("Solver:", x$control$solver, "\n")
-    }
-    else {
-        cat("Linear program:", x$control$linear_program, "| Purpose:", x$control$purpose, "\n")
-    }
-    cat("Separation:", x$separation, "\n")
-    if (!is.null(x$coefficients)) {
-        cat("Existence of maximum likelihood estimates\n")
-        print(coefficients(x))
-        cat("0: finite value, Inf: infinity, -Inf: -infinity\n")
-    }
 }

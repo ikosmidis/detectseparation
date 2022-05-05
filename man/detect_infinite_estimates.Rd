@@ -8,12 +8,12 @@
 detect_infinite_estimates(
   x,
   y,
-  weights,
+  weights = rep.int(1, nobs),
   start = NULL,
   etastart = NULL,
   mustart = NULL,
-  offset,
-  family = binomial(),
+  offset = rep.int(0, nobs),
+  family = gaussian(),
   control = list(),
   intercept = TRUE,
   singular.ok = TRUE
@@ -58,18 +58,19 @@ details.}
 error.}
 }
 \description{
-Method for \code{\link{glm}} that detects infinite components in 
+Method for \code{\link{glm}} that detects infinite components in
 the MLE estimates of generalized linear models with binomial responses.
 
 For all links except the \code{"log"} link, function
-\code{detect_infinite_estimates} is a wrapper around 
-\code{\link{detect_separation}}. For the \code{"log"}
-link separated data allocations not necessarily lead to
-infinite components in the MLE estimates, therefore another method is used.
+\code{detect_infinite_estimates} is a wrapper around
+\code{\link{detect_separation}}. For the \code{"log"} link
+separated data allocations do not necessarily lead to infinite
+components in the MLE estimates. For this reason another method is
+used.
 
 \code{\link{detect_infinite_estimates}} for the \code{"log"} link
-relies on the linear optimization model developed in 
-Schwendinger and Grün and Hornik (2021) and for all the other 
+relies on the linear optimization model developed in
+Schwendinger et al. (2021) and for all the other
 supported links it relies on the linear programming methods
 developed in Konis (2007).
 }
@@ -90,7 +91,7 @@ glm(y ~ ghqs, data = silvapulle1981, family = binomial("log"), start = c(-1, 0))
 
 }
 \references{
-Silvapulle, M. J. (1981). 
+Silvapulle, M. J. (1981).
 On the Existence of Maximum Likelihood Estimators for the Binomial Response Models.
 Journal of the Royal Statistical Society. Series B (Methodological), 43(3), 310–313.
 \url{http://www.jstor.org/stable/2984941}
@@ -109,6 +110,6 @@ and shrinkage in binomial-response generalized linear
 models. *Biometrika*, **108**, 71–82
 
 Schwendinger, F., Grün, B. & Hornik, K. A comparison of optimization solvers
-for log binomial regression including conic programming. 
+for log binomial regression including conic programming.
 Comput Stat 36, 1721–1754 (2021). \url{https://doi.org/10.1007/s00180-021-01084-5}
 }

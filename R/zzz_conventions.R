@@ -1,4 +1,4 @@
-## Some convenience names
+# Some convenience names
 
 #' @rdname detect_separation
 #' @export
