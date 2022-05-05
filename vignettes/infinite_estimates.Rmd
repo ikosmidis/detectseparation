@@ -87,16 +87,17 @@ method.
 glm(y ~ a + b, data = data, family = binomial("logit"), method = "detect_separation")
 ```
 
-For logistic regression model this means the MLE does not exist.
+The output above provides much information:
 
-```{r, tiny_example_inf_esti_logit}
-glm(y ~ a + b, data = data, family = binomial("logit"),  method = "detect_infinite_estimates")
-```
+1. The output shows, that for the verification oft the separation the linear optimization solver **lpsolve** was used.  
+2. The line `Separation: TRUE` indicates that the data is separated.
+3. The coefficients at `Inf` and `-Inf` indicate that the underlying optimization problem is unbounded and therefore the MLE does not exist for the logistic regression model.
+
 
 However, due to the linear constraint the MLE does exist for the LBRM,
 
-```{r, tiny_example_inf_esti_log}
-glm(y ~ a + b, data = data, family = binomial("log"),  method = "detect_infinite_estimates")
+```{r}
+glm(y ~ a + b, data = data, family = binomial("log"), method = "detect_separation")
 ```
 
 despite the fact that the data is separated.
@@ -137,8 +138,7 @@ args(glm.control)
 Since the default value for the maximum number of iterations is quite low (`maxit = 25`).
 However, `maxit = 25` is typically high enough for unbounded optimization problems 
 (almost all models supported by glm), but is often to low for the LBRM.
-I recommend to set `maxit = 10000` when estimating LBRMs.
-
+For most data sets setting `maxit = 10000` when estimating LBRMs is high enough.
 
 ```{r, tiny_example_inf_esti_log_separation}
 formula <- y ~ a + b
@@ -158,8 +158,8 @@ abs(drop(mm)) < 1e-6
 ```
 
 ## Choosing starting values
-`glm` will often require user specified starting values for the LBRM. Valid starting values
-have to reside in the interior of the feasible region ($X \beta < 0$).
+`glm` will often require users to specify starting values for the LBRM.
+Valid starting values have to reside in the interior of the feasible region ($X \beta < 0$).
 There have been different methods suggested for finding valid starting values.
 
 ### Simple approach
@@ -193,7 +193,7 @@ max(model.matrix(formula, data = data) %*% find_start_poisson(formula, data))
 ### Recommendation
 One can also solve an LP to find valid start values or think of other strategies.
 However, for the benchmark examples reported in @schwendinger+gruen+hornik:2021
-I found no conclusive evidence that one of these initialization methods outperforms
+we found no conclusive evidence that one of these initialization methods outperforms
 the others. Therefore, my personal favorite is the simple approach `(-1, 0, ..., 0)`.
 
 
