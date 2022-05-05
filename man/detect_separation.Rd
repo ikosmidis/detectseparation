@@ -94,9 +94,9 @@ parameter vector \eqn{\beta} such that \eqn{X^0 \beta \le 0}and
 \eqn{X^1 \beta \ge 0}, where \eqn{X^0} and \eqn{X^1} are the
 matrices formed by the rows of the model matrix $X$ corresponding
 to zero and non-zero responses, respectively. The data exhibits
-complete separation if there exists a parameter vector $\beta$ such
+complete separation if there exists a parameter vector \eqn{\beta} such
 that the aforementioned conditions are satisfied with strict
-inequalities. If there are no vectors $\beta$ that can satisfy the
+inequalities. If there are no vectors \eqn{\beta} that can satisfy the
 conditions, then the data points are said to overlap.
 
 If the inverse link function \eqn{G(t)} of a generalized linear
@@ -202,7 +202,7 @@ models. *Biometrika*, **108**, 71–82
 Silvapulle, M. J. (1981).
 On the Existence of Maximum Likelihood Estimators for the Binomial Response Models.
 Journal of the Royal Statistical Society. Series B (Methodological), 43(3), 310–313.
-\url{http://www.jstor.org/stable/2984941}
+\url{https://www.jstor.org/stable/2984941}
 }
 \seealso{
 \code{\link{glm.fit}} and \code{\link{glm}}, \code{\link{check_infinite_estimates}}, \code{\link[brglm2]{brglm_fit}},
