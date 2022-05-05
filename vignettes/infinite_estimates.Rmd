@@ -1,7 +1,7 @@
 ---
 title: "Detecting separation and infinite estimates in log binomial regression"
 author: "Florian Schwendinger"
-date: "r`Sys.Date()`"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: detectseparation.bib
 vignette: >
