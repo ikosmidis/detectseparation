@@ -1,6 +1,6 @@
 ---
 title: "Detect/check for separation and infinite maximum likelihood estimates in logistic regression"
-author: "[Ioannis Kosmidis](http://www.ikosmidis.com) and [Dirk Schumacher](http://www.dirk-schumacher.net)"
+author: "[Ioannis Kosmidis](https://www.ikosmidis.com) and [Dirk Schumacher](https://www.dirk-schumacher.net)"
 date: "5 January 2020"
 output: rmarkdown::html_vignette
 bibliography: detectseparation.bib
