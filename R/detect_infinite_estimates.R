@@ -16,21 +16,21 @@
 #' @title Detect Infinite Estimates
 #'
 #' @description
+#'
 #' Method for \code{\link{glm}} that detects infinite components in
-#' the MLE estimates of generalized linear models with binomial responses.
+#' the maximum likelihood estimates of generalized linear models
+#' with binomial responses.
 #'
-#' For all links except the \code{"log"} link, function
-#' \code{detect_infinite_estimates} is a wrapper around
-#' \code{\link{detect_separation}}. For the \code{"log"} link
-#' separated data allocations do not necessarily lead to infinite
-#' components in the MLE estimates. For this reason another method is
-#' used.
+#' In contrast to links like the \code{"logit"}, \code{"probit"}, and
+#' \code{"cauchit"}, for models with \code{"log"} link, separated data
+#' allocations do not necessarily lead to infinite maximum likelihood
+#' estimates.
 #'
-#' \code{\link{detect_infinite_estimates}} for the \code{"log"} link
-#' relies on the linear optimization model developed in
-#' Schwendinger et al. (2021) and for all the other
-#' supported links it relies on the linear programming methods
-#' developed in Konis (2007).
+#' For this reason, for models with the \code{"log"} link
+#' \code{\link{detect_infinite_estimates}} relies on an alternative
+#' linear optimization model developed in Schwendinger et al. (2021),
+#' and for all the other supported links it relies on the linear
+#' programming methods developed in Konis (2007).
 #'
 #' @inheritParams stats::glm.fit
 #'

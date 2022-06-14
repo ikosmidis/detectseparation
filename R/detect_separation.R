@@ -41,8 +41,9 @@
 #'
 #' @details
 #'
-#' According to the definitions in Albert and Anderson (1984), the
-#' data exhibits quasi-complete separation if there exists a non-zero
+#' Following the definitions in Albert and Anderson (1984), the data
+#' for a binomial-response generalized linear model with logistic link
+#' exhibit quasi-complete separation if there exists a non-zero
 #' parameter vector \eqn{\beta} such that \eqn{X^0 \beta \le 0}and
 #' \eqn{X^1 \beta \ge 0}, where \eqn{X^0} and \eqn{X^1} are the
 #' matrices formed by the rows of the model matrix $X$ corresponding
