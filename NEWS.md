@@ -10,11 +10,13 @@
   '"logit"', '"probit"', and '"cauchit"' links. See
   `?detect_infinite_estimates` for details
 
-## Bug fixes
+* `detect_separation()` is now a wrapper of `detect_infinite_estimates`.
 
 ## Other improvements, updates and additions
 
-* Major rewrite and enrichment of help page.
+* Major rewrite and enrichment of help pages and examples.
+
+* New vignette "Detecting separation and infinite estimates in log-binomial regression".
 
 
 # detectseparation 0.2
