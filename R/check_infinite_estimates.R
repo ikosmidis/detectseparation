@@ -17,7 +17,6 @@
 #' A simple diagnostic of whether the maximum likelihood estimates are
 #' infinite
 #'
-#' @aliases checkInfiniteEstimates
 #'
 #' @param object the result of a \code{\link{glm}} call.
 #' @param nsteps starting from \code{maxit = 1}, the GLM is refitted
@@ -31,7 +30,7 @@
 #'
 #' @details
 #'
-#' \code{check_infinite_estimates} attempts to identify the occurrence
+#' \code{check_infinite_estimates}() attempts to identify the occurrence
 #' of infinite estimates in GLMs with binomial responses by
 #' successively refitting the model. At each iteration the maximum
 #' number of allowed IWLS iterations is fixed starting from 1 to
@@ -46,11 +45,11 @@
 #' estimate for the corresponding parameter has value minus or plus
 #' infinity.
 #'
-#' \code{check_infinite_estimates} can also be used to identify the
+#' \code{check_infinite_estimates}() can also be used to identify the
 #' occurrence of infinite estimates in baseline category logit models
-#' for nominal responses (see \code{\link[brglm2]{brmultinom}} from the
-#' \pkg{brglm2} R package), and adjacent category logit models for
-#' ordinal responses (see \code{\link[brglm2]{bracl}} from the
+#' for nominal responses (see \code{\link[brglm2]{brmultinom}()} from
+#' the \pkg{brglm2} R package), and adjacent category logit models for
+#' ordinal responses (see \code{\link[brglm2]{bracl}()} from the
 #' \pkg{brglm2} R package).
 #'
 #' @return

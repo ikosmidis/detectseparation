@@ -21,17 +21,6 @@
 #' the maximum likelihood estimates of generalized linear models
 #' with binomial responses.
 #'
-#' In contrast to links like the \code{"logit"}, \code{"probit"}, and
-#' \code{"cauchit"}, for models with \code{"log"} link, separated data
-#' allocations do not necessarily lead to infinite maximum likelihood
-#' estimates.
-#'
-#' For this reason, for models with the \code{"log"} link
-#' \code{\link{detect_infinite_estimates}} relies on an alternative
-#' linear optimization model developed in Schwendinger et al. (2021),
-#' and for all the other supported links it relies on the linear
-#' programming methods developed in Konis (2007).
-#'
 #' @inheritParams stats::glm.fit
 #'
 #' @aliases detectInfiniteEstimates
@@ -46,6 +35,43 @@
 #' @param etastart currently not used.
 #' @param singular.ok logical. If \code{FALSE}, a singular model is an
 #'     error.
+#'
+#'
+#' @details
+#'
+#' In contrast to links like the \code{"logit"}, \code{"probit"}, and
+#' \code{"cauchit"}, for models with \code{"log"} link, separated data
+#' allocations do not necessarily lead to infinite maximum likelihood
+#' estimates.
+#'
+#' For this reason, for models with the \code{"log"} link
+#' \code{\link{detect_infinite_estimates}()} relies on an alternative
+#' linear optimization model developed in Schwendinger et al. (2021),
+#' and for all the other supported links it relies on the linear
+#' programming methods developed in Konis (2007).
+#'
+#' \code{\link{detect_infinite_estimates}()} is a wrapper to the
+#' \code{separator_ROI} function and \code{separator_lpSolveAPI}
+#' function (a modified version of the \code{separator()} function from
+#' the **safeBinaryRegression** R
+#' package).
+#'
+#' The \code{\link{coefficients}()} method extracts a vector of values
+#' for each of the model parameters under the following convention:
+#' \code{0} if the maximum likelihood estimate of the parameter is
+#' finite, and \code{Inf} or \code{-Inf} if the maximum likelihood
+#' estimate of the parameter if plus or minus infinity. This
+#' convention makes it easy to adjust the maximum likelihood estimates
+#' to their actual values by element-wise addition.
+#'
+#' \code{\link{detect_infinite_estimates}()} can be passed directly as
+#' a method to the \code{\link{glm}} function. See, examples.
+#'
+#' \code{detectInfiniteEstimates}() is an alias for
+#' \code{detect_infinite_estimates}().
+#'
+#' @author Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Florian Schwendinger [aut] \email{FlorianSchwendinger@gmx.at}, Dirk Schumacher [aut] \email{mail@dirk-schumacher.net}, Kjell Konis [ctb] \email{kjell.konis@me.com}
+#'
 #'
 #' @references
 #'
@@ -65,11 +91,12 @@
 #'
 #' Kosmidis I. and Firth D. (2021). Jeffreys-prior penalty, finiteness
 #' and shrinkage in binomial-response generalized linear
-#' models. *Biometrika*, **108**, 71–82
+#' models. *Biometrika*, **108**, 71–82. \doi{10.1093/biomet/asaa052}
 #'
-#' Schwendinger, F., Grün, B. & Hornik, K. A comparison of optimization solvers
-#' for log binomial regression including conic programming.
-#' Comput Stat 36, 1721–1754 (2021). \doi{10.1007/s00180-021-01084-5}
+#' Schwendinger, F., Grün, B. & Hornik, K. (2021). A comparison of
+#' optimization solvers for log binomial regression including conic
+#' programming.  *Computational Statistics*, **36**,
+#' 1721–1754. \doi{10.1007/s00180-021-01084-5}
 #'
 #'
 #' @examples

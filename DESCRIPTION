@@ -1,6 +1,6 @@
 Package: detectseparation
 Title: Detect and Check for Separation and Infinite Maximum Likelihood Estimates
-Version: 0.2.999
+Version: 0.3
 Authors@R: c(person(given = "Ioannis", family = "Kosmidis", role = c("aut", "cre"), email = "ioannis.kosmidis@warwick.ac.uk", comment = c(ORCID = "0000-0003-1556-0302")),
              person(given = "Dirk", family = "Schumacher", role = "aut", email = "mail@dirk-schumacher.net"),
              person(given = "Florian", family = "Schwendinger", role = "aut", email = "FlorianSchwendinger at gmx.at"),
@@ -18,7 +18,7 @@ Depends:
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Suggests: 
     knitr, rmarkdown, covr, brglm2, AER, tinytest,
     ROI.plugin.ecos, ROI.plugin.glpk, ROI.plugin.alabama, ROI.plugin.neos
