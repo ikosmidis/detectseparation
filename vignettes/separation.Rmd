@@ -1,6 +1,6 @@
 ---
 title: "Detect/check for separation and infinite maximum likelihood estimates in logistic regression"
-author: "[Ioannis Kosmidis](http://www.ikosmidis.com) and [Dirk Schumacher](http://www.dirk-schumacher.net)"
+author: "[Ioannis Kosmidis](https://www.ikosmidis.com) and [Dirk Schumacher](https://www.dirk-schumacher.net)"
 date: "5 January 2020"
 output: rmarkdown::html_vignette
 bibliography: detectseparation.bib
@@ -63,7 +63,7 @@ ratios diverges, then the maximum likelihood estimate of the
 corresponding parameter is minus or plus infinity. The following code
 chunk applies this process to `endo_glm`.
 
-```{r, echo = TRUE, eval = TRUE}
+```{r, echo = TRUE, eval = TRUE }
 (inf_check <- check_infinite_estimates(endo_glm))
 plot(inf_check)
 ```
@@ -83,7 +83,7 @@ Kjell Konis [@konis:2007].
 need to estimate the model to detect separation and/or identify
 infinite estimates. For example
 
-```{r, eval = TRUE, echo = TRUE}
+```{r, endo_sep, eval = TRUE, echo = TRUE}
 endo_sep <- glm(HG ~ NV + PI + EH, data = endometrial,
                 family = binomial("logit"),
                 method = "detect_separation")

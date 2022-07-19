@@ -2,7 +2,6 @@
 % Please edit documentation in R/check_infinite_estimates.R
 \name{check_infinite_estimates.glm}
 \alias{check_infinite_estimates.glm}
-\alias{checkInfiniteEstimates}
 \title{A simple diagnostic of whether the maximum likelihood estimates are
 infinite}
 \usage{
@@ -31,7 +30,7 @@ A simple diagnostic of whether the maximum likelihood estimates are
 infinite
 }
 \details{
-\code{check_infinite_estimates} attempts to identify the occurrence
+\code{check_infinite_estimates}() attempts to identify the occurrence
 of infinite estimates in GLMs with binomial responses by
 successively refitting the model. At each iteration the maximum
 number of allowed IWLS iterations is fixed starting from 1 to
@@ -46,11 +45,11 @@ quasi-complete separation occurs and the maximum likelihood
 estimate for the corresponding parameter has value minus or plus
 infinity.
 
-\code{check_infinite_estimates} can also be used to identify the
+\code{check_infinite_estimates}() can also be used to identify the
 occurrence of infinite estimates in baseline category logit models
-for nominal responses (see \code{\link[brglm2]{brmultinom}} from the
-\pkg{brglm2} R package), and adjacent category logit models for
-ordinal responses (see \code{\link[brglm2]{bracl}} from the
+for nominal responses (see \code{\link[brglm2]{brmultinom}()} from
+the \pkg{brglm2} R package), and adjacent category logit models for
+ordinal responses (see \code{\link[brglm2]{bracl}()} from the
 \pkg{brglm2} R package).
 }
 \note{
@@ -64,26 +63,26 @@ are infinite. The reduced-bias estimates can be computed using the
 }
 \examples{
 
-## endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
+# endometrial data from Heinze \& Schemper (2002) (see ?endometrial)
 data("endometrial", package = "detectseparation")
 endometrial_ml <- glm(HG ~ NV + PI + EH, data = endometrial,
                       family = binomial("probit"))
-## clearly the maximum likelihood estimate for the coefficient of
-## NV is infinite
+# clearly the maximum likelihood estimate for the coefficient of
+# NV is infinite
 (estimates <- check_infinite_estimates(endometrial_ml))
 plot(estimates)
 
 
 \donttest{
-## Aligator data (Agresti, 2002, Table~7.1)
+# Aligator data (Agresti, 2002, Table~7.1)
 if (requireNamespace("brglm2", quietly = TRUE)) {
     data("alligators", package = "brglm2")
     all_ml <- brglm2::brmultinom(foodchoice ~ size + lake , weights = round(freq/3),
                          data = alligators, type = "ML", ref = 1)
-    ## Clearly some estimated standard errors diverge as the number of
-    ## Fisher scoring iterations increases
+    # Clearly some estimated standard errors diverge as the number of
+    # Fisher scoring iterations increases
     plot(check_infinite_estimates(all_ml))
-    ## Bias reduction the brglm2 R packages can be used to get finite estimates
+    # Bias reduction the brglm2 R packages can be used to get finite estimates
     all_br <- brglm2::brmultinom(foodchoice ~ size + lake , weights = round(freq/3),
                          data = alligators, ref = 1)
     plot(check_infinite_estimates(all_br))

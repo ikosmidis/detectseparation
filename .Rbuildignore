@@ -6,3 +6,8 @@ inst/scratch
 ^codecov\.yml$
 ^CRAN-RELEASE$
 ^\.github$
+vignettes/Makefile
+work
+^.*\.tar\.gz
+Manual.pdf
+Makefile
