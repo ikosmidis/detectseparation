@@ -11,3 +11,4 @@ work
 ^.*\.tar\.gz
 Manual.pdf
 Makefile
+^CRAN-SUBMISSION$

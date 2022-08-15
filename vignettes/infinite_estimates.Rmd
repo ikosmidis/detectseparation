@@ -94,7 +94,7 @@ method (a detailed explanation of the output can be found in [Section 3](#output
 glm(y ~ a + b, data = data, family = binomial("logit"), method = "detect_separation")
 ```
 
-Since separation is a property of the data, checking for seperation gives the
+Since separation is a property of the data, checking for separation gives the
 same result for the logistic regression and the LBRM.
 
 ```{r, tiny_example_sep_lbrm}

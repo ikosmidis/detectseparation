@@ -47,7 +47,7 @@
 #' }
 #'
 #' @source The packaged data set was downloaded in \code{.dat} format
-#'     from \url{https://www.stat.ufl.edu/~aa/glm/data}. The latter
+#'     from \url{https://users.stat.ufl.edu/~aa/glm/data/}. The latter
 #'     link provides the data sets used in Agresti (2015).
 #'
 #'     The endometrial data set was first analyzed in Heinze and
@@ -57,8 +57,8 @@
 #' @seealso
 #'
 #' \code{\link[brglm2]{brglm_fit}}
-#' 
-#'  
+#'
+#'
 #' @references
 #'
 #' Agresti, A. (2015). *Foundations of Linear and Generalized Linear
@@ -86,7 +86,7 @@
 #'
 #' @references
 #'
-#' Silvapulle, M. J. (1981). 
+#' Silvapulle, M. J. (1981).
 #' On the Existence of Maximum Likelihood Estimators for the Binomial Response Models.
 #' Journal of the Royal Statistical Society. Series B (Methodological), 43(3), 310–313.
 #' \url{https://www.jstor.org/stable/2984941}

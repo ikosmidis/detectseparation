@@ -21,7 +21,7 @@ silvapulle1981
 Separation example presented in Silvapulle (1981).
 }
 \references{
-Silvapulle, M. J. (1981). 
+Silvapulle, M. J. (1981).
 On the Existence of Maximum Likelihood Estimators for the Binomial Response Models.
 Journal of the Royal Statistical Society. Series B (Methodological), 43(3), 310–313.
 \url{https://www.jstor.org/stable/2984941}
