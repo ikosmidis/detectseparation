@@ -9,11 +9,11 @@
 detect_infinite_estimates(
   x,
   y,
-  weights = rep.int(1, nobs),
+  weights = NULL,
   start = NULL,
   etastart = NULL,
   mustart = NULL,
-  offset = rep.int(0, nobs),
+  offset = NULL,
   family = gaussian(),
   control = list(),
   intercept = TRUE,
@@ -23,11 +23,11 @@ detect_infinite_estimates(
 detectInfiniteEstimates(
   x,
   y,
-  weights = rep.int(1, nobs),
+  weights = NULL,
   start = NULL,
   etastart = NULL,
   mustart = NULL,
-  offset = rep.int(0, nobs),
+  offset = NULL,
   family = gaussian(),
   control = list(),
   intercept = TRUE,
@@ -78,22 +78,20 @@ the maximum likelihood estimates of generalized linear models
 with binomial responses.
 }
 \details{
-In contrast to links like the \code{"logit"}, \code{"probit"}, and
-\code{"cauchit"}, for models with \code{"log"} link, separated data
-allocations do not necessarily lead to infinite maximum likelihood
-estimates.
-
-For this reason, for models with the \code{"log"} link
+For binomial-response generalized linear models with \code{"log"}
+link, separated data allocations do not necessarily lead to
+infinite maximum likelihood estimates. For this reason, for models
+with the \code{"log"} link
 \code{\link{detect_infinite_estimates}()} relies on an alternative
 linear optimization model developed in Schwendinger et al. (2021),
 and for all the other supported links it relies on the linear
-programming methods developed in Konis (2007).
+programming methods developed in Konis (2007). See
+\code{\link{detect_separation}()} for definitions and details.
 
 \code{\link{detect_infinite_estimates}()} is a wrapper to the
-\code{separator_ROI} function and \code{separator_lpSolveAPI}
-function (a modified version of the \code{separator()} function from
-the **safeBinaryRegression** R
-package).
+functions \code{separator_ROI()}, \code{separator_lpSolveAPI()} (a
+modified version of the \code{separator()} function from the
+**safeBinaryRegression** R package), and \code{dielb_ROI()}.
 
 The \code{\link{coefficients}()} method extracts a vector of values
 for each of the model parameters under the following convention:
@@ -148,6 +146,9 @@ Schwendinger, F., Grün, B. & Hornik, K. (2021). A comparison of
 optimization solvers for log binomial regression including conic
 programming.  *Computational Statistics*, **36**,
 1721–1754. \doi{10.1007/s00180-021-01084-5}
+}
+\seealso{
+\code{\link{glm.fit}} and \code{\link{glm}}, \code{\link{detect_separation}}, \code{\link{check_infinite_estimates}}, \code{\link[brglm2]{brglm_fit}}
 }
 \author{
 Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Florian Schwendinger [aut] \email{FlorianSchwendinger@gmx.at}, Dirk Schumacher [aut] \email{mail@dirk-schumacher.net}, Kjell Konis [ctb] \email{kjell.konis@me.com}

@@ -9,11 +9,11 @@
 detect_separation(
   x,
   y,
-  weights = rep.int(1, nobs),
+  weights = NULL,
   start = NULL,
   etastart = NULL,
   mustart = NULL,
-  offset = rep.int(0, nobs),
+  offset = NULL,
   family = gaussian(),
   control = list(),
   intercept = TRUE,
@@ -23,11 +23,11 @@ detect_separation(
 detectSeparation(
   x,
   y,
-  weights = rep.int(1, nobs),
+  weights = NULL,
   start = NULL,
   etastart = NULL,
   mustart = NULL,
-  offset = rep.int(0, nobs),
+  offset = NULL,
   family = gaussian(),
   control = list(),
   intercept = TRUE,
@@ -93,7 +93,7 @@ relies on the linear programming methods developed in Konis (2007).
 Following the definitions in Albert and Anderson (1984), the data
 for a binomial-response generalized linear model with logistic link
 exhibit quasi-complete separation if there exists a non-zero
-parameter vector \eqn{\beta} such that \eqn{X^0 \beta \le 0}and
+parameter vector \eqn{\beta} such that \eqn{X^0 \beta \le 0} and
 \eqn{X^1 \beta \ge 0}, where \eqn{X^0} and \eqn{X^1} are the
 matrices formed by the rows of the model matrix $X$ corresponding
 to zero and non-zero responses, respectively. The data exhibits
@@ -103,7 +103,7 @@ inequalities. If there are no vectors \eqn{\beta} that can satisfy the
 conditions, then the data points are said to overlap.
 
 If the inverse link function \eqn{G(t)} of a generalized linear
-models with binomial responses is such that \eqn{\log G(t)} and
+model with binomial responses is such that \eqn{\log G(t)} and
 \eqn{\log (1 - G(t))} are concave and the model has an intercept
 parameter, then overlap is a necessary and sufficient condition for
 the maximum likelihood estimates to be finite (see Silvapulle, 1981
@@ -152,14 +152,17 @@ are infinite. The reduced-bias estimates can be computed using the
 \code{\link{detect_separation}} was designed in 2017 by Ioannis
 Kosmidis for the **brglm2** R package, after correspondence with
 Kjell Konis, and a port of the \code{separator} function had been
-included in **brglm2** under the permission of Kjell Konis.
-
-In 2020, \code{\link{detect_separation}} and
+included in **brglm2** under the permission of Kjell Konis. In
+2020, \code{\link{detect_separation}} and
 \code{\link{check_infinite_estimates}} were moved outside
-**brglm2** into the dedicated **detectseparation** package. Dirk Schumacher
-authored the \code{separator_ROI} function, which depends on the
-**ROI** R package and is now the default implementation used for
-detecting separation.
+**brglm2** into the dedicated **detectseparation** package. Dirk
+Schumacher authored the \code{separator_ROI} function, which
+depends on the **ROI** R package and is now the default
+implementation used for detecting separation. In 2022, Florian
+Schwendinger authored the \code{dielb_ROI} function for detecting
+infinite estimates in log-binomial regression, and, with Ioannis
+Kosmidis, they refactored the codebase to properly accommodate for
+the support of log-binomial regression.
 }
 \examples{
 
@@ -185,7 +188,7 @@ if (requireNamespace("AER", quietly = TRUE)) {
     # which is also evident by the large estimated standard error for NV
     murder_glm <- update(murder_sep, method = "glm.fit")
     summary(murder_glm)
-    # and is also reveal by the divergence of the NV column of the
+    # and is also revealed by the divergence of the NV column of the
     # result from the more computationally intensive check
     plot(check_infinite_estimates(murder_glm))
     # Mean bias reduction via adjusted scores results in finite estimates
@@ -219,7 +222,7 @@ programming.  *Computational Statistics*, **36**,
 1721–1754. \doi{10.1007/s00180-021-01084-5}
 }
 \seealso{
-\code{\link{glm.fit}} and \code{\link{glm}}, \code{\link{check_infinite_estimates}}, \code{\link[brglm2]{brglm_fit}},
+\code{\link{glm.fit}} and \code{\link{glm}}, \code{\link{detect_infinite_estimates}}, \code{\link{check_infinite_estimates}}, \code{\link[brglm2]{brglm_fit}}
 }
 \author{
 Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Dirk Schumacher [aut] \email{mail@dirk-schumacher.net}, Florian Schwendinger [aut] \email{FlorianSchwendinger@gmx.at}, Kjell Konis [ctb] \email{kjell.konis@me.com}
