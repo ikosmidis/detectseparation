@@ -13,7 +13,7 @@
 #' @docType package
 #' @name detectseparation
 #' @import ROI.plugin.lpsolve
-#' @importFrom stats coef coefficients gaussian update vcov sd
+#' @importFrom stats coef coefficients gaussian update vcov sd binomial nobs
 #' @importFrom graphics matplot
 #'
 NULL

@@ -20,7 +20,7 @@ A data frame with 79 rows and 4 variables:
 }
 \source{
 The packaged data set was downloaded in \code{.dat} format
-    from \url{http://www.stat.ufl.edu/~aa/glm/data}. The latter
+    from \url{https://users.stat.ufl.edu/~aa/glm/data/}. The latter
     link provides the data sets used in Agresti (2015).
 
     The endometrial data set was first analyzed in Heinze and

@@ -6,7 +6,7 @@
 status](https://www.r-pkg.org/badges/version/detectseparation)](https://CRAN.R-project.org/package=detectseparation)
 [![R-CMD-check](https://github.com/ikosmidis/detectseparation/workflows/R-CMD-check/badge.svg)](https://github.com/ikosmidis/detectseparation/actions)
 [![Codecov test
-coverage](https://codecov.io/gh/ikosmidis/detectseparation/branch/master/graph/badge.svg)](https://codecov.io/gh/ikosmidis/detectseparation?branch=master)
+coverage](https://app.codecov.io/gh/ikosmidis/detectseparation/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ikosmidis/detectseparation?branch=master)
 [![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 <!-- badges: end -->
 

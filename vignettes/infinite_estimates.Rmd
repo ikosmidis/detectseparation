@@ -1,0 +1,253 @@
+---
+title: "Detecting separation and infinite estimates in log binomial regression"
+author: "Florian Schwendinger"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    number_sections: true
+bibliography: detectseparation.bib
+link-citations: yes
+vignette: >
+  %\VignetteIndexEntry{Detecting separation and infinite estimates in log binomial regression}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 6,
+  fig.height = 6
+)
+```
+
+
+# Introduction
+In contrast to logistic regression in log-binomial regression, separation is not
+the only factor which decides if the maximum likelihood estimate (MLE) has
+infinite components.
+As we will see in the example below, for the log-binomial regression model (LBRM)
+there exist data configurations which are separated but the MLE still exists.
+
+The MLE of the LBRM can be obtained by solving the following optimization problem.
+$$
+\begin{equation}
+    \begin{array}{rl}
+    \underset{\beta}{\textrm{maximize}} &
+    \ell(\beta) = \displaystyle\sum_{i = 1}^n y_i ~ X_{i*} \beta + (1 - y_i) ~  \log(1 - \exp(X_{i*} \beta)) \ \ \ \
+    \textrm{s.t.} &
+    X \beta \leq 0.
+    \end{array}
+\end{equation}
+$$
+
+From the optimization problem we can already guess that the different behavior 
+with regard to the existence of the MLE is caused by the linear constraint
+$X \beta \leq 0$.
+
+
+Let $X^0$ be the submatrix of $X$ obtained by keeping only the rows
+$I^0 = \{i|y_i = 0\}$ and $X^1$ the submatrix obtained by keeping only
+the rows $I^1 = \{i|y_i = 1\}$.
+@schwendinger+gruen+hornik:2021 pointed out that the finiteness of the MLE 
+can be checked by solving the following linear optimization problem.
+
+$$
+\begin{equation}
+\begin{array}{rll}
+  \underset{\beta}{\text{maximize}}~~  &
+    - \sum_{i \in I^0} X_{i*} \beta \\
+  \text{subject to}~~  &
+    X^0 \beta \leq 0 \\
+  & X^1 \beta = 0.
+\end{array}
+\end{equation}
+$$
+The MLE has only finite components if the solution of this linear program is a
+zero vector. If the MLE contains infinite components, the linear programming problem
+is unbounded. The function `detect_infinite_estimates()` from the **detectseparation** 
+implements the LP problem described above and can therefore be used to detect
+infinite components in the MLE of the LBRM. 
+
+```{r, echo = TRUE, eval = TRUE}
+library("detectseparation")
+```
+
+---
+
+# Example
+To show the different effect of separation on the logistic regression model
+compared to the LBRM consider the following data.
+```{r, tiny_example}
+data <- data.frame(a = c(1, 0, 3, 2, 3, 4),
+                   b = c(2, 1, 1, 4, 6, 8),
+                   y = c(0, 0, 0, 1, 1, 1))
+```
+
+## Detect separation
+
+Clearly the data is separated, which can be verified by using the `detect_separation`
+method (a detailed explanation of the output can be found in [Section 3](#output_details)).
+
+```{r, tiny_example_sep}
+glm(y ~ a + b, data = data, family = binomial("logit"), method = "detect_separation")
+```
+
+Since separation is a property of the data, checking for separation gives the
+same result for the logistic regression and the LBRM.
+
+```{r, tiny_example_sep_lbrm}
+glm(y ~ a + b, data = data, family = binomial("log"), method = "detect_separation")
+```
+
+## Detect infinite estimates
+
+For logistic regression separation is necessary and sufficient that the MLE 
+contains infinite components.
+
+```{r, tiny_example_inf_est}
+glm(y ~ a + b, data = data, family = binomial("logit"), method = "detect_infinite_estimates")
+```
+
+However, due to the linear constraint of the LBRM, there exists data allocations where
+the MLE does exist (i.e., has only finite components), despite the fact that
+the data is separated.
+
+```{r}
+glm(y ~ a + b, data = data, family = binomial("log"), method = "detect_infinite_estimates")
+```
+
+## Fitting the LBRM
+
+Using `glm` to solve this problem we get the following error message.
+
+```{r, glm_fit}
+fit <- try(glm(y ~ a + b, data = data, family = binomial("log")))
+```
+
+The error message means that we should provide starting values, a simple
+but reliable approach is to use $(-1, 0, ..., 0)$ as starting value.
+
+Since in this example one of the constraints $X_{i*} \beta \leq 0$
+is by design binding, the iteratively re-weighted least squares (IRLS)
+method used by the `glm` function has convergence problems.
+The `glm` function informs us about the convergence problems by
+issuing some warnings. The warnings 
+
+```
+#> Warning: step size truncated: out of bounds
+#> Warning: glm.fit: algorithm stopped at boundary value
+```
+
+tell us that IRLS is not the best option for optimization problems with binding constraints.
+The warning 
+
+```
+#> Warning: glm.fit: algorithm did not converge
+```
+
+tell us that the algorithm did not converge. Practically in most cases this just means
+the default value for the maximum number of iterations should be increased.
+
+
+```{r}
+args(glm.control)
+```
+Since the default value for the maximum number of iterations is quite low (`maxit = 25`).
+However, `maxit = 25` is typically high enough for unbounded optimization problems 
+(almost all models supported by `glm`), but is often to low for the LBRM.
+For most data sets setting `maxit = 10000` when estimating LBRMs is high enough.
+
+```{r, tiny_example_inf_esti_log_separation}
+formula <- y ~ a + b
+start <- c(-1, double(ncol(model.matrix(formula, data = data)) - 1L))
+ctrl = glm.control(epsilon = 1e-8, maxit = 10000, trace = FALSE)
+suppressWarnings(
+  fit <- glm(formula, data = data, family = binomial("log"), start = start, control = ctrl)
+)
+summary(fit)
+```
+
+We can verify that one of the constraints $X_{i*} \beta \leq 0$ is binding
+(i.e., $X_{i*} \beta = 0$ for at least one $i$) by multiplying the
+coefficients with the model matrix.
+```{r}
+print(mm <- drop(model.matrix(formula, data) %*% coef(fit)))
+abs(drop(mm)) < 1e-6
+```
+
+---
+
+# Details on the output{#output_details}
+
+## Detect separation
+
+```{r, explain_output_detect_separation}
+glm(y ~ a + b, data = data, family = binomial("logit"), method = "detect_separation")
+```
+
+The output above provides much information:
+
+1. The output shows, that for the verification oft the separation the linear optimization solver **lpsolve** was used.  
+2. The line `Separation: TRUE` indicates that the data is separated.
+3. The coefficients at `Inf` and `-Inf` indicate that the underlying optimization problem is unbounded and therefore the MLE does not exist for the logistic regression model.
+
+## Detect infinite estimates
+
+```{r, explain_output_detect_infinite_estimates}
+glm(y ~ a + b, data = data, family = binomial("log"), method = "detect_infinite_estimates")
+```
+
+The output above provides much information:
+
+1. The output shows, that for the verification oft the separation the linear optimization solver **lpsolve** was used.  
+2. The line `Infinite estimates: FALSE` indicates that the MLE has only finite components (the MLE exists).
+3. The coefficients are all `0` which again indicates that the MLE has only finite components
+and therefore underlying optimization problem is bounded.
+
+---
+
+# Choosing starting values
+For the LBRM the `glm` function often requires the users to specify starting values.
+Valid starting values have to reside in the interior of the feasible region ($X \beta < 0$).
+There have been different methods suggested for finding valid starting values.
+
+## Simple approach
+If an intercept is present in the estimation `(-1, 0, ..., 0)` will always provide 
+valid starting values.
+```{r}
+find_start_simple <- function(formula, data) {
+  c(-1, double(ncol(model.matrix(formula, data = data)) - 1L))  
+}
+
+find_start_simple(formula, data)
+max(model.matrix(formula, data = data) %*% find_start_simple(formula, data))
+```
+
+## Hot start via Poisson model
+@andrade+andrade2018 suggest a hot start method, by using the modified estimation result
+of a Poisson model with log link as starting values. Again this method only works if an
+intercept is used.
+```{r}
+find_start_poisson <- function(formula, data, delta = 1) {
+  b0 <- coef(glm(formula, data, family = poisson(link = "log")))
+  mX <- -model.matrix(formula, data = data)[, -1L, drop = FALSE]
+  b0[1] <- min(mX %*% b0[-1]) - delta
+  b0
+}
+
+find_start_poisson(formula, data)
+max(model.matrix(formula, data = data) %*% find_start_poisson(formula, data))
+```
+
+## Recommendation
+One can also solve an LP to find valid start values or think of other strategies.
+However, for the benchmark examples reported in @schwendinger+gruen+hornik:2021
+we found no conclusive evidence that one of these initialization methods outperforms
+the others. Therefore, my personal favorite is the simple approach `(-1, 0, ..., 0)`.
+
+
+---
+
+# References
