@@ -1,5 +1,8 @@
-# detectseparation 0.4
+# detectseparation 0.3.0.111
 
+## Other improvements, updates and additions
+
++ Updated CI workflow
 
 # detectseparation 0.3
 
