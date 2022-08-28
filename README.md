@@ -27,11 +27,11 @@ You can install the released version of detectseparation from
 install.packages("detectseparation")
 ```
 
-And the development version from [GitHub](https://github.com/) with:
+and the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("ikosmidis/detectseparation")
+devtools::install_github("ikosmidis/detectseparation", ref = "develop")
 ```
 
 ## Detecting and checking for Infinite maximum likelihood estimates
