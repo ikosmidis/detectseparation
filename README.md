@@ -16,7 +16,8 @@ provides *pre-fit* and *post-fit* methods for the detection of
 separation and of infinite maximum likelihood estimates in binomial
 response generalized linear models.
 
-The key methods are `detect_separation` and `check_infinite_estimates`.
+The key methods are `detect_infinite_estimates`, `detect_separation` and
+`check_infinite_estimates`.
 
 ## Installation
 
