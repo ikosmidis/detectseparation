@@ -2,6 +2,7 @@
 % Please edit documentation in R/detectseparation-package.R
 \docType{package}
 \name{detectseparation}
+\alias{detectseparation-package}
 \alias{detectseparation}
 \title{detectseparation: Methods for Detecting and Checking for Separation
 and Infinite Maximum Likelihood Estimates}
@@ -16,4 +17,19 @@ The key methods are \code{\link{detect_separation}} and
 }
 \seealso{
 \code{\link{detect_separation}}, \code{\link{check_infinite_estimates}}
+}
+\author{
+\strong{Maintainer}: Ioannis Kosmidis \email{ioannis.kosmidis@warwick.ac.uk} (\href{https://orcid.org/0000-0003-1556-0302}{ORCID})
+
+Authors:
+\itemize{
+  \item Dirk Schumacher \email{mail@dirk-schumacher.net}
+  \item Florian Schwendinger \email{FlorianSchwendinger@gmx.at}
+}
+
+Other contributors:
+\itemize{
+  \item Kjell Konis \email{kjell.konis@me.com} [contributor]
+}
+
 }

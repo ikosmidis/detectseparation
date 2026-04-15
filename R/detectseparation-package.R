@@ -10,13 +10,12 @@
 #'
 #' @seealso \code{\link{detect_separation}}, \code{\link{check_infinite_estimates}}
 #'
-#' @docType package
 #' @name detectseparation
 #' @import ROI.plugin.lpsolve
 #' @importFrom stats coef coefficients gaussian update vcov sd binomial nobs
 #' @importFrom graphics matplot
 #'
-NULL
+"_PACKAGE"
 
 #' Generic method for checking for infinite estimates
 #' @param object a fitted model object (e.g. the result of a
