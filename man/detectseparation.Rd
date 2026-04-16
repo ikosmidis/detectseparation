@@ -12,11 +12,11 @@ the detection of separation and of infinite maximum likelihood
 estimates in binomial response generalized linear models.
 }
 \details{
-The key methods are \code{\link{detect_separation}} and
-\code{\link{check_infinite_estimates}}.
+The key methods are \code{\link[=detect_separation]{detect_separation()}} and
+\code{\link[=check_infinite_estimates]{check_infinite_estimates()}}.
 }
 \seealso{
-\code{\link{detect_separation}}, \code{\link{check_infinite_estimates}}
+\code{\link[=detect_separation]{detect_separation()}}, \code{\link[=check_infinite_estimates]{check_infinite_estimates()}}
 }
 \author{
 \strong{Maintainer}: Ioannis Kosmidis \email{ioannis.kosmidis@warwick.ac.uk} (\href{https://orcid.org/0000-0003-1556-0302}{ORCID})

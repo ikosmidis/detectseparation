@@ -18,45 +18,43 @@
 #' infinite
 #'
 #'
-#' @param object the result of a \code{\link{glm}} call.
-#' @param nsteps starting from \code{maxit = 1}, the GLM is refitted
-#'     for \code{maxit = 2}, \code{maxit = 3}, \ldots, \code{maxit =
-#'     nsteps}. Default value is 30.
+#' @param object the result of a [glm()] call.
+#' @param nsteps starting from `maxit = 1`, the GLM is refitted
+#'     for `maxit = 2`, `maxit = 3`, \ldots, `maxit =
+#'     nsteps`. Default value is `20`.
 #' @param ... currently not used.
 #'
 #' @return
 #'
-#' An object of class \code{inf_check} that has a \code{plot} method.
+#' An object of class `inf_check` that has a [plot()] method.
 #'
 #' @details
 #'
-#' \code{check_infinite_estimates}() attempts to identify the occurrence
+#' [check_infinite_estimates()] attempts to identify the occurrence
 #' of infinite estimates in GLMs with binomial responses by
 #' successively refitting the model. At each iteration the maximum
 #' number of allowed IWLS iterations is fixed starting from 1 to
-#' \code{nsteps} (by setting \code{control = glm.control(maxit = j)},
-#' where \code{j} takes values 1, \ldots, nsteps in
-#' \code{\link{glm}}). For each value of \code{maxit}, the estimated
+#' `nsteps` (by setting `control = glm.control(maxit = j)`,
+#' where `j` takes values `1, ..., nsteps` in
+#' [glm()]. For each value of `maxit`, the estimated
 #' asymptotic standard errors are divided to the corresponding ones
-#' from \code{control = glm.control(maxit = 1)}. Then, based on the
+#' from `control = glm.control(maxit = 1)`. Then, based on the
 #' results in Lesaffre & Albert (1989), if the sequence of ratios in
 #' any column of the resultant matrix diverges, then complete or
 #' quasi-complete separation occurs and the maximum likelihood
 #' estimate for the corresponding parameter has value minus or plus
 #' infinity.
 #'
-#' \code{check_infinite_estimates}() can also be used to identify the
+#' [check_infinite_estimates()] can also be used to identify the
 #' occurrence of infinite estimates in baseline category logit models
-#' for nominal responses (see \code{\link[brglm2]{brmultinom}()} from
-#' the \pkg{brglm2} R package), and adjacent category logit models for
-#' ordinal responses (see \code{\link[brglm2]{bracl}()} from the
-#' \pkg{brglm2} R package).
+#' for nominal responses (see [brglm2::brmultinom()]), and adjacent category
+#' logit models for ordinal responses (see [brglm2::bracl()]).
 #'
 #' @return
 #'
-#' A matrix inheriting from class \code{inf_check}, with \code{nsteps}
-#' rows and \code{p} columns, where \code{p} is the number of model
-#' parameters. A \code{plot} method is provided for \code{inf_check}
+#' A matrix inheriting from class `inf_check`, with `nsteps`
+#' rows and `p` columns, where `p` is the number of model
+#' parameters. A [plot()] method is provided for `inf_check`
 #' objects for the easy inspection of the ratios of the standard
 #' errors.
 #'
@@ -70,10 +68,10 @@
 #' are infinite. The reduced-bias estimates can be computed using the
 #' \pkg{brglm2} R package.
 #'
-#' @seealso \code{\link[nnet]{multinom}},
-#'     \code{\link{detect_separation}},
-#'     \code{\link[brglm2]{brmultinom}},
-#'     \code{\link[brglm2]{bracl}}
+#' @seealso [nnet::multinom()],
+#'     [detect_separation()],
+#'     [brglm2::brmultinom()],
+#'     [brglm2::bracl()]
 #'
 #' @references
 #'

@@ -5,10 +5,10 @@
 #' the detection of separation and of infinite maximum likelihood
 #' estimates in binomial response generalized linear models.
 #'
-#' The key methods are \code{\link{detect_separation}} and
-#' \code{\link{check_infinite_estimates}}.
+#' The key methods are [detect_separation()] and
+#' [check_infinite_estimates()].
 #'
-#' @seealso \code{\link{detect_separation}}, \code{\link{check_infinite_estimates}}
+#' @seealso [detect_separation()], [check_infinite_estimates()]
 #'
 #' @name detectseparation
 #' @import ROI.plugin.lpsolve
@@ -19,7 +19,7 @@
 
 #' Generic method for checking for infinite estimates
 #' @param object a fitted model object (e.g. the result of a
-#'     \code{\link{glm}} call).
+#'     [glm()] call).
 #' @param ... other options to be passed to the method.
 #'
 #' @seealso check_infinite_estimates.glm

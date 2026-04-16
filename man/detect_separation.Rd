@@ -63,7 +63,7 @@ detectSeparation(
     family functions.)}
 
 \item{control}{a list of parameters controlling separation
-detection. See \code{\link{detect_separation_control}()} for
+detection. See \code{detect_separation_control()} for
 details.}
 
 \item{intercept}{logical. Should an intercept be included in the
@@ -73,24 +73,25 @@ details.}
 error.}
 }
 \value{
-A list that inherits from class \code{detect_separation},
-\code{glm} and \code{lm}. A \code{print} method is provided for
-\code{detect_separation} objects. If
+A list that inherits from class \code{\link{detect_separation}},
+\code{\link{glm}} and \code{\link{lm}}. A \code{print} method is provided for
+\code{\link{detect_separation}} objects. If
 \code{detect_separation_control(separation_type = TRUE)} is used and
-separation is detected, then the returned object has a
-\code{complete} component, which is \code{TRUE} for complete
-separation and \code{FALSE} for quasi-complete separation.
+separation is detected, then the returned object has a \code{complete}
+component, which is \code{TRUE} for complete separation and \code{FALSE} for
+quasi-complete separation. Otherwise, the \code{complete} component is
+\code{NULL}.
 }
 \description{
-Method for \code{\link{glm}} that tests for data separation and
+Method for \code{\link[=glm]{glm()}} that tests for data separation and
 finds which parameters have infinite maximum likelihood estimates
 in generalized linear models with binomial responses
 
-\code{\link{detect_separation}()} is a method for \code{\link{glm}}
+\code{\link[=detect_separation]{detect_separation()}} is a method for \code{\link[=glm]{glm()}}
 that tests for the occurrence of complete or quasi-complete
 separation in datasets for binomial response generalized linear
 models, and finds which of the parameters will have infinite
-maximum likelihood estimates. \code{\link{detect_separation}()}
+maximum likelihood estimates. \code{\link[=detect_separation]{detect_separation()}}
 relies on the linear programming methods developed in Konis (2007).
 }
 \details{
@@ -114,26 +115,26 @@ the maximum likelihood estimates to be finite (see Silvapulle, 1981
 for a proof). Such link functions are, for example, the logit,
 probit and complementary log-log.
 
-\code{\link{detect_separation}()} determines whether or not the
+\code{\link[=detect_separation]{detect_separation()}} determines whether or not the
 data exhibits (quasi-)complete separation. Then, if separation is
 detected and the link function \eqn{G(t)} is such that \eqn{\log
 G(t)} and \eqn{\log (1 - G(t))} are concave, the maximum likelihood
 estimates has infinite components.
 
-\code{\link{detect_separation}()} is a wrapper to the
-\code{\link{detect_infinite_estimates}()} method. Separation
+\code{\link[=detect_separation]{detect_separation()}} is a wrapper to the
+\code{\link[=detect_infinite_estimates]{detect_infinite_estimates()}} method. Separation
 detection, as separation is defined above, takes place using the
 linear programming methods in Konis (2007) regardless of the link
 function. The output of those methods is also used to determine
-which estimates are infinite, unless the link is "log". In the
+which estimates are infinite, unless the link is \code{"log"}. In the
 latter case the linear programming methods in Schwendinger et
 al. (2021) are called to establish if and which estimates are
-infinite. If the link function is not one of `"logit"`, `"log"`,
-`"probit"`, `"cauchit"`, `"cloglog"` then a warning is issued.
+infinite. If the link function is not one of \code{"logit"}, \code{"log"},
+\code{"probit"}, \code{"cauchit"}, \code{"cloglog"} then a warning is issued.
 
 If \code{separation_type = TRUE} in
-\code{\link{detect_separation_control}()}, then, whenever
-separation is detected, \code{\link{detect_separation}()} attempts
+\code{detect_separation_control()}, then, whenever
+separation is detected, \code{\link[=detect_separation]{detect_separation()}} attempts
 to distinguish between complete and quasi-complete separation by
 solving an additional linear program that maximizes the minimum
 transformed margin. If \eqn{x_i} is the \eqn{i}th row of the model
@@ -146,13 +147,13 @@ program that is solved maximizes \eqn{t} subject to
 1}. This is equivalent to solving \eqn{\max_\beta \min_i
 (\bar{x}_i^\top \beta)} subject to \eqn{-1 \le \beta_j \le 1} for
 all \eqn{j}. A positive optimal value for \eqn{t} implies complete
-separation, while an optimal value of zero implies only
+separation, while an optimal value of zero implies
 quasi-complete separation provided that separation has already been
 detected. See Konis (2007, Section 1.3 and Chapter 4) for the
 definitions of separation and the transformed linear programming
 formulation.
 
-The \code{\link{coefficients}} method extracts a vector of values
+The \code{\link[=coefficients]{coefficients()}} method extracts a vector of values
 for each of the model parameters under the following convention:
 \code{0} if the maximum likelihood estimate of the parameter is
 finite, and \code{Inf} or \code{-Inf} if the maximum likelihood
@@ -160,10 +161,10 @@ estimate of the parameter if plus or minus infinity. This
 convention makes it easy to adjust the maximum likelihood estimates
 to their actual values by element-wise addition.
 
-\code{\link{detect_separation}()} can be passed directly as
-a method to the \code{\link{glm}} function. See, examples.
+\code{\link[=detect_separation]{detect_separation()}} can be passed directly as
+a method to the \code{\link[=glm]{glm()}} function. See, examples.
 
-\code{detectSeparation}() is an alias for \code{detect_separation}().
+\code{\link[=detectSeparation]{detectSeparation()}} is an alias for \code{\link[=detect_separation]{detect_separation()}}.
 }
 \note{
 For the definition of complete and quasi-complete separation, see
@@ -174,17 +175,17 @@ finite values, even when some of the maximum likelihood estimates
 are infinite. The reduced-bias estimates can be computed using the
 \pkg{brglm2} R package.
 
-\code{\link{detect_separation}} was designed in 2017 by Ioannis
-Kosmidis for the **brglm2** R package, after correspondence with
-Kjell Konis, and a port of the \code{separator} function had been
-included in **brglm2** under the permission of Kjell Konis. In
-2020, \code{\link{detect_separation}} and
-\code{\link{check_infinite_estimates}} were moved outside
-**brglm2** into the dedicated **detectseparation** package. Dirk
-Schumacher authored the \code{separator_ROI} function, which
-depends on the **ROI** R package and is now the default
+\code{\link[=detect_separation]{detect_separation()}} was designed in 2017 by Ioannis
+Kosmidis for the \pkg{brglm2} R package, after correspondence with
+Kjell Konis, and a port of the \code{separator()} function had been
+included in \pkg{brglm2} under the permission of Kjell Konis. In
+2020, \code{\link[=detect_separation]{detect_separation()}} and
+\code{\link[=check_infinite_estimates]{check_infinite_estimates()}} were moved outside
+\strong{brglm2} into the dedicated \strong{detectseparation} package. Dirk
+Schumacher authored the \code{separator_ROI()} function, which
+depends on the \pkg{ROI} R package and is now the default
 implementation used for detecting separation. In 2022, Florian
-Schwendinger authored the \code{dielb_ROI} function for detecting
+Schwendinger authored the \code{dielb_ROI()} function for detecting
 infinite estimates in log-binomial regression, and, with Ioannis
 Kosmidis, they refactored the codebase to properly accommodate for
 the support of log-binomial regression.
@@ -200,9 +201,11 @@ endometrial_sep
 # The maximum likelihood estimate for NV is infinite
 summary(update(endometrial_sep, method = "glm.fit"))
 
-# If we want to futher check for the type of separation (complete
+# If we want to further check for the type of separation (complete
 # or quasi-complete) we can do
-update(endometrial_sep, separation_type = TRUE)
+endometrial_sep_type <- update(endometrial_sep, separation_type = TRUE)
+endometrial_sep
+endometrial_sep_type
 
 \donttest{
 # Example inspired by unpublished microeconometrics lecture notes by
@@ -227,9 +230,9 @@ if (requireNamespace("AER", quietly = TRUE)) {
 }
 }
 \references{
-Konis K. (2007). *Linear Programming Algorithms for Detecting
+Konis K. (2007). \emph{Linear Programming Algorithms for Detecting
 Separated Data in Binary Logistic Regression
-Models*. DPhil. University of Oxford.
+Models}. DPhil. University of Oxford.
 \url{https://ora.ox.ac.uk/objects/uuid:8f9ee0d0-d78e-4101-9ab4-f9cbceed2a2a}
 
 Konis K. (2013). safeBinaryRegression: Safe Binary Regression. R
@@ -238,21 +241,21 @@ package version 0.1-3.
 
 Kosmidis I. and Firth D. (2021). Jeffreys-prior penalty, finiteness
 and shrinkage in binomial-response generalized linear
-models. *Biometrika*, **108**, 71–82. \doi{10.1093/biomet/asaa052}
+models. \emph{Biometrika}, \strong{108}, 71–82. \doi{10.1093/biomet/asaa052}
 
 Silvapulle, M. J. (1981).  On the Existence of Maximum Likelihood
-Estimators for the Binomial Response Models.  *Journal of the Royal
-Statistical Society. Series B (Methodological)*, **43**, 310–313.
+Estimators for the Binomial Response Models.  \emph{Journal of the Royal
+Statistical Society. Series B (Methodological)}, \strong{43}, 310–313.
 \url{https://www.jstor.org/stable/2984941}
 
 Schwendinger, F., Grün, B. & Hornik, K. (2021). A comparison of
 optimization solvers for log binomial regression including conic
-programming.  *Computational Statistics*, **36**,
+programming.  \emph{Computational Statistics}, \strong{36},
 1721–1754. \doi{10.1007/s00180-021-01084-5}
 }
 \seealso{
-\code{\link{glm.fit}} and \code{\link{glm}}, \code{\link{detect_infinite_estimates}}, \code{\link{check_infinite_estimates}}, \code{\link[brglm2]{brglm_fit}}
+\code{\link[=glm]{glm()}}, \code{\link[=detect_infinite_estimates]{detect_infinite_estimates()}}, \code{\link[=check_infinite_estimates]{check_infinite_estimates()}}, \code{\link[brglm2:brglmFit]{brglm2::brglm_fit()}}
 }
 \author{
-Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Dirk Schumacher [aut] \email{mail@dirk-schumacher.net}, Florian Schwendinger [aut] \email{FlorianSchwendinger@gmx.at}, Kjell Konis [ctb] \email{kjell.konis@me.com}
+Ioannis Kosmidis \verb{[aut, cre]} \email{ioannis.kosmidis@warwick.ac.uk}, Dirk Schumacher \verb{[aut]} \email{mail@dirk-schumacher.net}, Florian Schwendinger \verb{[aut]} \email{FlorianSchwendinger@gmx.at}, Kjell Konis \verb{[ctb]} \email{kjell.konis@me.com}
 }

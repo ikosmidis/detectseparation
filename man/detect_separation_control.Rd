@@ -3,8 +3,8 @@
 \name{detect_separation_control}
 \alias{detect_separation_control}
 \alias{detectSeparationControl}
-\title{Auxiliary function for the \code{\link{glm}} interface when
-\code{method} is \code{\link{detect_separation}}.}
+\title{Auxiliary function for the \code{\link[=glm]{glm()}} interface when
+\code{method} is \code{\link[=detect_separation]{detect_separation()}}}
 \usage{
 detect_separation_control(
   implementation = c("ROI", "lpSolveAPI"),
@@ -27,59 +27,62 @@ detectSeparationControl(
 )
 }
 \arguments{
-\item{implementation}{should the implementation using \code{ROI} or
-the implementation using \code{lpSolveAPI} be used? Default is
-\code{ROI}.}
+\item{implementation}{should the implementation using \code{ROI} or the
+implementation using \code{lpSolveAPI} be used? Default is \code{ROI}.}
 
 \item{solver}{should the linear program be solved using the
-\code{"lpsolve"} (using the \pkg{ROI.plugin.lpsolve} package;
-default) or another solver? Alternative solvers are
-\code{"glpk"}, \code{"cbc"}, \code{"clp"}, \code{"cplex"},
-\code{"ecos"}, \code{"gurobi"}, \code{"scs"},
-\code{"symphony"}. If \pkg{ROI.plugin.[solver]} is not
-installed then the user will be prompted to install it before
-continuing.}
+\code{"lpsolve"} (using the \code{ROI.plugin.lpsolve} package; default)
+or another solver? Alternative solvers are \code{"glpk"}, \code{"cbc"},
+\code{"clp"}, \code{"cplex"}, \code{"ecos"}, \code{"gurobi"}, \code{"scs"},
+\code{"symphony"}. If the corresponding package
+\code{ROI.plugin.[solver]} is not installed then the user will be
+prompted to install it before continuing.}
 
-\item{linear_program}{should \code{\link{detect_separation}} solve
-the \code{"primal"} (default) or \code{"dual"} linear program
-for separation detection? Only relevant if \code{implementation
-= "lpSolveAPI"}.}
+\item{linear_program}{should \code{\link[=detect_separation]{detect_separation()}} solve the
+\code{"primal"} (default) or \code{"dual"} linear program for separation
+detection? Only relevant if \code{implementation = "lpSolveAPI"}.}
 
-\item{purpose}{should \code{\link{detect_separation}} simply
-\code{"test"} for separation or also \code{"find"} (default)
-which parameters are infinite? Only relevant if
-\code{implementation = "lpSolveAPI"}.}
+\item{purpose}{should \code{\link[=detect_separation]{detect_separation()}} simply \code{"test"} for
+separation or also \code{"find"} (default) which parameters are
+infinite? Only relevant if \code{implementation = "lpSolveAPI"}.}
 
 \item{tolerance}{maximum absolute variable value from the linear
-program, before separation is declared. Default is
-\code{1e-04}.}
+program, before separation is declared. Default is \code{1e-04}.}
 
 \item{solver_control}{a list with additional control parameters for
 the \code{"solver"}. This is solver specific, so consult the
 corresponding documentation. Default is \code{list()} unless
-\code{solver} is \code{"alabama"} when the default is \code{list(start
-= rep(0, p))}, where p is the number of parameters.}
+\code{solver} is \code{"alabama"} when the default is \code{list(start = rep(0, p))}, where \code{p} is the number of parameters.}
 
-\item{separation_type}{logical. Should \code{\link{detect_separation}}
+\item{separation_type}{logical. Should \code{\link[=detect_separation]{detect_separation()}}
 attempt to distinguish complete from quasi-complete separation
-after separation has been detected? If \code{TRUE} and
-separation is detected, then an additional linear program is
-solved. Default is \code{FALSE}.}
+after separation has been detected? If \code{TRUE} and separation is
+detected, then an additional linear program is solved. Default
+is \code{FALSE}.}
 }
 \value{
 A list with the supplied \code{linear_program}, \code{solver},
-\code{solver_control}, \code{purpose}, \code{tolerance},
-\code{separation_type},
-\code{implementation}, and the matched \code{separator} function
-(according to the value of \code{implementation}).
+\code{solver_control}, \code{purpose}, \code{tolerance}, \code{separation_type},
+and \code{implementation}. The returned list is intended to be passed to
+the \code{control} argument of \code{\link[=detect_separation]{detect_separation()}} and
+\code{\link[=detect_infinite_estimates]{detect_infinite_estimates()}}.
 }
 \description{
-Typically only used internally by \code{\link{detect_separation}}
+Typically only used internally by \code{\link[=detect_separation]{detect_separation()}}
 but may be used to construct a \code{control} argument.
 }
+\examples{
+data("endometrial", package = "detectseparation")
+ctrl <- detect_separation_control(separation_type = TRUE)
+glm(HG ~ NV + PI + EH, data = endometrial,
+    family = binomial("logit"),
+    method = "detect_separation",
+    control = ctrl)
+
+}
 \references{
-Konis K. (2007). *Linear Programming Algorithms for Detecting
-Separated Data in Binary Logistic Regression Models*. DPhil.
+Konis K. (2007). \emph{Linear Programming Algorithms for Detecting
+Separated Data in Binary Logistic Regression Models}. DPhil.
 University of Oxford.
 \url{https://ora.ox.ac.uk/objects/uuid:8f9ee0d0-d78e-4101-9ab4-f9cbceed2a2a}
 }

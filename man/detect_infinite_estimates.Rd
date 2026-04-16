@@ -63,7 +63,7 @@ detectInfiniteEstimates(
     family functions.)}
 
 \item{control}{a list of parameters controlling separation
-detection. See \code{\link{detect_separation_control}} for
+detection. See \code{\link[=detect_separation_control]{detect_separation_control()}} for
 details.}
 
 \item{intercept}{logical. Should an intercept be included in the
@@ -73,43 +73,45 @@ details.}
 error.}
 }
 \description{
-Method for \code{\link{glm}} that detects infinite components in
+Method for \code{\link[=glm]{glm()}} that detects infinite components in
 the maximum likelihood estimates of generalized linear models
 with binomial responses.
 }
 \details{
-For binomial-response generalized linear models with \code{"log"}
-link, separated data allocations do not necessarily lead to
-infinite maximum likelihood estimates. For this reason, for models
-with the \code{"log"} link
-\code{\link{detect_infinite_estimates}()} relies on an alternative
-linear optimization model developed in Schwendinger et al. (2021),
-and for all the other supported links it relies on the linear
-programming methods developed in Konis (2007). See
-\code{\link{detect_separation}()} for definitions and details.
+For binomial-response generalized linear models with \code{"log"} link,
+separated data allocations do not necessarily lead to infinite
+maximum likelihood estimates. For this reason, for models with the
+\code{"log"} link \code{\link[=detect_infinite_estimates]{detect_infinite_estimates()}} relies on an alternative
+linear optimization model developed in Schwendinger et
+al. (2021). For all the other supported links
+\code{\link[=detect_infinite_estimates]{detect_infinite_estimates()}} relies on the linear programming
+methods developed in Konis (2007). See \code{\link[=detect_separation]{detect_separation()}} for
+definitions and details.
 
-\code{\link{detect_infinite_estimates}()} is a wrapper to the
+\code{\link[=detect_infinite_estimates]{detect_infinite_estimates()}} is a wrapper to the
 functions \code{separator_ROI()}, \code{separator_lpSolveAPI()} (a
 modified version of the \code{separator()} function from the
-**safeBinaryRegression** R package), and \code{dielb_ROI()}.
+\pkg{safeBinaryRegression} R package), and \code{dielb_ROI()}. The first
+two are used for non-log links, while \code{dielb_ROI()} is used for the
+\code{"log"} link.
 
-The \code{\link{coefficients}()} method extracts a vector of values
+The \code{\link[=coefficients]{coefficients()}} method extracts a vector of values
 for each of the model parameters under the following convention:
 \code{0} if the maximum likelihood estimate of the parameter is
 finite, and \code{Inf} or \code{-Inf} if the maximum likelihood
-estimate of the parameter if plus or minus infinity. This
+estimate of the parameter is plus or minus infinity. This
 convention makes it easy to adjust the maximum likelihood estimates
 to their actual values by element-wise addition.
 
-\code{\link{detect_infinite_estimates}()} can be passed directly as
-a method to the \code{\link{glm}} function. See, examples.
+\code{\link[=detect_infinite_estimates]{detect_infinite_estimates()}} can be passed directly as
+a method to the \code{\link[=glm]{glm()}} function. See, examples.
 
-\code{detectInfiniteEstimates}() is an alias for
-\code{detect_infinite_estimates}().
+\code{\link[=detectInfiniteEstimates]{detectInfiniteEstimates()}} is an alias for
+\code{\link[=detect_infinite_estimates]{detect_infinite_estimates()}}.
 }
 \examples{
 # The classical example given in Silvapulle (1981) can be utilized
-# to show that for the Log-Binomial model there exist data allocations
+# to show that for the log-binomial model there exist data allocations
 # which are separated but produce finite estimates.
 data("silvapulle1981", package = "detectseparation")
 
@@ -120,6 +122,7 @@ glm(y ~ ghqs, data = silvapulle1981, family = binomial(),
 # However, for the log link all components of the MLE are finite.
 glm(y ~ ghqs, data = silvapulle1981, family = binomial("log"),
     method = "detect_infinite_estimates")
+# The maximum likelihood fit is
 glm(y ~ ghqs, data = silvapulle1981, family = binomial("log"), start = c(-1, 0))
 
 }
@@ -129,9 +132,9 @@ On the Existence of Maximum Likelihood Estimators for the Binomial Response Mode
 Journal of the Royal Statistical Society. Series B (Methodological), 43(3), 310–313.
 \url{https://www.jstor.org/stable/2984941}
 
-Konis K. (2007). *Linear Programming Algorithms for Detecting
+Konis K. (2007). \emph{Linear Programming Algorithms for Detecting
 Separated Data in Binary Logistic Regression
-Models*. DPhil. University of Oxford.
+Models}. DPhil. University of Oxford.
 \url{https://ora.ox.ac.uk/objects/uuid:8f9ee0d0-d78e-4101-9ab4-f9cbceed2a2a}
 
 Konis K. (2013). safeBinaryRegression: Safe Binary Regression. R
@@ -140,16 +143,16 @@ package version 0.1-3.
 
 Kosmidis I. and Firth D. (2021). Jeffreys-prior penalty, finiteness
 and shrinkage in binomial-response generalized linear
-models. *Biometrika*, **108**, 71–82. \doi{10.1093/biomet/asaa052}
+models. \emph{Biometrika}, \strong{108}, 71–82. \doi{10.1093/biomet/asaa052}
 
 Schwendinger, F., Grün, B. & Hornik, K. (2021). A comparison of
 optimization solvers for log binomial regression including conic
-programming.  *Computational Statistics*, **36**,
+programming.  \emph{Computational Statistics}, \strong{36},
 1721–1754. \doi{10.1007/s00180-021-01084-5}
 }
 \seealso{
-\code{\link{glm.fit}} and \code{\link{glm}}, \code{\link{detect_separation}}, \code{\link{check_infinite_estimates}}, \code{\link[brglm2]{brglm_fit}}
+\code{\link[=glm]{glm()}}, \code{\link[=detect_separation]{detect_separation()}}, \code{\link[=check_infinite_estimates]{check_infinite_estimates()}}, \code{\link[brglm2:brglmFit]{brglm2::brglm_fit()}}
 }
 \author{
-Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Florian Schwendinger [aut] \email{FlorianSchwendinger@gmx.at}, Dirk Schumacher [aut] \email{mail@dirk-schumacher.net}, Kjell Konis [ctb] \email{kjell.konis@me.com}
+Ioannis Kosmidis \verb{[aut, cre]} \email{ioannis.kosmidis@warwick.ac.uk}, Florian Schwendinger \verb{[aut]} \email{FlorianSchwendinger@gmx.at}, Dirk Schumacher \verb{[aut]} \email{mail@dirk-schumacher.net}, Kjell Konis \verb{[ctb]} \email{kjell.konis@me.com}
 }

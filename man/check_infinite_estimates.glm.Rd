@@ -8,20 +8,19 @@ infinite}
 \method{check_infinite_estimates}{glm}(object, nsteps = 20, ...)
 }
 \arguments{
-\item{object}{the result of a \code{\link{glm}} call.}
+\item{object}{the result of a \code{\link[=glm]{glm()}} call.}
 
 \item{nsteps}{starting from \code{maxit = 1}, the GLM is refitted
-for \code{maxit = 2}, \code{maxit = 3}, \ldots, \code{maxit =
-nsteps}. Default value is 30.}
+for \code{maxit = 2}, \code{maxit = 3}, \ldots, \code{maxit = nsteps}. Default value is \code{20}.}
 
 \item{...}{currently not used.}
 }
 \value{
-An object of class \code{inf_check} that has a \code{plot} method.
+An object of class \code{inf_check} that has a \code{\link[=plot]{plot()}} method.
 
 A matrix inheriting from class \code{inf_check}, with \code{nsteps}
 rows and \code{p} columns, where \code{p} is the number of model
-parameters. A \code{plot} method is provided for \code{inf_check}
+parameters. A \code{\link[=plot]{plot()}} method is provided for \code{inf_check}
 objects for the easy inspection of the ratios of the standard
 errors.
 }
@@ -30,13 +29,13 @@ A simple diagnostic of whether the maximum likelihood estimates are
 infinite
 }
 \details{
-\code{check_infinite_estimates}() attempts to identify the occurrence
+\code{\link[=check_infinite_estimates]{check_infinite_estimates()}} attempts to identify the occurrence
 of infinite estimates in GLMs with binomial responses by
 successively refitting the model. At each iteration the maximum
 number of allowed IWLS iterations is fixed starting from 1 to
 \code{nsteps} (by setting \code{control = glm.control(maxit = j)},
-where \code{j} takes values 1, \ldots, nsteps in
-\code{\link{glm}}). For each value of \code{maxit}, the estimated
+where \code{j} takes values \verb{1, ..., nsteps} in
+\code{\link[=glm]{glm()}}. For each value of \code{maxit}, the estimated
 asymptotic standard errors are divided to the corresponding ones
 from \code{control = glm.control(maxit = 1)}. Then, based on the
 results in Lesaffre & Albert (1989), if the sequence of ratios in
@@ -45,12 +44,10 @@ quasi-complete separation occurs and the maximum likelihood
 estimate for the corresponding parameter has value minus or plus
 infinity.
 
-\code{check_infinite_estimates}() can also be used to identify the
+\code{\link[=check_infinite_estimates]{check_infinite_estimates()}} can also be used to identify the
 occurrence of infinite estimates in baseline category logit models
-for nominal responses (see \code{\link[brglm2]{brmultinom}()} from
-the \pkg{brglm2} R package), and adjacent category logit models for
-ordinal responses (see \code{\link[brglm2]{bracl}()} from the
-\pkg{brglm2} R package).
+for nominal responses (see \code{\link[brglm2:brmultinom]{brglm2::brmultinom()}}), and adjacent category
+logit models for ordinal responses (see \code{\link[brglm2:bracl]{brglm2::bracl()}}).
 }
 \note{
 For the definition of complete and quasi-complete separation, see
@@ -91,16 +88,16 @@ if (requireNamespace("brglm2", quietly = TRUE)) {
 }
 \references{
 Lesaffre, E., & Albert, A. (1989). Partial Separation in Logistic
-Discrimination. *Journal of the Royal Statistical Society. Series B
-(Methodological)*, **51**, 109-116
+Discrimination. \emph{Journal of the Royal Statistical Society. Series B
+(Methodological)}, \strong{51}, 109-116
 
 Kosmidis I. and Firth D. (2021). Jeffreys-prior penalty, finiteness
 and shrinkage in binomial-response generalized linear
-models. *Biometrika*, **108**, 71–82
+models. \emph{Biometrika}, \strong{108}, 71–82
 }
 \seealso{
-\code{\link[nnet]{multinom}},
-    \code{\link{detect_separation}},
-    \code{\link[brglm2]{brmultinom}},
-    \code{\link[brglm2]{bracl}}
+\code{\link[nnet:multinom]{nnet::multinom()}},
+\code{\link[=detect_separation]{detect_separation()}},
+\code{\link[brglm2:brmultinom]{brglm2::brmultinom()}},
+\code{\link[brglm2:bracl]{brglm2::bracl()}}
 }

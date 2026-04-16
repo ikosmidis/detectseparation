@@ -70,9 +70,9 @@
 #' [detectInfiniteEstimates()] is an alias for
 #' [detect_infinite_estimates()].
 #'
-#' @author Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Florian Schwendinger [aut] \email{FlorianSchwendinger@gmx.at}, Dirk Schumacher [aut] \email{mail@dirk-schumacher.net}, Kjell Konis [ctb] \email{kjell.konis@me.com}
+#' @author Ioannis Kosmidis `[aut, cre]` \email{ioannis.kosmidis@warwick.ac.uk}, Florian Schwendinger `[aut]` \email{FlorianSchwendinger@gmx.at}, Dirk Schumacher `[aut]` \email{mail@dirk-schumacher.net}, Kjell Konis `[ctb]` \email{kjell.konis@me.com}
 #'
-#' @seealso [glm.fit()] and [glm()], [detect_separation()], [check_infinite_estimates()], [brglm2::brglm_fit()]
+#' @seealso [glm()], [detect_separation()], [check_infinite_estimates()], [brglm2::brglm_fit()]
 #'
 #' @references
 #'

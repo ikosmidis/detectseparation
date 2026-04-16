@@ -6,12 +6,10 @@
 \title{Separation Example Presented in Silvapulle (1981)}
 \format{
 A data frame with 35 rows and 2 variables:
-\describe{
-
-\item{y}{a factor with the levels \code{case} and \code{none-case},
-         giving the outcome of a standardized psychiatric interview}
-\item{ghqs}{an integer giving the general health questionnaire score.}
-
+\itemize{
+\item \code{y}: a factor with the levels \code{case} and \code{none-case}, giving the
+outcome of a standardized psychiatric interview
+\item \code{ghqs}: an integer giving the general health questionnaire score.
 }
 }
 \usage{
@@ -25,5 +23,8 @@ Silvapulle, M. J. (1981).
 On the Existence of Maximum Likelihood Estimators for the Binomial Response Models.
 Journal of the Royal Statistical Society. Series B (Methodological), 43(3), 310–313.
 \url{https://www.jstor.org/stable/2984941}
+}
+\seealso{
+\code{\link[=detect_infinite_estimates]{detect_infinite_estimates()}}
 }
 \keyword{datasets}
