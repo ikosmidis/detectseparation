@@ -162,7 +162,11 @@ print.detect_infinite_estimates <- function(x, digits = max(5L, getOption("digit
                                        control = list(), intercept = TRUE, singular.ok = TRUE,
                                        log_link = FALSE) {
     control <- do.call("detect_separation_control", control)
-    lp <- if (log_link) dielb_ROI else control$separator
+    lp <- if (log_link) {
+        dielb_ROI
+    } else {
+        getNamespace("detectseparation")[[paste("separator", control$implementation, sep = "_")]]
+    }
     # ensure x is a matrix
     x <- as.matrix(x)
     betas_names_all <- betas_names <- if (is.null(colnames(x))) make.names(seq_len(NCOL(x))) else colnames(x)

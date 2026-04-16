@@ -15,6 +15,5 @@ expect_equal(out1$linear_program, "dual")
 expect_equal(out1$solver, "alabama")
 expect_equal(out1$purpose, "find")
 expect_equal(out1$tolerance, 1e-07)
-expect_equal(out1$separator, detectseparation:::separator_lpSolveAPI)
 expect_equal(out1$implementation, "lpSolveAPI")
 

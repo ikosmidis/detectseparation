@@ -293,61 +293,64 @@ print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L
     }
 }
 
-#' Auxiliary function for the \code{\link{glm}} interface when
-#' \code{method} is \code{\link{detect_separation}}.
+#' Auxiliary function for the [glm()] interface when
+#' `method` is [detect_separation()]
 #'
-#' Typically only used internally by \code{\link{detect_separation}}
-#' but may be used to construct a \code{control} argument.
+#' Typically only used internally by [detect_separation()]
+#' but may be used to construct a `control` argument.
 #'
 #' @aliases detectSeparationControl
-#' @param implementation should the implementation using \code{ROI} or
-#'     the implementation using \code{lpSolveAPI} be used? Default is
-#'     \code{ROI}.
+#' @param implementation should the implementation using `ROI` or the
+#'     implementation using `lpSolveAPI` be used? Default is `ROI`.
 #' @param tolerance maximum absolute variable value from the linear
-#'     program, before separation is declared. Default is
-#'     \code{1e-04}.
-#' @param linear_program should \code{\link{detect_separation}} solve
-#'     the \code{"primal"} (default) or \code{"dual"} linear program
-#'     for separation detection? Only relevant if \code{implementation
-#'     = "lpSolveAPI"}.
-#' @param purpose should \code{\link{detect_separation}} simply
-#'     \code{"test"} for separation or also \code{"find"} (default)
-#'     which parameters are infinite? Only relevant if
-#'     \code{implementation = "lpSolveAPI"}.
+#'     program, before separation is declared. Default is `1e-04`.
+#' @param linear_program should [detect_separation()] solve the
+#'     `"primal"` (default) or `"dual"` linear program for separation
+#'     detection? Only relevant if `implementation = "lpSolveAPI"`.
+#' @param purpose should [detect_separation()] simply `"test"` for
+#'     separation or also `"find"` (default) which parameters are
+#'     infinite? Only relevant if `implementation = "lpSolveAPI"`.
 #' @param solver should the linear program be solved using the
-#'     \code{"lpsolve"} (using the \pkg{ROI.plugin.lpsolve} package;
-#'     default) or another solver? Alternative solvers are
-#'     \code{"glpk"}, \code{"cbc"}, \code{"clp"}, \code{"cplex"},
-#'     \code{"ecos"}, \code{"gurobi"}, \code{"scs"},
-#'     \code{"symphony"}. If \pkg{ROI.plugin.[solver]} is not
-#'     installed then the user will be prompted to install it before
-#'     continuing.
+#'     `"lpsolve"` (using the `ROI.plugin.lpsolve` package; default)
+#'     or another solver? Alternative solvers are `"glpk"`, `"cbc"`,
+#'     `"clp"`, `"cplex"`, `"ecos"`, `"gurobi"`, `"scs"`,
+#'     `"symphony"`. If the corresponding package
+#'     `ROI.plugin.[solver]` is not installed then the user will be
+#'     prompted to install it before continuing.
 #' @param solver_control a list with additional control parameters for
-#'     the \code{"solver"}. This is solver specific, so consult the
-#'     corresponding documentation. Default is \code{list()} unless
-#'     \code{solver} is \code{"alabama"} when the default is \code{list(start
-#'     = rep(0, p))}, where p is the number of parameters.
-#' @param separation_type logical. Should \code{\link{detect_separation}}
+#'     the `"solver"`. This is solver specific, so consult the
+#'     corresponding documentation. Default is `list()` unless
+#'     `solver` is `"alabama"` when the default is `list(start =
+#'     rep(0, p))`, where `p` is the number of parameters.
+#' @param separation_type logical. Should [detect_separation()]
 #'     attempt to distinguish complete from quasi-complete separation
-#'     after separation has been detected? If \code{TRUE} and
-#'     separation is detected, then an additional linear program is
-#'     solved. Default is \code{FALSE}.
+#'     after separation has been detected? If `TRUE` and separation is
+#'     detected, then an additional linear program is solved. Default
+#'     is `FALSE`.
 #'
 #'
 #' @return
 #'
-#' A list with the supplied \code{linear_program}, \code{solver},
-#' \code{solver_control}, \code{purpose}, \code{tolerance},
-#' \code{separation_type},
-#' \code{implementation}, and the matched \code{separator} function
-#' (according to the value of \code{implementation}).
+#' A list with the supplied `linear_program`, `solver`,
+#' `solver_control`, `purpose`, `tolerance`, `separation_type`,
+#' and `implementation`. The returned list is intended to be passed to
+#' the `control` argument of [detect_separation()] and
+#' [detect_infinite_estimates()].
 #'
 #' @references
 #'
 #' Konis K. (2007). *Linear Programming Algorithms for Detecting
 #' Separated Data in Binary Logistic Regression Models*. DPhil.
 #' University of Oxford.
-#' \url{https://ora.ox.ac.uk/objects/uuid:8f9ee0d0-d78e-4101-9ab4-f9cbceed2a2a}
+#' <https://ora.ox.ac.uk/objects/uuid:8f9ee0d0-d78e-4101-9ab4-f9cbceed2a2a>
+#'
+#' @examples
+#' data("endometrial", package = "detectseparation")
+#' ctrl <- detect_separation_control(separation_type = TRUE)
+#' glm(HG ~ NV + PI + EH, data = endometrial,
+#'     family = binomial("logit"),
+#'     method = "detect_separation",
+#'     control = ctrl)
 #'
 #' @export
 detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
@@ -360,7 +363,6 @@ detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
     implementation <- match.arg(implementation)
     purpose <- match.arg(purpose)
     linear_program <- match.arg(linear_program)
-    separator <- getNamespace("detectseparation")[[paste("separator", implementation, sep = "_")]]
     check_ROI_solver(solver)
     list(linear_program = linear_program,
          solver = solver,
@@ -368,6 +370,5 @@ detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
          purpose = purpose,
          tolerance = tolerance,
          separation_type = separation_type,
-         separator = separator,
          implementation = implementation)
 }
