@@ -82,6 +82,13 @@
 #' infinite. If the link function is not one of `"logit"`, `"log"`,
 #' `"probit"`, `"cauchit"`, `"cloglog"` then a warning is issued.
 #'
+#' If \code{separation_type = TRUE} in
+#' \code{\link{detect_separation_control}()}, then, whenever separation
+#' is detected, \code{\link{detect_separation}()} attempts to
+#' distinguish between complete and quasi-complete separation by
+#' solving an additional linear program that maximizes the minimum
+#' transformed margin.
+#'
 #' The \code{\link{coefficients}} method extracts a vector of values
 #' for each of the model parameters under the following convention:
 #' \code{0} if the maximum likelihood estimate of the parameter is
@@ -124,7 +131,11 @@
 #'
 #' A list that inherits from class \code{detect_separation},
 #' \code{glm} and \code{lm}. A \code{print} method is provided for
-#' \code{detect_separation} objects.
+#' \code{detect_separation} objects. If
+#' \code{detect_separation_control(separation_type = TRUE)} is used and
+#' separation is detected, then the returned object has a
+#' \code{complete} component, which is \code{TRUE} for complete
+#' separation and \code{FALSE} for quasi-complete separation.
 #'
 #'
 #' @author Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Dirk Schumacher [aut] \email{mail@dirk-schumacher.net}, Florian Schwendinger [aut] \email{FlorianSchwendinger@gmx.at}, Kjell Konis [ctb] \email{kjell.konis@me.com}
@@ -213,6 +224,17 @@ detect_separation <- function(x, y, weights = NULL,
                                       offset = offset, family = family, control = control,
                                       intercept = control, singular.ok = singular.ok,
                                       log_link = FALSE)
+    out$complete <- NULL
+    if (isTRUE(out$control$separation_type) && isTRUE(out$outcome)) {
+        complete <- separation_type_ROI(x = out$x, y = out$y,
+                                        solver = out$control$solver,
+                                        tolerance = out$control$tolerance,
+                                        solver_control = out$control$solver_control)
+        out$complete <- complete$outcome
+        if (is.na(complete$outcome)) {
+            warning("unexpected result from `separation_type_ROI` with solver: ", out$control$solver, "\n")
+        }
+    }
     if (log_link) {
         # test for existence using the linear program in Schwendinger et al (2021)
         out$coefficients <- .detect_infinite_estimates(x = x, y = y, weights = weights, start = start,
@@ -235,7 +257,17 @@ print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L
     else {
         cat("Linear program:", x$control$linear_program, "| Purpose:", x$control$purpose, "\n")
     }
-    cat("Separation:", x$outcome, "\n")
+    if (is.null(x$complete)) {
+        str <- "\n"
+    } else {
+        if (is.na(x$complete)) {
+            str <- "(type undetermined)\n"
+        }
+        else {
+            str <- ifelse(isTRUE(x$complete), "(complete)\n", "(quasi-complete)\n")
+        }
+    }
+    cat("Separation:", x$outcome, str)
     if (!is.null(x$coefficients)) {
         cat("Existence of maximum likelihood estimates\n")
         print(coefficients(x))
@@ -277,11 +309,17 @@ print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L
 #'     corresponding documentation. Default is \code{list()} unless
 #'     \code{solver} is \code{"alabama"} when the default is \code{list(start
 #'     = rep(0, p))}, where p is the number of parameters.
+#' @param separation_type logical. Should \code{\link{detect_separation}}
+#'     attempt to distinguish complete from quasi-complete separation
+#'     after separation has been detected? If \code{TRUE} and
+#'     separation is detected, then an additional linear program is
+#'     solved. Default is \code{FALSE}.
 #'
 #' @return
 #'
 #' A list with the supplied \code{linear_program}, \code{solver},
 #' \code{solver_control}, \code{purpose}, \code{tolerance},
+#' \code{separation_type},
 #' \code{implementation}, and the matched \code{separator} function
 #' (according to the value of \code{implementation}).
 #'
@@ -291,7 +329,8 @@ detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
                                       linear_program = c("primal", "dual"),
                                       purpose = c("find", "test"),
                                       tolerance = 1e-04,
-                                      solver_control = list()) {
+                                      solver_control = list(),
+                                      separation_type = FALSE) {
     implementation <- match.arg(implementation)
     purpose <- match.arg(purpose)
     linear_program <- match.arg(linear_program)
@@ -302,6 +341,7 @@ detect_separation_control <- function(implementation = c("ROI", "lpSolveAPI"),
          solver_control = solver_control,
          purpose = purpose,
          tolerance = tolerance,
+         separation_type = separation_type,
          separator = separator,
          implementation = implementation)
 }

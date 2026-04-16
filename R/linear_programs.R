@@ -1,3 +1,6 @@
+#  separation_type_ROI:
+#  Copyright (C) 2026- Ioannis Kosmidis
+#
 #  separator_ROI:
 #  Copyright (C) 2021- Dirk Schumacher, Ioannis Kosmidis
 #
@@ -68,12 +71,12 @@ separator_ROI <- function(x, y,
     # compare to 0 zero with tolerance
     sol <- ROI::solution(result, "primal")
     names(sol) <- colnames(x)
-    has_seperation <- any(abs(sol) > tolerance, na.rm = TRUE)
+    has_separation <- any(abs(sol) > tolerance, na.rm = TRUE)
     # an optimal solution should always exist
     if (!isTRUE(ROI::solution(result, "status_code") == 0L)) {
         has_separation <- NA
     }
-    list(outcome = has_seperation,
+    list(outcome = has_separation,
          beta = sol)
 }
 
@@ -231,4 +234,53 @@ separator_lpSolveAPI <- function(x, y,
         ans$beta <- beta
     }
     ans
+}
+
+separation_type_ROI <- function(x, y,
+                         solver = "lpsolve",
+                         tolerance = 1e-03,
+                         solver_control = list(),
+                         ...) {
+    # The model here is based on the transformed design matrix X_bar and
+    # solves a max-min-margin problem. In particular, it maximizes the
+    # minimum margin t subject to X_bar %*% beta >= t. A strictly positive
+    # optimal value for t implies complete separation.
+    #
+    # build the ROI model
+    # transform the model matrix so that all constraints are >=
+    # that should also work with doubles
+    y[y == 0] <- -1
+    X_bar <- x * y
+    m <- ncol(X_bar)
+    n <- nrow(X_bar)
+    constraints <- ROI::L_constraint(cbind(X_bar, -1), rep.int(">=", n), rep.int(0, n))
+    bounds <- ROI::V_bound(li = seq_len(m),
+                           lb = rep.int(-1, m),
+                           ui = seq_len(m),
+                           ub = rep.int(1, m),
+                           nobj = m + 1)
+    # max t
+    # subject to X_bar %*% beta >= t
+    # beta between -1 and 1
+    opt_model <- ROI::OP(objective = c(rep.int(0, m), 1),
+                         constraints = constraints,
+                         types = rep.int("C", m + 1),
+                         bounds = bounds,
+                         maximum = TRUE)
+    result <- ROI::ROI_solve(opt_model, solver = solver, control = solver_control)
+    status <- ROI::solution(result, "status_code")
+    sol <- ROI::solution(result, "primal")
+    if (length(sol) != m + 1L) {
+        sol <- rep(NA_real_, m + 1L)
+    }
+    beta <- sol[seq_len(m)]
+    names(beta) <- colnames(x)
+    minimum_margin <- unname(sol[m + 1])
+    has_complete_separation <- isTRUE(minimum_margin > tolerance)
+    if (!isTRUE(status == 0L)) {
+        has_complete_separation <- NA
+    }
+    list(outcome = has_complete_separation,
+         beta = beta,
+         minimum_margin = minimum_margin)
 }

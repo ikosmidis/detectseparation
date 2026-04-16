@@ -35,6 +35,40 @@ expect_stdout(print(endometrial_separation_lpsolve), "Implementation: lpSolveAPI
 expect_stdout(print(endometrial_separation_lpsolve), "Separation: TRUE")
 expect_stdout(print(endometrial_separation_lpsolve2), "Implementation: lpSolveAPI \\| Linear program: dual \\| Purpose: test \\nSeparation: TRUE")
 
+## Test separation type detection
+counterexample_x <- rbind(c(1, -1, 2),
+                          c(1, -1, -2),
+                          c(1, -2, -2),
+                          c(1, 2, 2))
+counterexample_y <- c(0, 1, 1, 1)
+
+counterexample_separation <- detect_separation(x = counterexample_x,
+                                               y = counterexample_y,
+                                               family = binomial(),
+                                               control = list(separation_type = TRUE))
+expect_true(counterexample_separation$outcome)
+expect_true(counterexample_separation$complete)
+expect_stdout(print(counterexample_separation), "Separation: TRUE \\(complete\\)")
+
+counterexample_separation_lpsolve <- detect_separation(x = counterexample_x,
+                                                       y = counterexample_y,
+                                                       family = binomial(),
+                                                       control = list(implementation = "lpSolveAPI",
+                                                                      linear_program = "primal",
+                                                                      purpose = "test",
+                                                                      separation_type = TRUE))
+expect_true(counterexample_separation_lpsolve$outcome)
+expect_true(counterexample_separation_lpsolve$complete)
+
+overlap_x <- cbind(1, c(-1, 0, 1, 2))
+overlap_y <- c(0, 1, 0, 1)
+overlap_separation <- detect_separation(x = overlap_x,
+                                        y = overlap_y,
+                                        family = binomial(),
+                                        control = list(separation_type = TRUE))
+expect_false(overlap_separation$outcome)
+expect_null(overlap_separation$complete)
+
 ## Test aliasing
 endometrial_separation_a <- glm(HG ~ NV + I(2 * NV) + PI + EH, data = endometrial,
                                 family = binomial("cloglog"),
@@ -59,8 +93,13 @@ expect_message(m1sep <- glm(y ~ ghqs, data = silvapulle1981, family = binomial("
 m1inf <- glm(y ~ ghqs, data = silvapulle1981, family = binomial("log"),
              method = "detect_infinite_estimates")
 
+m1sep_type <- glm(y ~ ghqs, data = silvapulle1981, family = binomial("log"),
+                  method = "detect_separation", separation_type = TRUE)
+
 expect_equal(unname(coef(m1sep)), unname(coef(m1inf)))
 expect_equal(unname(coef(m1sep)), c(0, 0))
+expect_true(m1sep_type$outcome)
+expect_false(m1sep_type$complete)
 
 
 

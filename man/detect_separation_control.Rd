@@ -12,7 +12,8 @@ detect_separation_control(
   linear_program = c("primal", "dual"),
   purpose = c("find", "test"),
   tolerance = 1e-04,
-  solver_control = list()
+  solver_control = list(),
+  separation_type = FALSE
 )
 
 detectSeparationControl(
@@ -21,7 +22,8 @@ detectSeparationControl(
   linear_program = c("primal", "dual"),
   purpose = c("find", "test"),
   tolerance = 1e-04,
-  solver_control = list()
+  solver_control = list(),
+  separation_type = FALSE
 )
 }
 \arguments{
@@ -57,10 +59,17 @@ the \code{"solver"}. This is solver specific, so consult the
 corresponding documentation. Default is \code{list()} unless
 \code{solver} is \code{"alabama"} when the default is \code{list(start
 = rep(0, p))}, where p is the number of parameters.}
+
+\item{separation_type}{logical. Should \code{\link{detect_separation}}
+attempt to distinguish complete from quasi-complete separation
+after separation has been detected? If \code{TRUE} and
+separation is detected, then an additional linear program is
+solved. Default is \code{FALSE}.}
 }
 \value{
 A list with the supplied \code{linear_program}, \code{solver},
 \code{solver_control}, \code{purpose}, \code{tolerance},
+\code{separation_type},
 \code{implementation}, and the matched \code{separator} function
 (according to the value of \code{implementation}).
 }

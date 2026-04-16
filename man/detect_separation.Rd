@@ -75,7 +75,11 @@ error.}
 \value{
 A list that inherits from class \code{detect_separation},
 \code{glm} and \code{lm}. A \code{print} method is provided for
-\code{detect_separation} objects.
+\code{detect_separation} objects. If
+\code{detect_separation_control(separation_type = TRUE)} is used and
+separation is detected, then the returned object has a
+\code{complete} component, which is \code{TRUE} for complete
+separation and \code{FALSE} for quasi-complete separation.
 }
 \description{
 Method for \code{\link{glm}} that tests for data separation and
@@ -126,6 +130,13 @@ latter case the linear programming methods in Schwendinger et
 al. (2021) are called to establish if and which estimates are
 infinite. If the link function is not one of `"logit"`, `"log"`,
 `"probit"`, `"cauchit"`, `"cloglog"` then a warning is issued.
+
+If \code{separation_type = TRUE} in
+\code{\link{detect_separation_control}()}, then, whenever separation
+is detected, \code{\link{detect_separation}()} attempts to
+distinguish between complete and quasi-complete separation by
+solving an additional linear program that maximizes the minimum
+transformed margin.
 
 The \code{\link{coefficients}} method extracts a vector of values
 for each of the model parameters under the following convention:
