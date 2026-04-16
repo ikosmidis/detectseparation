@@ -77,3 +77,9 @@ A list with the supplied \code{linear_program}, \code{solver},
 Typically only used internally by \code{\link{detect_separation}}
 but may be used to construct a \code{control} argument.
 }
+\references{
+Konis K. (2007). *Linear Programming Algorithms for Detecting
+Separated Data in Binary Logistic Regression Models*. DPhil.
+University of Oxford.
+\url{https://ora.ox.ac.uk/objects/uuid:8f9ee0d0-d78e-4101-9ab4-f9cbceed2a2a}
+}

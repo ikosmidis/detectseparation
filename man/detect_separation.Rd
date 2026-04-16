@@ -132,11 +132,25 @@ infinite. If the link function is not one of `"logit"`, `"log"`,
 `"probit"`, `"cauchit"`, `"cloglog"` then a warning is issued.
 
 If \code{separation_type = TRUE} in
-\code{\link{detect_separation_control}()}, then, whenever separation
-is detected, \code{\link{detect_separation}()} attempts to
-distinguish between complete and quasi-complete separation by
+\code{\link{detect_separation_control}()}, then, whenever
+separation is detected, \code{\link{detect_separation}()} attempts
+to distinguish between complete and quasi-complete separation by
 solving an additional linear program that maximizes the minimum
-transformed margin.
+transformed margin. If \eqn{x_i} is the \eqn{i}th row of the model
+matrix and \eqn{\tilde{y}_i = -1 + 2 y_i}, where \eqn{y_i} is the
+\eqn{i}th Bernoulli response (the representation to which any
+binomial data supplied by the user are transformed internally),
+then \eqn{\bar{x}_i = \tilde{y}_i x_i}. The additional linear
+program that is solved maximizes \eqn{t} subject to
+\eqn{\bar{X}\beta \ge t {\bf 1}} and \eqn{-1 \le \beta_j \le
+1}. This is equivalent to solving \eqn{\max_\beta \min_i
+(\bar{x}_i^\top \beta)} subject to \eqn{-1 \le \beta_j \le 1} for
+all \eqn{j}. A positive optimal value for \eqn{t} implies complete
+separation, while an optimal value of zero implies only
+quasi-complete separation provided that separation has already been
+detected. See Konis (2007, Section 1.3 and Chapter 4) for the
+definitions of separation and the transformed linear programming
+formulation.
 
 The \code{\link{coefficients}} method extracts a vector of values
 for each of the model parameters under the following convention:
@@ -185,6 +199,10 @@ endometrial_sep <- glm(HG ~ NV + PI + EH, data = endometrial,
 endometrial_sep
 # The maximum likelihood estimate for NV is infinite
 summary(update(endometrial_sep, method = "glm.fit"))
+
+# If we want to futher check for the type of separation (complete
+# or quasi-complete) we can do
+update(endometrial_sep, separation_type = TRUE)
 
 \donttest{
 # Example inspired by unpublished microeconometrics lecture notes by
