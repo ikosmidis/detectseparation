@@ -122,7 +122,7 @@ detect_infinite_estimates <- function(x, y, weights = NULL,
                                       offset = NULL, family = gaussian(),
                                       control = list(), intercept = TRUE, singular.ok = TRUE) {
     if (isTRUE(family$family != "binomial")) {
-        warning("`detect_infinite_estimates` has been developed for use with binomial-response GLMs")
+        warning("`detect_infinite_estimates()` has been developed for use with binomial-response GLMs")
     }
     nobs <- NROW(y)
     if (is.null(weights)) {

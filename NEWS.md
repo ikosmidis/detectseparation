@@ -8,7 +8,13 @@
 
 ## Other improvements, updates and additions
 
++ Documentation improvements.
+
 + Updated CI workflow.
+
++ `detect_separation_control()` does not infer the `separator`
+  function, which is now done internally in
+  `.detect_infinite_estimates()`.
 
 + Fixed typos in some internal variable names (thanks to [Kasper
   Daniel Hansen](https://github.com/kasperdanielhansen)).

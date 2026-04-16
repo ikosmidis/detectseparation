@@ -230,7 +230,7 @@ detect_separation <- function(x, y, weights = NULL,
     if (isTRUE(family$family == "binomial")) {
         reliable_links <- c("logit", "log", "probit", "cauchit", "cloglog")
         if (!isTRUE(family$link %in% reliable_links)) {
-            warning("`detect_separation` results may be unreliable for binomial-response GLMs",
+            warning("`detect_separation()` results may be unreliable for binomial-response GLMs",
                     " with links other than ", paste(shQuote(reliable_links), collapse = ", "))
         }
         if (log_link) {
@@ -238,7 +238,7 @@ detect_separation <- function(x, y, weights = NULL,
         }
     }
     else {
-        warning("`detect_separation` has been developed for use with binomial-response GLMs")
+        warning("`detect_separation()` has been developed for use with binomial-response GLMs")
     }
     out <- .detect_infinite_estimates(x = x, y = y, weights = weights, start = start,
                                       etastart = etastart,  mustart = mustart,

@@ -93,8 +93,9 @@ expect_message(m1sep <- glm(y ~ ghqs, data = silvapulle1981, family = binomial("
 m1inf <- glm(y ~ ghqs, data = silvapulle1981, family = binomial("log"),
              method = "detect_infinite_estimates")
 
-m1sep_type <- glm(y ~ ghqs, data = silvapulle1981, family = binomial("log"),
-                  method = "detect_separation", separation_type = TRUE)
+expect_message(m1sep_type <- glm(y ~ ghqs, data = silvapulle1981, family = binomial("log"),
+                                 method = "detect_separation", separation_type = TRUE),
+               pattern = "necessarily result in")
 
 expect_equal(unname(coef(m1sep)), unname(coef(m1inf)))
 expect_equal(unname(coef(m1sep)), c(0, 0))

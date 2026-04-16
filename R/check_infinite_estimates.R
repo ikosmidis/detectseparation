@@ -115,10 +115,10 @@ check_infinite_estimates.glm <- function(object, nsteps = 20, ...) {
     valid_classes <- c("glm", "brglmFit", "brmultinom")
     is_brmultinom <- inherits(object, "brmultinom")
     if (!inherits(object, valid_classes)) {
-        warning("check_infinite_estimates has been designed for objects of class 'glm', 'brglmFit', 'brmultinom'")
+        warning("`check_infinite_estimates()` has been designed for objects of class 'glm', 'brglmFit', 'brmultinom'")
     }
     if ((object$family$family != "binomial") & (!is_brmultinom)) {
-        warning("check_infinite_estimates has been designed for binomial- or multinomial-response models")
+        warning("`check_infinite_estimates()` has been designed for binomial- or multinomial-response models")
     }
     if (is_brmultinom) {
         betas <- coef(object)
