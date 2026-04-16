@@ -157,7 +157,7 @@ The \code{\link[=coefficients]{coefficients()}} method extracts a vector of valu
 for each of the model parameters under the following convention:
 \code{0} if the maximum likelihood estimate of the parameter is
 finite, and \code{Inf} or \code{-Inf} if the maximum likelihood
-estimate of the parameter if plus or minus infinity. This
+estimate of the parameter is plus or minus infinity. This
 convention makes it easy to adjust the maximum likelihood estimates
 to their actual values by element-wise addition.
 
@@ -257,5 +257,5 @@ programming.  \emph{Computational Statistics}, \strong{36},
 \code{\link[=glm]{glm()}}, \code{\link[=detect_infinite_estimates]{detect_infinite_estimates()}}, \code{\link[=check_infinite_estimates]{check_infinite_estimates()}}, \code{\link[brglm2:brglmFit]{brglm2::brglm_fit()}}
 }
 \author{
-Ioannis Kosmidis \verb{[aut, cre]} \email{ioannis.kosmidis@warwick.ac.uk}, Dirk Schumacher \verb{[aut]} \email{mail@dirk-schumacher.net}, Florian Schwendinger \verb{[aut]} \email{FlorianSchwendinger@gmx.at}, Kjell Konis \verb{[ctb]} \email{kjell.konis@me.com}
+Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Dirk Schumacher [aut] \email{mail@dirk-schumacher.net}, Florian Schwendinger [aut] \email{FlorianSchwendinger@gmx.at}, Kjell Konis [ctb] \email{kjell.konis@me.com}
 }

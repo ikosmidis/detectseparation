@@ -18,10 +18,9 @@ The packaged data set was downloaded in \code{.dat} format from
 \url{https://users.stat.ufl.edu/~aa/glm/data/}. The latter link
 provides the data sets used in Agresti (2015).
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{The endometrial data set was first analyzed in Heinze and
+The endometrial data set was first analyzed in Heinze and
 Schemper (2002), and was originally provided by Dr
 E. Asseryanis from the Medical University of Vienna.
-}\if{html}{\out{</div>}}
 }
 \usage{
 endometrial

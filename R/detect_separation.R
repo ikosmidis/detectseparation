@@ -107,7 +107,7 @@
 #' for each of the model parameters under the following convention:
 #' `0` if the maximum likelihood estimate of the parameter is
 #' finite, and `Inf` or `-Inf` if the maximum likelihood
-#' estimate of the parameter if plus or minus infinity. This
+#' estimate of the parameter is plus or minus infinity. This
 #' convention makes it easy to adjust the maximum likelihood estimates
 #' to their actual values by element-wise addition.
 #'
@@ -153,7 +153,7 @@
 #' `NULL`.
 #'
 #'
-#' @author Ioannis Kosmidis `[aut, cre]` \email{ioannis.kosmidis@warwick.ac.uk}, Dirk Schumacher `[aut]` \email{mail@dirk-schumacher.net}, Florian Schwendinger `[aut]` \email{FlorianSchwendinger@gmx.at}, Kjell Konis `[ctb]` \email{kjell.konis@me.com}
+#' @author Ioannis Kosmidis \[aut, cre\] \email{ioannis.kosmidis@warwick.ac.uk}, Dirk Schumacher \[aut\] \email{mail@dirk-schumacher.net}, Florian Schwendinger \[aut\] \email{FlorianSchwendinger@gmx.at}, Kjell Konis \[ctb\] \email{kjell.konis@me.com}
 #'
 #' @seealso [glm()], [detect_infinite_estimates()], [check_infinite_estimates()], [brglm2::brglm_fit()]
 #'

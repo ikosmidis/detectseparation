@@ -25,9 +25,8 @@ Models} (2nd Edition).  London: Chapman and Hall.
 
 Originally from
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{Schoener T W (1970) Nonsynchronous spatial overlap of lizards
-in patchy habitats.  _Ecology_ *51*, 408-418.
-}\if{html}{\out{</div>}}
+Schoener T W (1970) Nonsynchronous spatial overlap of lizards
+in patchy habitats.  \emph{Ecology} \emph{51}, 408-418.
 }
 \usage{
 lizards

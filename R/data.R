@@ -16,36 +16,39 @@
 #' @seealso
 #'
 #' [detect_separation()]
-
 #'
 #' @source
 #'
-#'   McCullagh P, Nelder J A (1989) _Generalized Linear
-#'   Models_ (2nd Edition).  London: Chapman and Hall.
+#' McCullagh P, Nelder J A (1989) _Generalized Linear
+#' Models_ (2nd Edition).  London: Chapman and Hall.
 #'
 #' Originally from
 #'
-#'     Schoener T W (1970) Nonsynchronous spatial overlap of lizards
-#'     in patchy habitats.  _Ecology_ *51*, 408-418.
+#' Schoener T W (1970) Nonsynchronous spatial overlap of lizards
+#' in patchy habitats.  _Ecology_ *51*, 408-418.
 #'
 "lizards"
 
 #' Histology grade and risk factors for 79 cases of endometrial cancer
 #'
-#' @format A data frame with 79 rows and 4 variables:
+#' @format
+#'
+#' A data frame with 79 rows and 4 variables:
 #'
 #' * `NV`: neovasculization with coding 0 for absent and 1 for present
 #' * `PI`: pulsality index of arteria uterina
 #' * `EH`: endometrium height
 #' * `HG`: histology grade with coding 0 for low grade and 1 for high grade
 #'
-#' @source The packaged data set was downloaded in `.dat` format from
-#'     <https://users.stat.ufl.edu/~aa/glm/data/>. The latter link
-#'     provides the data sets used in Agresti (2015).
+#' @source
 #'
-#'     The endometrial data set was first analyzed in Heinze and
-#'     Schemper (2002), and was originally provided by Dr
-#'     E. Asseryanis from the Medical University of Vienna.
+#' The packaged data set was downloaded in `.dat` format from
+#' <https://users.stat.ufl.edu/~aa/glm/data/>. The latter link
+#' provides the data sets used in Agresti (2015).
+#'
+#' The endometrial data set was first analyzed in Heinze and
+#' Schemper (2002), and was originally provided by Dr
+#' E. Asseryanis from the Medical University of Vienna.
 #'
 #' @seealso
 #'
@@ -73,14 +76,16 @@
 #' @description
 #' Separation example presented in Silvapulle (1981).
 #'
-#' @format A data frame with 35 rows and 2 variables:
+#' @format
 #'
+#' A data frame with 35 rows and 2 variables:
 #'
 #' * `y`: a factor with the levels `case` and `none-case`, giving the
 #'        outcome of a standardized psychiatric interview
 #' * `ghqs`: an integer giving the general health questionnaire score.
 #'
 #' @seealso
+#'
 #' [detect_infinite_estimates()]
 #'
 #' @references
