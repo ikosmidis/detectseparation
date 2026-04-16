@@ -97,7 +97,7 @@
 #' 1}. This is equivalent to solving \eqn{\max_\beta \min_i
 #' (\bar{x}_i^\top \beta)} subject to \eqn{-1 \le \beta_j \le 1} for
 #' all \eqn{j}. A positive optimal value for \eqn{t} implies complete
-#' separation, while an optimal value of zero implies only
+#' separation, while an optimal value of zero implies
 #' quasi-complete separation provided that separation has already been
 #' detected. See Konis (2007, Section 1.3 and Chapter 4) for the
 #' definitions of separation and the transformed linear programming
@@ -147,9 +147,10 @@
 #' [`glm`] and [`lm`]. A `print` method is provided for
 #' [`detect_separation`] objects. If
 #' `detect_separation_control(separation_type = TRUE)` is used and
-#' separation is detected, then the returned object has a
-#' `complete` component, which is `TRUE` for complete
-#' separation and `FALSE` for quasi-complete separation.
+#' separation is detected, then the returned object has a `complete`
+#' component, which is `TRUE` for complete separation and `FALSE` for
+#' quasi-complete separation. Otherwise, the `complete` component is
+#' `NULL`.
 #'
 #'
 #' @author Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Dirk Schumacher [aut] \email{mail@dirk-schumacher.net}, Florian Schwendinger [aut] \email{FlorianSchwendinger@gmx.at}, Kjell Konis [ctb] \email{kjell.konis@me.com}
