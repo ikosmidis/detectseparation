@@ -10,7 +10,8 @@
 
 + Updated CI workflow.
 
-+ Fixed typos in some internal variable names.
++ Fixed typos in some internal variable names (thanks to [Kasper
+  Daniel Hansen](https://github.com/kasperdanielhansen)).
 
 # detectseparation 0.3
 
