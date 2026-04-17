@@ -69,9 +69,9 @@ cannot be trusted for inference on the size of the effect for `NV`.
 
 ### `detect_separation`
 
-`detect_separation` is *pre-fit* method, in the sense that it does not
+`detect_separation` is a *pre-fit* method, in the sense that it does not
 need to estimate the model to detect separation and/or identify
-infinite estimates. For example
+infinite estimates. For example,
 
 ```{r, eval = TRUE, echo = TRUE}
 endo_sep <- glm(HG ~ NV + PI + EH, data = endometrial,
@@ -80,8 +80,7 @@ endo_sep <- glm(HG ~ NV + PI + EH, data = endometrial,
 endo_sep
 ```
 
-So, the
-actual maximum likelihood estimates are
+So, the actual maximum likelihood estimates are
 
 ```{r, echo = TRUE,  eval = TRUE}
 coef(endo_glm) + coef(endo_sep)
@@ -93,12 +92,30 @@ and the estimated standard errors are
 coef(summary(endo_glm))[, "Std. Error"] + abs(coef(endo_sep))
 ```
 
+We can ask `detect_separation()` not only to detect separation, but
+also, if separation is detected, to solve an additional linear program
+to check whether separation is complete or quasi-complete. We do this
+by setting `separation_type = TRUE` in the `glm()` call
+
+```{r, echo = TRUE, eval = TRUE}
+glm(HG ~ NV + PI + EH, data = endometrial, family = binomial("logit"),
+    method = "detect_separation", separation_type = TRUE)
+```
+
+We can of course, simply, use the update method on the `glm` object,
+if that is available, and change the `method` argument with any extra
+options. For example,
+
+```{r, echo = TRUE, eval = TRUE}
+update(endo_glm, method = "detect_separation", separation_type = TRUE)
+```
+
 ### `check_infinite_estimates`
 
 @lesaffre+albert:1989[, Section 4] describe a procedure that can hint
 on the occurrence of infinite estimates. In particular, the model is
 successively refitted, by increasing the maximum number of allowed
-iteratively re-weighted least squares iterations at east step. The
+iteratively re-weighted least squares iterations at each step. The
 estimated asymptotic standard errors from each step are, then, divided
 to the corresponding ones from the first fit. If the sequence of
 ratios diverges, then the maximum likelihood estimate of the

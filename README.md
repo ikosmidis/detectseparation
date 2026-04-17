@@ -74,9 +74,9 @@ for `NV`.
 
 ### `detect_separation`
 
-`detect_separation` is *pre-fit* method, in the sense that it does not
+`detect_separation` is a *pre-fit* method, in the sense that it does not
 need to estimate the model to detect separation and/or identify infinite
-estimates. For example
+estimates. For example,
 
     endo_sep <- glm(HG ~ NV + PI + EH, data = endometrial,
                     family = binomial("logit"),
@@ -101,12 +101,38 @@ and the estimated standard errors are
     #> (Intercept)          NV          PI          EH 
     #>  1.63729861         Inf  0.04433196  0.84555156
 
+We can ask `detect_separation()` not only to detect separation, but
+also, if separation is detected, to solve an additional linear program
+to check whether separation is complete or quasi-complete. We do this by
+setting `separation_type = TRUE` in the `glm()` call
+
+    glm(HG ~ NV + PI + EH, data = endometrial, family = binomial("logit"),
+        method = "detect_separation", separation_type = TRUE)
+    #> Implementation: ROI | Solver: lpsolve 
+    #> Separation: TRUE (quasi-complete)
+    #> Existence of maximum likelihood estimates
+    #> (Intercept)          NV          PI          EH 
+    #>           0         Inf           0           0 
+    #> 0: finite value, Inf: infinity, -Inf: -infinity
+
+We can of course, simply, use the update method on the `glm` object, if
+that is available, and change the `method` argument with any extra
+options. For example,
+
+    update(endo_glm, method = "detect_separation", separation_type = TRUE)
+    #> Implementation: ROI | Solver: lpsolve 
+    #> Separation: TRUE (quasi-complete)
+    #> Existence of maximum likelihood estimates
+    #> (Intercept)          NV          PI          EH 
+    #>           0         Inf           0           0 
+    #> 0: finite value, Inf: infinity, -Inf: -infinity
+
 ### `check_infinite_estimates`
 
 Lesaffre and Albert (1989, sec. 4) describe a procedure that can hint on
 the occurrence of infinite estimates. In particular, the model is
 successively refitted, by increasing the maximum number of allowed
-iteratively re-weighted least squares iterations at east step. The
+iteratively re-weighted least squares iterations at each step. The
 estimated asymptotic standard errors from each step are, then, divided
 to the corresponding ones from the first fit. If the sequence of ratios
 diverges, then the maximum likelihood estimate of the corresponding
@@ -139,7 +165,7 @@ this process to `endo_glm`.
     #> [1] "inf_check"
     plot(inf_check)
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 # References
 
