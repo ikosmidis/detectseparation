@@ -67,10 +67,9 @@ functionality that **detectseparation** provides.
 The maximum likelihood (ML) estimate of the parameter for `NV` is
 actually infinite. The reported, apparently finite value is merely due
 to false convergence of the iterative estimation procedure. The same is
-true for the estimated standard error, and, hence the value
-`r round(coef(summary(endo_glm))["NV", "z value"], 3)` for the
-*z*-statistic cannot be trusted for inference on the size of the effect
-for `NV`.
+true for the estimated standard error, and, hence the value 0.011 for
+the *z*-statistic cannot be trusted for inference on the size of the
+effect for `NV`.
 
 ### `detect_separation()`
 
