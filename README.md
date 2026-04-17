@@ -15,8 +15,8 @@ provides *pre-fit* and *post-fit* methods for the detection of
 separation and of infinite maximum likelihood estimates in binomial
 response generalized linear models.
 
-The key methods are `detect_infinite_estimates`, `detect_separation` and
-`check_infinite_estimates`.
+The key methods are `detect_infinite_estimates()`, `detect_separation()`
+and `check_infinite_estimates()`.
 
 ## Installation
 
@@ -72,11 +72,11 @@ true for the estimated standard error, and, hence the value
 *z*-statistic cannot be trusted for inference on the size of the effect
 for `NV`.
 
-### `detect_separation`
+### `detect_separation()`
 
-`detect_separation` is a *pre-fit* method, in the sense that it does not
-need to estimate the model to detect separation and/or identify infinite
-estimates. For example,
+`detect_separation()` is a *pre-fit* method, in the sense that it does
+not need to estimate the model to detect separation and/or identify
+infinite estimates. For example,
 
     endo_sep <- glm(HG ~ NV + PI + EH, data = endometrial,
                     family = binomial("logit"),
@@ -127,7 +127,7 @@ options. For example,
     #>           0         Inf           0           0 
     #> 0: finite value, Inf: infinity, -Inf: -infinity
 
-### `check_infinite_estimates`
+### `check_infinite_estimates()`
 
 Lesaffre and Albert (1989, sec. 4) describe a procedure that can hint on
 the occurrence of infinite estimates. In particular, the model is
