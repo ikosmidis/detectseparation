@@ -1,3 +1,15 @@
+# detectseparation 0.5
+
+## Bug fixes
+
++ Aliasing is now detected after excluding observations with zero
+  effective weight, including binomial responses with zero trial
+  totals. 
+
+## New functionality
+
+## Other improvements, updates and additions
+
 # detectseparation 0.4
 
 ## New functionality

@@ -187,9 +187,11 @@ print.detect_infinite_estimates <- function(x, digits = max(5L, getOption("digit
     }
     # Initialize as prescribed in family
     eval(family$initialize)
-    if (control$solver == "alabama" & is.null(control$solver_control$start)) {
-        control$solver_control$start <- rep(0, nvars)
-    }
+    # Initialization can change weights, for example for zero binomial totals.
+    # Only observations with positive effective weight determine the rank.
+    keep <- weights > 0
+    x <- x[keep, , drop = FALSE]
+    y <- y[keep]
     # Detect aliasing
     qrx <- qr(x)
     rank <- qrx$rank
@@ -199,15 +201,13 @@ print.detect_infinite_estimates <- function(x, digits = max(5L, getOption("digit
     }
     if (!isTRUE(is_full_rank)) {
         aliased <- qrx$pivot[seq.int(qrx$rank + 1, nvars)]
-        X_all <- x
-        x <- x[, -aliased]
+        x <- x[, -aliased, drop = FALSE]
         betas_names <- betas_names[-aliased]
     }
     betas_all <- structure(rep(NA_real_, length(betas_names_all)), .Names = betas_names_all)
-    # Observations with zero weight do not enter calculations so ignore
-    keep <- weights > 0
-    x <- x[keep, , drop = FALSE]
-    y <- y[keep]
+    if (control$solver == "alabama" & is.null(control$solver_control$start)) {
+        control$solver_control$start <- rep(0, rank)
+    }
     # Reshape data set: keep 0 and 1, and replace anything in (0,
     # 1) with one zero and one 1
     ones <- y == 1
@@ -216,12 +216,19 @@ print.detect_infinite_estimates <- function(x, digits = max(5L, getOption("digit
     x <- x[c(which(ones), which(zeros), rep(which(non_boundary), 2)), , drop = FALSE]
     y <- c(y[ones], y[zeros], rep(c(0., 1.), each = sum(non_boundary)))
     # Run linear program
-    out <- lp(x = x, y = y,
-              linear_program = control$linear_program,
-              purpose = control$purpose,
-              tolerance = control$tolerance,
-              solver = control$solver,
-              solver_control = control$solver_control)
+    if (rank == 0) {
+        # No nonzero fitted direction remains after removing aliased columns.
+        beta <- if (!log_link && control$implementation == "lpSolveAPI" &&
+                    control$purpose == "test") NULL else numeric(0)
+        out <- list(outcome = FALSE, beta = beta)
+    } else {
+        out <- lp(x = x, y = y,
+                  linear_program = control$linear_program,
+                  purpose = control$purpose,
+                  tolerance = control$tolerance,
+                  solver = control$solver,
+                  solver_control = control$solver_control)
+    }
     if (is.na(out$outcome)) {
         if (identical(control$implementation, "ROI")) {
             warning("unexpected result from implementation ", control$implementation, " with solver: ", control$solver, "\n")
