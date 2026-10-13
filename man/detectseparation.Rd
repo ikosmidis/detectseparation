@@ -23,6 +23,7 @@ The key methods are \code{\link[=detect_separation]{detect_separation()}} and
 
 Authors:
 \itemize{
+  \item Ioannis Kosmidis \email{ioannis.kosmidis@warwick.ac.uk} (\href{https://orcid.org/0000-0003-1556-0302}{ORCID})
   \item Dirk Schumacher \email{mail@dirk-schumacher.net}
   \item Florian Schwendinger \email{FlorianSchwendinger@gmx.at}
 }

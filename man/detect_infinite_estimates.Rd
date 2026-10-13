@@ -151,7 +151,7 @@ programming.  \emph{Computational Statistics}, \strong{36},
 1721–1754. \doi{10.1007/s00180-021-01084-5}
 }
 \seealso{
-\code{\link[=glm]{glm()}}, \code{\link[=detect_separation]{detect_separation()}}, \code{\link[=check_infinite_estimates]{check_infinite_estimates()}}, \code{\link[brglm2:brglmFit]{brglm2::brglm_fit()}}
+\code{\link[=glm]{glm()}}, \code{\link[=detect_separation]{detect_separation()}}, \code{\link[=check_infinite_estimates]{check_infinite_estimates()}}, \code{\link[brglm2:brglm_fit]{brglm2::brglm_fit()}}
 }
 \author{
 Ioannis Kosmidis [aut, cre] \email{ioannis.kosmidis@warwick.ac.uk}, Florian Schwendinger [aut] \email{FlorianSchwendinger@gmx.at}, Dirk Schumacher [aut] \email{mail@dirk-schumacher.net}, Kjell Konis [ctb] \email{kjell.konis@me.com}
