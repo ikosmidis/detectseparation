@@ -38,12 +38,14 @@
 #' where `j` takes values `1, ..., nsteps` in
 #' [glm()]. For each value of `maxit`, the estimated
 #' asymptotic standard errors are divided to the corresponding ones
-#' from `control = glm.control(maxit = 1)`. Then, based on the
-#' results in Lesaffre & Albert (1989), if the sequence of ratios in
-#' any column of the resultant matrix diverges, then complete or
-#' quasi-complete separation occurs and the maximum likelihood
-#' estimate for the corresponding parameter has value minus or plus
-#' infinity.
+#' from `control = glm.control(maxit = 1)`. Following the diagnostic
+#' approach of Lesaffre & Albert (1989), diverging ratios indicate loss
+#' of information associated with complete or quasi-complete separation.
+#' They do not determine the sign of an infinite coefficient limit or
+#' distinguish it from an undetermined coefficient limit. In particular,
+#' a coefficient may remain finite along the fitting sequence while its
+#' standard-error ratios grow. For coefficient classifications in
+#' binomial-response GLMs, see [detect_separation()].
 #'
 #' [check_infinite_estimates()] can also be used to identify the
 #' occurrence of infinite estimates in baseline category logit models
@@ -154,7 +156,9 @@ check_infinite_estimates.glm <- function(object, nsteps = 20, ...) {
 
 #' @export
 plot.inf_check <- function(x, tol = 1e+2, ...) {
-    # heuristic for determining ploting ranges
+    ## heuristic for determining ploting ranges
+    keep <- colSums(!is.na(x)) > 0L
+    x <- x[, keep, drop = FALSE]
     sds <- apply(x, 2, sd)
     matplot(x, type = "l", lty = 1, ylim = range(x[, sds < tol]) * c(1, 1.5),
             ylab = "estimate", xlab = "number of iterations")

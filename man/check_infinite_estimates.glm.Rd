@@ -37,12 +37,14 @@ number of allowed IWLS iterations is fixed starting from 1 to
 where \code{j} takes values \verb{1, ..., nsteps} in
 \code{\link[=glm]{glm()}}. For each value of \code{maxit}, the estimated
 asymptotic standard errors are divided to the corresponding ones
-from \code{control = glm.control(maxit = 1)}. Then, based on the
-results in Lesaffre & Albert (1989), if the sequence of ratios in
-any column of the resultant matrix diverges, then complete or
-quasi-complete separation occurs and the maximum likelihood
-estimate for the corresponding parameter has value minus or plus
-infinity.
+from \code{control = glm.control(maxit = 1)}. Following the diagnostic
+approach of Lesaffre & Albert (1989), diverging ratios indicate loss
+of information associated with complete or quasi-complete separation.
+They do not determine the sign of an infinite coefficient limit or
+distinguish it from an undetermined coefficient limit. In particular,
+a coefficient may remain finite along the fitting sequence while its
+standard-error ratios grow. For coefficient classifications in
+binomial-response GLMs, see \code{\link[=detect_separation]{detect_separation()}}.
 
 \code{\link[=check_infinite_estimates]{check_infinite_estimates()}} can also be used to identify the
 occurrence of infinite estimates in baseline category logit models
