@@ -46,29 +46,23 @@
 #' linear optimization model developed in Schwendinger et
 #' al. (2021). For all the other supported links
 #' [detect_infinite_estimates()] relies on the linear programming
-#' methods developed in Konis (2007). See [detect_separation()] for
-#' definitions and details.
-#'
-#' [detect_infinite_estimates()] is a wrapper to the
-#' functions `separator_ROI()`, `separator_lpSolveAPI()` (a
-#' modified version of the `separator()` function from the
-#' \pkg{safeBinaryRegression} R package), and `dielb_ROI()`. The first
-#' two are used for non-log links, while `dielb_ROI()` is used for the
-#' `"log"` link.
-#'
-#' The [coefficients()] method extracts a vector of values
-#' for each of the model parameters under the following convention:
-#' `0` if the maximum likelihood estimate of the parameter is
-#' finite, and `Inf` or `-Inf` if the maximum likelihood
-#' estimate of the parameter is plus or minus infinity. This
-#' convention makes it easy to adjust the maximum likelihood estimates
-#' to their actual values by element-wise addition.
+#' methods developed in Konis (2007). Log-binomial calculations use ROI;
+#' non-log models use the selected implementation. See [detect_separation()]
+#' for definitions, the coordinate-wise LP calculation, coefficient flag
+#' meanings, numerical failure handling, and the log-binomial feasibility
+#' assumption.
 #'
 #' [detect_infinite_estimates()] can be passed directly as
 #' a method to the [glm()] function. See, examples.
 #'
 #' [detectInfiniteEstimates()] is an alias for
 #' [detect_infinite_estimates()].
+#'
+#' @return A list of class `"detect_infinite_estimates"`, also inheriting from
+#'     `"glm"` and `"lm"` when used as a [glm()] method. The common output
+#'     components are described in the Value section of [detect_separation()].
+#'     Here `outcome` is `TRUE` if infinite components are detected, `FALSE`
+#'     if finiteness is established, and `NA` if the decision remains unresolved.
 #'
 #' @author Ioannis Kosmidis \[aut, cre\] \email{ioannis.kosmidis@warwick.ac.uk}, Florian Schwendinger \[aut\] \email{FlorianSchwendinger@gmx.at}, Dirk Schumacher \[aut\] \email{mail@dirk-schumacher.net}, Kjell Konis \[ctb\] \email{kjell.konis@me.com}
 #'
@@ -154,7 +148,7 @@ print.detect_infinite_estimates <- function(x, digits = max(5L, getOption("digit
     if (!is.null(x$coefficients)) {
         cat("Existence of maximum likelihood estimates\n")
         print(coefficients(x))
-        cat("0: finite value, Inf: infinity, -Inf: -infinity\n")
+        cat("0: finite value, Inf: infinity, -Inf: -infinity, NA: undetermined, aliased or unresolved\n")
     }
 }
 
@@ -163,8 +157,10 @@ print.detect_infinite_estimates <- function(x, digits = max(5L, getOption("digit
                                        start = NULL, etastart = NULL,  mustart = NULL,
                                        offset = NULL, family = gaussian(),
                                        control = list(), intercept = TRUE, singular.ok = TRUE,
-                                       log_link = FALSE) {
+                                       log_link = FALSE, classify = TRUE) {
     control <- do.call("detect_separation_control", control)
+    find_coefficients <- classify && (log_link || control$implementation == "ROI" ||
+                                      control$purpose == "find")
     lp <- if (log_link) {
         dielb_ROI
     } else {
@@ -172,7 +168,7 @@ print.detect_infinite_estimates <- function(x, digits = max(5L, getOption("digit
     }
     # ensure x is a matrix
     x <- as.matrix(x)
-    betas_names_all <- betas_names <- if (is.null(colnames(x))) make.names(seq_len(NCOL(x))) else colnames(x)
+    betas_names_all <- if (is.null(colnames(x))) make.names(seq_len(NCOL(x))) else colnames(x)
     #
     nobs <- NROW(y)
     nvars <- ncol(x)
@@ -193,6 +189,7 @@ print.detect_infinite_estimates <- function(x, digits = max(5L, getOption("digit
     x <- x[keep, , drop = FALSE]
     y <- y[keep]
     # Detect aliasing
+    estimable <- seq_len(nvars)
     qrx <- qr(x)
     rank <- qrx$rank
     is_full_rank <- rank == nvars
@@ -202,9 +199,11 @@ print.detect_infinite_estimates <- function(x, digits = max(5L, getOption("digit
     if (!isTRUE(is_full_rank)) {
         aliased <- qrx$pivot[seq.int(qrx$rank + 1, nvars)]
         x <- x[, -aliased, drop = FALSE]
-        betas_names <- betas_names[-aliased]
+        estimable <- estimable[-aliased]
     }
     betas_all <- structure(rep(NA_real_, length(betas_names_all)), .Names = betas_names_all)
+    coefficient_status <- structure(rep("aliased", nvars), .Names = betas_names_all)
+    coefficient_status[estimable] <- "unresolved"
     if (control$solver == "alabama" & is.null(control$solver_control$start)) {
         control$solver_control$start <- rep(0, rank)
     }
@@ -218,9 +217,7 @@ print.detect_infinite_estimates <- function(x, digits = max(5L, getOption("digit
     # Run linear program
     if (rank == 0) {
         # No nonzero fitted direction remains after removing aliased columns.
-        beta <- if (!log_link && control$implementation == "lpSolveAPI" &&
-                    control$purpose == "test") NULL else numeric(0)
-        out <- list(outcome = FALSE, beta = beta)
+        out <- list(outcome = FALSE, beta = numeric(0), status = 0L)
     } else {
         out <- lp(x = x, y = y,
                   linear_program = control$linear_program,
@@ -229,29 +226,69 @@ print.detect_infinite_estimates <- function(x, digits = max(5L, getOption("digit
                   solver = control$solver,
                   solver_control = control$solver_control)
     }
-    if (is.na(out$outcome)) {
-        if (identical(control$implementation, "ROI")) {
-            warning("unexpected result from implementation ", control$implementation, " with solver: ", control$solver, "\n")
-        }
-        if (identical(control$implementation, "lsSolveAPI") & !log_link) {
-            warning("unexpected result from implementation ", control$implementation, " with linear_program: ", control$linear_program, " and purpose: ", control$purpose, "\n")
+    A <- binomial_cone_constraints(x, y, log_link = log_link)
+    if (!log_link && !is.null(out$beta) && rank > 0L && !is.na(out$outcome)) {
+        # Use the strict-margin objective for the global decision, and reject
+        # an infeasible returned direction rather than interpreting its signs.
+        d <- out$beta
+        if (length(d) != rank || any(!is.finite(d)) ||
+            any(abs(d) > 1 + control$tolerance) ||
+            any(drop(A %*% d) < -control$tolerance * pmax(1, rowSums(abs(A))))) {
+            out$outcome <- NA
+        } else {
+            out$outcome <- sum(A %*% d) > control$tolerance
         }
     }
-    if (is.null(out$beta)) {
+    coordinate_lp <- NULL
+    if (!find_coefficients) {
         betas_all <- NULL
-    }
-    else {
-        betas <- out$beta
-        names(betas) <- betas_names
-        inds <- abs(betas) < control$tolerance
-        betas <- Inf * betas
-        betas[inds] <- 0
-        betas_all[betas_names] <- betas[betas_names]
+        coefficient_status <- NULL
+    } else if (identical(out$outcome, FALSE)) {
+        # A successful global finiteness check needs no coordinate LPs.
+        betas_all[estimable] <- 0
+        coefficient_status[estimable] <- "finite"
+    } else {
+        coordinate_lp <- if (log_link || control$implementation == "ROI") {
+            coordinate_ranges_ROI(A, solver = control$solver,
+                                  tolerance = control$tolerance,
+                                  solver_control = control$solver_control)
+        } else {
+            coordinate_ranges_lpSolveAPI(A, tolerance = control$tolerance)
+        }
+        ranges <- coordinate_lp$ranges
+        valid <- is.finite(ranges) & !is.na(coordinate_lp$status) & coordinate_lp$status == 0L
+        resolved <- rowSums(valid) == 2L
+        positive <- ranges[, "upper"] > control$tolerance
+        negative <- ranges[, "lower"] < -control$tolerance
+        finite <- which(resolved & !positive & !negative)
+        pos_inf <- which(resolved & positive & !negative)
+        neg_inf <- which(resolved & negative & !positive)
+        undetermined <- which(resolved & positive & negative)
+        betas_all[estimable[finite]] <- 0
+        betas_all[estimable[pos_inf]] <- Inf
+        betas_all[estimable[neg_inf]] <- -Inf
+        coefficient_status[estimable[finite]] <- "finite"
+        coefficient_status[estimable[pos_inf]] <- "positive_infinity"
+        coefficient_status[estimable[neg_inf]] <- "negative_infinity"
+        coefficient_status[estimable[undetermined]] <- "undetermined"
+        if (is.na(out$outcome)) {
+            # Any successfully established nonzero range certifies an improving
+            # direction. A negative global decision needs every bound resolved.
+            if (any(valid[, "upper"] & positive, na.rm = TRUE) ||
+                any(valid[, "lower"] & negative, na.rm = TRUE)) {
+                out$outcome <- TRUE
+            } else if (all(resolved)) {
+                out$outcome <- FALSE
+            }
+        }
     }
     out <- list(x = x,
                 y = y,
                 coefficients = betas_all,
+                coefficient_status = coefficient_status,
+                coordinate_lp = coordinate_lp,
                 outcome = out$outcome,
+                lp_status = out$status,
                 control = control)
     return(out)
 }

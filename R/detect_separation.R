@@ -75,11 +75,11 @@
 #' [detect_infinite_estimates()] method. Separation
 #' detection, as separation is defined above, takes place using the
 #' linear programming methods in Konis (2007) regardless of the link
-#' function. The output of those methods is also used to determine
-#' which estimates are infinite, unless the link is `"log"`. In the
-#' latter case the linear programming methods in Schwendinger et
-#' al. (2021) are called to establish if and which estimates are
-#' infinite. If the link function is not one of `"logit"`, `"log"`,
+#' function. Coefficient classifications are obtained from coordinate-wise
+#' LPs over the likelihood recession cone. For the `"log"` link, this cone
+#' uses the constraints in Schwendinger et al. (2021), while the global
+#' separation decision uses Konis (2007). If the link function
+#' is not one of `"logit"`, `"log"`,
 #' `"probit"`, `"cauchit"`, `"cloglog"` then a warning is issued.
 #'
 #' If `separation_type = TRUE` in
@@ -103,13 +103,48 @@
 #' definitions of separation and the transformed linear programming
 #' formulation.
 #'
+#' Coefficient classification first checks finiteness using `separator_ROI()`,
+#' `separator_lpSolveAPI()` (a modified version of `separator()` from
+#' \pkg{safeBinaryRegression}), or `dielb_ROI()` for the `"log"` link.
+#' If finiteness is established, no coordinate LPs are needed. Otherwise, two
+#' coordinate-wise LPs per non-aliased coefficient minimize and maximize its
+#' directional component over the likelihood recession cone, subject to each
+#' direction coordinate lying in \eqn{[-1, 1]}. The minimum and maximum
+#' determine the reported coefficient flag:
+#'
+#' * Both minimum and maximum are zero: the coefficient is classified as
+#'   finite (`0`).
+#' * The maximum is positive and the minimum is zero: the coefficient is
+#'   classified as positive infinity (`Inf`).
+#' * The minimum is negative and the maximum is zero: the coefficient is
+#'   classified as negative infinity (`-Inf`).
+#' * The minimum is negative and the maximum is positive: there is no unique
+#'   coefficient limit; the flag is `NA` with status `"undetermined"`.
+#'
+#' Comparisons with zero use `tolerance` in
+#' [detect_separation_control()].
+#' For log-binomial models, these conclusions assume that some finite
+#' coefficient vector gives valid fitted probabilities and positive likelihood.
+#'
 #' The [coefficients()] method extracts a vector of values
 #' for each of the model parameters under the following convention:
-#' `0` if the maximum likelihood estimate of the parameter is
-#' finite, and `Inf` or `-Inf` if the maximum likelihood
-#' estimate of the parameter is plus or minus infinity. This
-#' convention makes it easy to adjust the maximum likelihood estimates
-#' to their actual values by element-wise addition.
+#' `0` if the coefficient remains bounded along every likelihood-maximizing
+#' sequence, and `Inf` or `-Inf` if it diverges along every such sequence with
+#' that sign. `NA` denotes an undetermined limit, an aliased coefficient, or
+#' an unresolved numerical calculation; `coefficient_status` distinguishes
+#' these cases. A finite classification does not guarantee a unique coefficient
+#' value. For the `"log"` and `"cauchit"` links, distinct finite coefficient
+#' vectors can maximize the likelihood.
+#'
+#' An unavailable coordinate bound leaves that coefficient unresolved; it is
+#' distinct from an undetermined limit, where both LPs succeeded and established
+#' attainable signs of either kind. Other coefficient classifications and an
+#' established global decision are retained. Coordinate LP failures issue one
+#' warning identifying the affected coefficients and whether the minimum or
+#' maximum calculation failed. The warning distinguishes solver failures from
+#' solutions that fail numerical checks. Unresolved calculations are also
+#' recorded in the returned components; invalid arguments or errors constructing
+#' the LP still raise errors.
 #'
 #' [detect_separation()] can be passed directly as
 #' a method to the [glm()] function. See, examples.
@@ -143,9 +178,24 @@
 #'
 #' @return
 #'
-#' A list that inherits from class [`detect_separation`],
-#' [`glm`] and [`lm`]. A `print` method is provided for
-#' [`detect_separation`] objects. If
+#' A list of class `"detect_separation"`, also inheriting from `"glm"` and
+#' `"lm"` when used as a [glm()] method. A `print` method is provided.
+#' Here `outcome` is `TRUE` for geometric separation, `FALSE` for overlap,
+#' and `NA` if the decision remains unresolved. Geometric separation need
+#' not imply infinite estimates for the log link.
+#'
+#' The common components returned by both [detect_separation()] and
+#' [detect_infinite_estimates()] are `coefficients`, `coefficient_status`,
+#' the processed `x`, `y`, and `control`, and the LP diagnostics. The named
+#' character vector `coefficient_status` uses `"finite"`, `"positive_infinity"`,
+#' `"negative_infinity"`, `"undetermined"`, `"aliased"`, and `"unresolved"`.
+#' When coordinate LPs are run, `coordinate_lp` contains their `ranges` and
+#' backend-specific `status` matrices; otherwise it is `NULL`. `lp_status`
+#' records the global LP status. In non-log models with
+#' `implementation = "lpSolveAPI"` and `purpose = "test"`, no coefficient
+#' classifications are returned. Empty models also return no classifications.
+#'
+#' If
 #' `detect_separation_control(separation_type = TRUE)` is used and
 #' separation is detected, then the returned object has a `complete`
 #' component, which is `TRUE` for complete separation and `FALSE` for
@@ -200,6 +250,24 @@
 #' endometrial_sep
 #' endometrial_sep_type
 #'
+#' # Aliasing: NV and 2 * NV are linearly dependent. The redundant
+#' # coefficient is NA; the other flags refer to the retained columns.
+#' endometrial_alias <- update(endometrial_sep,
+#'                            HG ~ NV + I(2 * NV) + PI + EH)
+#' coef(endometrial_alias)
+#' endometrial_alias$coefficient_status
+#'
+#' # Here the model matrix has full column rank, so there is no aliasing.
+#' endometrial_interaction <- update(endometrial_sep, HG ~ NV * PI + EH)
+#' endometrial_interaction
+#' endometrial_interaction$coefficient_status
+#' # All observations with `NV = 1` have `HG = 1`, including one with
+#' # `PI = 0`.  The `NV` coefficient must tend to positive infinity
+#' # along maximizing sequences. The `NV:PI` coefficient can tend to
+#' # either infinity or any finite value, provided `NV` grows
+#' # sufficiently fast. Its `NA` flag indicates that there is no
+#' # unique coefficient limit.
+#'
 #' \donttest{
 #' # Example inspired by unpublished microeconometrics lecture notes by
 #' # Achim Zeileis https://eeecon.uibk.ac.at/~zeileis/
@@ -244,7 +312,7 @@ detect_separation <- function(x, y, weights = NULL,
                                       etastart = etastart,  mustart = mustart,
                                       offset = offset, family = family, control = control,
                                       intercept = control, singular.ok = singular.ok,
-                                      log_link = FALSE)
+                                      log_link = FALSE, classify = !log_link)
     out$complete <- NULL
     if (isTRUE(out$control$separation_type) && isTRUE(out$outcome)) {
         complete <- separation_type_ROI(x = out$x, y = out$y,
@@ -258,11 +326,14 @@ detect_separation <- function(x, y, weights = NULL,
     }
     if (log_link) {
         # test for existence using the linear program in Schwendinger et al (2021)
-        out$coefficients <- .detect_infinite_estimates(x = x, y = y, weights = weights, start = start,
+        limits <- .detect_infinite_estimates(x = x, y = y, weights = weights, start = start,
                                                        etastart = etastart,  mustart = mustart,
                                                        offset = offset, family = family, control = control,
                                                        intercept = control, singular.ok = singular.ok,
-                                                       log_link = TRUE)$coefficients
+                                                       log_link = TRUE)
+        out$coefficients <- limits$coefficients
+        out$coefficient_status <- limits$coefficient_status
+        out$coordinate_lp <- limits$coordinate_lp
     }
     class(out) <- out$class <- "detect_separation"
     out
@@ -291,8 +362,23 @@ print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L
     cat("Separation:", x$outcome, str)
     if (!is.null(x$coefficients)) {
         cat("Existence of maximum likelihood estimates\n")
-        print(coefficients(x))
-        cat("0: finite value, Inf: infinity, -Inf: -infinity\n")
+
+        coefs <- coefficients(x)
+        display <- format(coefs, digits = digits, trim = TRUE)
+
+        labels <- c(aliased = "NA(A)",
+                    undetermined = "NA(UD)",
+                    unresolved = "NA(UR)")
+        missing <- is.na(coefs)
+        display[missing] <- unname(labels[x$coefficient_status[missing]])
+
+        print(display, quote = FALSE, right = TRUE)
+        cat("0: finite value, Inf: infinity, -Inf: -infinity, ",
+            "NA(A): aliased, NA(UD): undetermined, NA(UR): unresolved\n",
+            sep = "")
+        ## cat("Existence of maximum likelihood estimates\n")
+        ## print(coefficients(x))
+        ## cat("0: finite value, Inf: infinity, -Inf: -infinity, NA: undetermined, aliased or unresolved\n")
     }
 }
 
@@ -305,14 +391,17 @@ print.detect_separation <- function(x, digits = max(5L, getOption("digits") - 3L
 #' @aliases detectSeparationControl
 #' @param implementation should the implementation using `ROI` or the
 #'     implementation using `lpSolveAPI` be used? Default is `ROI`.
-#' @param tolerance maximum absolute variable value from the linear
-#'     program, before separation is declared. Default is `1e-04`.
+#' @param tolerance nonnegative numerical threshold for global margin
+#'     objectives and coordinate ranges, also used to check primal residuals.
+#'     Default is `1e-04`. Solver accuracy is controlled separately through
+#'     `solver_control`.
 #' @param linear_program should [detect_separation()] solve the
 #'     `"primal"` (default) or `"dual"` linear program for separation
 #'     detection? Only relevant if `implementation = "lpSolveAPI"`.
 #' @param purpose should [detect_separation()] simply `"test"` for
 #'     separation or also `"find"` (default) which parameters are
-#'     infinite? Only relevant if `implementation = "lpSolveAPI"`.
+#'     infinite? Only relevant for non-log models with
+#'     `implementation = "lpSolveAPI"`.
 #' @param solver should the linear program be solved using the
 #'     `"lpsolve"` (using the `ROI.plugin.lpsolve` package; default)
 #'     or another solver? Alternative solvers are `"glpk"`, `"cbc"`,
