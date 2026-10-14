@@ -77,7 +77,8 @@ separator_ROI <- function(x, y,
         has_separation <- NA
     }
     list(outcome = has_separation,
-         beta = sol)
+         beta = sol,
+         status = ROI::solution(result, "status_code"))
 }
 
 # detect infinite estimates log binomial (dielb)
@@ -106,9 +107,20 @@ dielb_ROI <- function(x, y,
     result <- ROI::ROI_solve(op, solver, control = solver_control)
     sol <- ROI::solution(result)
     names(sol) <- colnames(x)
-    has_infinite_estimates <-  !isTRUE(ROI::solution(result, "status_code") == 0L)
+    status <- ROI::solution(result, "status_code")
+    # A nonoptimal status need not mean unboundedness. Other statuses leave
+    # the global decision unresolved; coordinate LPs can still supply evidence.
+    symbol <- as.character(result$status$msg$symbol)
+    unbounded <- length(symbol) == 1L &&
+        symbol %in% c("LPS_UNBOUNDED", "GLP_UNBND", "ECOS_DINF")
+    has_infinite_estimates <- if (isTRUE(status == 0L)) FALSE else if (unbounded) TRUE else NA
+    if (identical(has_infinite_estimates, FALSE) &&
+        (length(sol) != ncol(x) || any(!is.finite(sol)) || any(abs(sol) > tolerance))) {
+        has_infinite_estimates <- NA
+    }
     list(outcome = has_infinite_estimates,
-         beta = sol)
+         beta = sol,
+         status = status)
 }
 
 #  Port of the separator function from the safeBinaryRegression
@@ -164,11 +176,11 @@ separator_lpSolveAPI <- function(x, y,
         control <- lpSolveAPI::lp.control(lp, pivoting = "firstindex", sense = "max",
                               simplextype = c("primal", "primal"))
         status <- lpSolveAPI::solve.lpExtPtr(lp)
+        beta <- if (status == 0) lpSolveAPI::get.variables(lp) else NULL
         if (status != 0) {
             ans$outcome <- NA
         }
-        beta <- lpSolveAPI::get.variables(lp)
-        if (any(abs(beta) > tolerance)) {
+        else if (any(abs(beta) > tolerance)) {
             ans$outcome <- TRUE
         }
         else {
@@ -224,8 +236,11 @@ separator_lpSolveAPI <- function(x, y,
         basis[b >= 0.0] <- basis[b >= 0.0] + p
         status <- lpSolveAPI::set.basis(lp, -(n + p + basis))
         status <- lpSolveAPI::solve.lpExtPtr(lp)
-        beta <- lpSolveAPI::get.dual.solution(lp)[2:(p+1)]
-        if (any(abs(beta) > tolerance)) {
+        beta <- if (status == 0) lpSolveAPI::get.dual.solution(lp)[2:(p+1)] else NULL
+        if (status != 0) {
+            ans$outcome <- NA
+        }
+        else if (any(abs(beta) > tolerance)) {
             ans$outcome <- TRUE
         }
         else {
@@ -233,6 +248,7 @@ separator_lpSolveAPI <- function(x, y,
         }
         ans$beta <- beta
     }
+    ans$status <- status
     ans
 }
 
@@ -313,6 +329,28 @@ binomial_cone_constraints <- function(x, y, log_link = FALSE) {
             }
             ranges[j, k] <- value
         }
+    }
+    failed <- which(is.na(ranges), arr.ind = TRUE)
+    if (nrow(failed) > 0L) {
+        coefficient_names <- colnames(A)
+        if (is.null(coefficient_names)) {
+            coefficient_names <- paste("coefficient", seq_len(q))
+        }
+        details <- vapply(seq_len(nrow(failed)), function(i) {
+            j <- failed[i, 1L]
+            k <- failed[i, 2L]
+            reason <- if (isTRUE(status[j, k] == 0L)) {
+                "solution failed numerical checks"
+            } else {
+                paste("solver status", status[j, k])
+            }
+            paste0(coefficient_names[j], " (", c("minimum", "maximum")[k],
+                   ": ", reason, ")")
+        }, character(1L))
+        warning("Coordinate LP calculations failed for: ",
+                paste(details, collapse = "; "),
+                ". The affected coefficient classifications are unresolved.",
+                call. = FALSE)
     }
     list(ranges = ranges, status = status)
 }
