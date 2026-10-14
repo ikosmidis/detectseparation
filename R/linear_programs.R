@@ -236,6 +236,142 @@ separator_lpSolveAPI <- function(x, y,
     ans
 }
 
+# Cone constraints for initialized responses, after removing zero weights.
+# Mixed responses contribute both signs of a row. For the log link, success
+# predictors must remain constant and failure predictors must not increase.
+binomial_cone_constraints <- function(x, y, log_link = FALSE) {
+    x <- as.matrix(x)
+    if (length(y) != nrow(x) || any(!is.finite(y)) || any(y < 0 | y > 1)) {
+        stop("y must contain one initialized binomial response per row of x")
+    }
+    success <- x[y > 0, , drop = FALSE]
+    failure <- x[y < 1, , drop = FALSE]
+    if (log_link) {
+        rbind(-failure, success, -success)
+    } else {
+        rbind(success, -failure)
+    }
+}
+
+# Directional minima and maxima over {d: A d >= 0, -1 <= d <= 1}.
+# These are ranges of directions, not intervals for coefficient estimates.
+# Each backend supplies an optimality status, a primal solution, and its
+# objective. An NA range denotes a nonoptimal or numerically unusable solve;
+# status codes retain their backend-specific meanings (zero means optimal).
+.coordinate_ranges <- function(A, solve, tolerance, make_solver = NULL) {
+    A <- as.matrix(A)
+    if (!is.numeric(A) || any(!is.finite(A))) {
+        stop("A must be a finite numeric matrix")
+    }
+    if (length(tolerance) != 1L || !is.finite(tolerance) || tolerance < 0) {
+        stop("tolerance must be a finite nonnegative number")
+    }
+    q <- ncol(A)
+    labels <- list(colnames(A), c("lower", "upper"))
+    ranges <- matrix(NA_real_, q, 2L, dimnames = labels)
+    status <- matrix(NA_integer_, q, 2L, dimnames = labels)
+    if (q == 0L) {
+        return(list(ranges = ranges, status = status))
+    }
+    if (nrow(A) == 0L) {
+        ranges[, "lower"] <- -1
+        ranges[, "upper"] <- 1
+        status[] <- 0L
+        return(list(ranges = ranges, status = status))
+    }
+    # Construct reusable solver objects only after validation and empty cases.
+    if (!is.null(make_solver)) {
+        solve <- make_solver(A)
+    }
+    # Check primal feasibility with row-relative residual tolerances.
+    margin_tolerance <- tolerance * pmax(1, rowSums(abs(A)))
+    for (j in seq_len(q)) {
+        objective <- numeric(q)
+        objective[j] <- 1
+        for (k in seq_len(2L)) {
+            result <- solve(objective, maximum = k == 2L)
+            status[j, k] <- result$status
+            if (!isTRUE(result$status == 0L)) {
+                next
+            }
+            d <- result$solution
+            value <- result$objective
+            if (length(d) != q || any(!is.finite(d)) ||
+                length(value) != 1L || !is.finite(value)) {
+                next
+            }
+            if (any(abs(d) > 1 + tolerance) ||
+                any(drop(A %*% d) < -margin_tolerance) ||
+                abs(value - d[j]) > tolerance * max(1, abs(value), abs(d[j]))) {
+                next
+            }
+            # Zero is feasible, so minima cannot be positive and maxima cannot
+            # be negative, apart from the allowed numerical residual.
+            if ((k == 1L && value > tolerance) ||
+                (k == 2L && value < -tolerance)) {
+                next
+            }
+            ranges[j, k] <- value
+        }
+    }
+    list(ranges = ranges, status = status)
+}
+
+coordinate_ranges_ROI <- function(A, solver = "lpsolve", tolerance = 1e-04,
+                                  solver_control = list()) {
+    make_solver <- function(A) {
+        q <- ncol(A)
+        constraints <- ROI::L_constraint(A, rep.int(">=", nrow(A)),
+                                          numeric(nrow(A)))
+        bounds <- ROI::V_bound(li = seq_len(q), lb = rep.int(-1, q),
+                               ui = seq_len(q), ub = rep.int(1, q))
+        function(objective, maximum) {
+            op <- ROI::OP(objective = objective, constraints = constraints,
+                           bounds = bounds, maximum = maximum)
+            result <- ROI::ROI_solve(op, solver = solver, control = solver_control)
+            status <- ROI::solution(result, "status_code")
+            if (!isTRUE(status == 0L)) {
+                return(list(status = status))
+            }
+            list(status = status, solution = ROI::solution(result, "primal"),
+                 objective = ROI::solution(result, "objval"))
+        }
+    }
+    .coordinate_ranges(A, solve = NULL, tolerance = tolerance, make_solver = make_solver)
+}
+
+coordinate_ranges_lpSolveAPI <- function(A, tolerance = 1e-04,
+                                         solver_control = list()) {
+    make_solver <- function(A) {
+        q <- ncol(A)
+        lp <- lpSolveAPI::make.lp(nrow(A), q)
+        for (j in seq_len(q)) {
+            lpSolveAPI::set.column(lp, j, A[, j])
+        }
+        lpSolveAPI::set.rhs(lp, numeric(nrow(A)))
+        lpSolveAPI::set.constr.type(lp, rep.int(">=", nrow(A)))
+        lpSolveAPI::set.bounds(lp, lower = rep.int(-1, q),
+                               upper = rep.int(1, q))
+        control <- utils::modifyList(list(pivoting = "firstindex",
+                                         simplextype = c("primal", "primal")),
+                                     solver_control)
+        function(objective, maximum) {
+            lpSolveAPI::set.objfn(lp, objective)
+            control$sense <- if (maximum) "max" else "min"
+            do.call(lpSolveAPI::lp.control, c(list(lprec = lp), control))
+            # A basis from a different objective or sense need not be suitable.
+            lpSolveAPI::set.basis(lp, default = TRUE)
+            status <- lpSolveAPI::solve.lpExtPtr(lp)
+            if (!isTRUE(status == 0L)) {
+                return(list(status = status))
+            }
+            list(status = status, solution = lpSolveAPI::get.variables(lp),
+                 objective = lpSolveAPI::get.objective(lp))
+        }
+    }
+    .coordinate_ranges(A, solve = NULL, tolerance = tolerance, make_solver = make_solver)
+}
+
 separation_type_ROI <- function(x, y,
                          solver = "lpsolve",
                          tolerance = 1e-03,
