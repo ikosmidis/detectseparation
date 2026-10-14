@@ -3,6 +3,16 @@ roi <- detectseparation:::coordinate_ranges_ROI
 api <- detectseparation:::coordinate_ranges_lpSolveAPI
 engine <- detectseparation:::.coordinate_ranges
 
+capture_warnings <- function(code) {
+    captured <- new.env(parent = emptyenv())
+    captured$messages <- character()
+    value <- withCallingHandlers(code, warning = function(w) {
+        captured$messages <- c(captured$messages, conditionMessage(w))
+        invokeRestart("muffleWarning")
+    })
+    list(value = value, warnings = captured$messages)
+}
+
 expected_ranges <- function(lower, upper, coefficient_names) {
     matrix(c(lower, upper), ncol = 2L,
            dimnames = list(coefficient_names, c("lower", "upper")))
@@ -81,15 +91,25 @@ expect_equal(cone(X_mixed, c(0.5, 0), log_link = TRUE),
              matrix(c(-1, -2, 1, -1), ncol = 1L))
 
 ## A failed coordinate solve must remain unresolved, without erasing other bounds.
-partial <- engine(diag(2), function(objective, maximum) {
+partial_result <- capture_warnings(engine(diag(2), function(objective, maximum) {
     if (!maximum) return(list(status = 2L))
     list(status = 0L, solution = objective, objective = 1)
-}, tolerance = 1e-04)
+}, tolerance = 1e-04))
+partial <- partial_result$value
+expect_equal(partial_result$warnings,
+             paste0("Coordinate LP calculations failed for: ",
+                    "coefficient 1 (minimum: solver status 2); ",
+                    "coefficient 2 (minimum: solver status 2). ",
+                    "The affected coefficient classifications are unresolved."))
 expect_true(all(is.na(partial$ranges[, "lower"])))
 expect_equal(unname(partial$ranges[, "upper"]), c(1, 1))
 expect_equal(unname(partial$status), matrix(c(2L, 2L, 0L, 0L), 2L, 2L))
 
-failed <- engine(diag(2), function(...) list(status = 3L), tolerance = 1e-04)
+failed_result <- capture_warnings(engine(diag(2), function(...) list(status = 3L),
+                                        tolerance = 1e-04))
+failed <- failed_result$value
+expect_equal(length(failed_result$warnings), 1L)
+expect_true(grepl("maximum: solver status 3", failed_result$warnings, fixed = TRUE))
 expect_true(all(is.na(failed$ranges)))
 expect_true(all(failed$status == 3L))
 
@@ -101,7 +121,12 @@ invalid_results <- list(
     inconsistent_objective = list(status = 0L, solution = c(0, 0), objective = 0.5),
     wrong_dimension = list(status = 0L, solution = 0, objective = 0))
 for (reason in names(invalid_results)) {
-    invalid <- engine(diag(2), function(...) invalid_results[[reason]], tolerance = 1e-04)
+    invalid_result <- capture_warnings(engine(diag(2), function(...) invalid_results[[reason]],
+                                             tolerance = 1e-04))
+    invalid <- invalid_result$value
+    expect_equal(length(invalid_result$warnings), 1L, info = reason)
+    expect_true(grepl("solution failed numerical checks", invalid_result$warnings,
+                     fixed = TRUE), info = reason)
     expect_true(all(is.na(invalid$ranges)), info = reason)
     expect_true(all(invalid$status == 0L), info = reason)
 }
@@ -110,10 +135,40 @@ for (reason in names(invalid_results)) {
 equality <- matrix(c(1, -1), ncol = 1L)
 residual <- function(...) list(status = 0L, solution = 1e-10, objective = 1e-10)
 loose <- engine(equality, residual, tolerance = 1e-04)
-tight <- engine(equality, residual, tolerance = 1e-12)
+tight_result <- capture_warnings(engine(equality, residual, tolerance = 1e-12))
+tight <- tight_result$value
+expect_equal(length(tight_result$warnings), 1L)
+expect_true(grepl("solution failed numerical checks", tight_result$warnings, fixed = TRUE))
 expect_equal(unname(loose$ranges), matrix(1e-10, 1L, 2L), tolerance = 0)
 expect_true(all(is.na(tight$ranges)))
 expect_true(all(tight$status == 0L))
+
+## Different failure reasons and bounds are collected into one named warning.
+named_A <- diag(3)
+colnames(named_A) <- c("a", "b", "c")
+mixed <- capture_warnings(engine(named_A, function(objective, maximum) {
+    if (objective[1L] == 1 && !maximum) return(list(status = 2L))
+    if (objective[3L] == 1 && !maximum) return(list(status = NA_integer_))
+    if (objective[2L] == 1 && maximum) {
+        return(list(status = 0L, solution = 2 * objective, objective = 2))
+    }
+    d <- if (maximum) objective else numeric(3)
+    list(status = 0L, solution = d, objective = as.numeric(maximum))
+}, tolerance = 1e-04))
+expect_equal(mixed$warnings,
+             paste0("Coordinate LP calculations failed for: ",
+                    "a (minimum: solver status 2); c (minimum: solver status NA); ",
+                    "b (maximum: solution failed numerical checks). ",
+                    "The affected coefficient classifications are unresolved."))
+expect_equal(unname(mixed$value$ranges), matrix(c(NA, 0, NA, 1, NA, 1), 3L, 2L))
+expect_equal(unname(mixed$value$status), matrix(c(2L, 0L, NA, 0L, 0L, 0L), 3L, 2L))
+
+## Successful and empty calculations issue no warnings.
+for (backend in backends) {
+    expect_silent(backend(cases$ambiguous$A))
+    expect_silent(backend(cases$no_constraints$A))
+    expect_silent(backend(cases$no_coordinates$A))
+}
 
 ## Strict input checks in both backends.
 for (bad in list(matrix(NA_real_, 1L, 1L), matrix(Inf, 1L, 1L), matrix("x", 1L, 1L))) {
