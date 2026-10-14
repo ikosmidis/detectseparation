@@ -8,6 +8,23 @@
 #' The key methods are [detect_separation()] and
 #' [check_infinite_estimates()].
 #'
+#' #' @details
+#' # Declaration of AI-Assisted Development
+#'
+#' Generative artificial intelligence tools were used to assist with
+#' selected aspects of software implementation and documentation.
+#'
+#' The use of these tools was limited to supporting the development
+#' process. The scientific methodology, computational objectives, and
+#' final decisions concerning the package remain the responsibility of
+#' its human authors. AI-assisted material is subject to the same
+#' review, testing, and quality standards as other contributions to
+#' the package.
+#'
+#' This declaration is provided in the interest of transparency and
+#' reproducibility. It does not modify the licensing terms of the
+#' software.
+#'
 #' @seealso [detect_separation()], [check_infinite_estimates()]
 #'
 #' @name detectseparation
