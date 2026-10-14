@@ -146,9 +146,24 @@ print.detect_infinite_estimates <- function(x, digits = max(5L, getOption("digit
     }
     cat("Infinite estimates:", x$outcome, "\n")
     if (!is.null(x$coefficients)) {
-        cat("Existence of maximum likelihood estimates\n")
-        print(coefficients(x))
-        cat("0: finite value, Inf: infinity, -Inf: -infinity, NA: undetermined, aliased or unresolved\n")
+                cat("Existence of maximum likelihood estimates\n")
+
+        coefs <- coefficients(x)
+        display <- format(coefs, digits = digits, trim = TRUE)
+
+        labels <- c(aliased = "NA(A)",
+                    undetermined = "NA(UD)",
+                    unresolved = "NA(UR)")
+        missing <- is.na(coefs)
+        display[missing] <- unname(labels[x$coefficient_status[missing]])
+
+        print(display, quote = FALSE, right = TRUE)
+        cat("0: finite value, Inf: infinity, -Inf: -infinity, ",
+            "NA(A): aliased, NA(UD): undetermined, NA(UR): unresolved\n",
+            sep = "")
+        ## cat("Existence of maximum likelihood estimates\n")
+        ## print(coefficients(x))
+        ## cat("0: finite value, Inf: infinity, -Inf: -infinity, NA: undetermined, aliased or unresolved\n")
     }
 }
 
