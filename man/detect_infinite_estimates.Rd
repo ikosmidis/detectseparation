@@ -72,6 +72,13 @@ details.}
 \item{singular.ok}{logical. If \code{FALSE}, a singular model is an
 error.}
 }
+\value{
+A list of class \code{"detect_infinite_estimates"}, also inheriting from
+\code{"glm"} and \code{"lm"} when used as a \code{\link[=glm]{glm()}} method. The common output
+components are described in the Value section of \code{\link[=detect_separation]{detect_separation()}}.
+Here \code{outcome} is \code{TRUE} if infinite components are detected, \code{FALSE}
+if finiteness is established, and \code{NA} if the decision remains unresolved.
+}
 \description{
 Method for \code{\link[=glm]{glm()}} that detects infinite components in
 the maximum likelihood estimates of generalized linear models
@@ -85,23 +92,11 @@ maximum likelihood estimates. For this reason, for models with the
 linear optimization model developed in Schwendinger et
 al. (2021). For all the other supported links
 \code{\link[=detect_infinite_estimates]{detect_infinite_estimates()}} relies on the linear programming
-methods developed in Konis (2007). See \code{\link[=detect_separation]{detect_separation()}} for
-definitions and details.
-
-\code{\link[=detect_infinite_estimates]{detect_infinite_estimates()}} is a wrapper to the
-functions \code{separator_ROI()}, \code{separator_lpSolveAPI()} (a
-modified version of the \code{separator()} function from the
-\pkg{safeBinaryRegression} R package), and \code{dielb_ROI()}. The first
-two are used for non-log links, while \code{dielb_ROI()} is used for the
-\code{"log"} link.
-
-The \code{\link[=coefficients]{coefficients()}} method extracts a vector of values
-for each of the model parameters under the following convention:
-\code{0} if the maximum likelihood estimate of the parameter is
-finite, and \code{Inf} or \code{-Inf} if the maximum likelihood
-estimate of the parameter is plus or minus infinity. This
-convention makes it easy to adjust the maximum likelihood estimates
-to their actual values by element-wise addition.
+methods developed in Konis (2007). Log-binomial calculations use ROI;
+non-log models use the selected implementation. See \code{\link[=detect_separation]{detect_separation()}}
+for definitions, the coordinate-wise LP calculation, coefficient flag
+meanings, numerical failure handling, and the log-binomial feasibility
+assumption.
 
 \code{\link[=detect_infinite_estimates]{detect_infinite_estimates()}} can be passed directly as
 a method to the \code{\link[=glm]{glm()}} function. See, examples.

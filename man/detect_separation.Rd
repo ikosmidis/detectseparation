@@ -73,9 +73,24 @@ details.}
 error.}
 }
 \value{
-A list that inherits from class \code{\link{detect_separation}},
-\code{\link{glm}} and \code{\link{lm}}. A \code{print} method is provided for
-\code{\link{detect_separation}} objects. If
+A list of class \code{"detect_separation"}, also inheriting from \code{"glm"} and
+\code{"lm"} when used as a \code{\link[=glm]{glm()}} method. A \code{print} method is provided.
+Here \code{outcome} is \code{TRUE} for geometric separation, \code{FALSE} for overlap,
+and \code{NA} if the decision remains unresolved. Geometric separation need
+not imply infinite estimates for the log link.
+
+The common components returned by both \code{\link[=detect_separation]{detect_separation()}} and
+\code{\link[=detect_infinite_estimates]{detect_infinite_estimates()}} are \code{coefficients}, \code{coefficient_status},
+the processed \code{x}, \code{y}, and \code{control}, and the LP diagnostics. The named
+character vector \code{coefficient_status} uses \code{"finite"}, \code{"positive_infinity"},
+\code{"negative_infinity"}, \code{"undetermined"}, \code{"aliased"}, and \code{"unresolved"}.
+When coordinate LPs are run, \code{coordinate_lp} contains their \code{ranges} and
+backend-specific \code{status} matrices; otherwise it is \code{NULL}. \code{lp_status}
+records the global LP status. In non-log models with
+\code{implementation = "lpSolveAPI"} and \code{purpose = "test"}, no coefficient
+classifications are returned. Empty models also return no classifications.
+
+If
 \code{detect_separation_control(separation_type = TRUE)} is used and
 separation is detected, then the returned object has a \code{complete}
 component, which is \code{TRUE} for complete separation and \code{FALSE} for
@@ -125,11 +140,11 @@ estimates has infinite components.
 \code{\link[=detect_infinite_estimates]{detect_infinite_estimates()}} method. Separation
 detection, as separation is defined above, takes place using the
 linear programming methods in Konis (2007) regardless of the link
-function. The output of those methods is also used to determine
-which estimates are infinite, unless the link is \code{"log"}. In the
-latter case the linear programming methods in Schwendinger et
-al. (2021) are called to establish if and which estimates are
-infinite. If the link function is not one of \code{"logit"}, \code{"log"},
+function. Coefficient classifications are obtained from coordinate-wise
+LPs over the likelihood recession cone. For the \code{"log"} link, this cone
+uses the constraints in Schwendinger et al. (2021), while the global
+separation decision uses Konis (2007). If the link function
+is not one of \code{"logit"}, \code{"log"},
 \code{"probit"}, \code{"cauchit"}, \code{"cloglog"} then a warning is issued.
 
 If \code{separation_type = TRUE} in
@@ -153,13 +168,49 @@ detected. See Konis (2007, Section 1.3 and Chapter 4) for the
 definitions of separation and the transformed linear programming
 formulation.
 
+Coefficient classification first checks finiteness using \code{separator_ROI()},
+\code{separator_lpSolveAPI()} (a modified version of \code{separator()} from
+\pkg{safeBinaryRegression}), or \code{dielb_ROI()} for the \code{"log"} link.
+If finiteness is established, no coordinate LPs are needed. Otherwise, two
+coordinate-wise LPs per non-aliased coefficient minimize and maximize its
+directional component over the likelihood recession cone, subject to each
+direction coordinate lying in \eqn{[-1, 1]}. The minimum and maximum
+determine the reported coefficient flag:
+\itemize{
+\item Both minimum and maximum are zero: the coefficient is classified as
+finite (\code{0}).
+\item The maximum is positive and the minimum is zero: the coefficient is
+classified as positive infinity (\code{Inf}).
+\item The minimum is negative and the maximum is zero: the coefficient is
+classified as negative infinity (\code{-Inf}).
+\item The minimum is negative and the maximum is positive: there is no unique
+coefficient limit; the flag is \code{NA} with status \code{"undetermined"}.
+}
+
+Comparisons with zero use \code{tolerance} in
+\code{\link[=detect_separation_control]{detect_separation_control()}}.
+For log-binomial models, these conclusions assume that some finite
+coefficient vector gives valid fitted probabilities and positive likelihood.
+
 The \code{\link[=coefficients]{coefficients()}} method extracts a vector of values
 for each of the model parameters under the following convention:
-\code{0} if the maximum likelihood estimate of the parameter is
-finite, and \code{Inf} or \code{-Inf} if the maximum likelihood
-estimate of the parameter is plus or minus infinity. This
-convention makes it easy to adjust the maximum likelihood estimates
-to their actual values by element-wise addition.
+\code{0} if the coefficient remains bounded along every likelihood-maximizing
+sequence, and \code{Inf} or \code{-Inf} if it diverges along every such sequence with
+that sign. \code{NA} denotes an undetermined limit, an aliased coefficient, or
+an unresolved numerical calculation; \code{coefficient_status} distinguishes
+these cases. A finite classification does not guarantee a unique coefficient
+value. For the \code{"log"} and \code{"cauchit"} links, distinct finite coefficient
+vectors can maximize the likelihood.
+
+An unavailable coordinate bound leaves that coefficient unresolved; it is
+distinct from an undetermined limit, where both LPs succeeded and established
+attainable signs of either kind. Other coefficient classifications and an
+established global decision are retained. Coordinate LP failures issue one
+warning identifying the affected coefficients and whether the minimum or
+maximum calculation failed. The warning distinguishes solver failures from
+solutions that fail numerical checks. Unresolved calculations are also
+recorded in the returned components; invalid arguments or errors constructing
+the LP still raise errors.
 
 \code{\link[=detect_separation]{detect_separation()}} can be passed directly as
 a method to the \code{\link[=glm]{glm()}} function. See, examples.
@@ -206,6 +257,24 @@ summary(update(endometrial_sep, method = "glm.fit"))
 endometrial_sep_type <- update(endometrial_sep, separation_type = TRUE)
 endometrial_sep
 endometrial_sep_type
+
+# Aliasing: NV and 2 * NV are linearly dependent. The redundant
+# coefficient is NA; the other flags refer to the retained columns.
+endometrial_alias <- update(endometrial_sep,
+                           HG ~ NV + I(2 * NV) + PI + EH)
+coef(endometrial_alias)
+endometrial_alias$coefficient_status
+
+# Here the model matrix has full column rank, so there is no aliasing.
+endometrial_interaction <- update(endometrial_sep, HG ~ NV * PI + EH)
+endometrial_interaction
+endometrial_interaction$coefficient_status
+# All observations with `NV = 1` have `HG = 1`, including one with
+# `PI = 0`.  The `NV` coefficient must tend to positive infinity
+# along maximizing sequences. The `NV:PI` coefficient can tend to
+# either infinity or any finite value, provided `NV` grows
+# sufficiently fast. Its `NA` flag indicates that there is no
+# unique coefficient limit.
 
 \donttest{
 # Example inspired by unpublished microeconometrics lecture notes by

@@ -12,9 +12,28 @@ the detection of separation and of infinite maximum likelihood
 estimates in binomial response generalized linear models.
 }
 \details{
-The key methods are \code{\link[=detect_separation]{detect_separation()}} and
+The key methods are \code{\link[=detect_separation]{detect_separation()}}, \code{\link[=detect_infinite_estimates]{detect_infinite_estimates()}} and
 \code{\link[=check_infinite_estimates]{check_infinite_estimates()}}.
+
+#' @details
 }
+\section{Declaration of AI-Assisted Development}{
+Generative artificial intelligence tools were used to assist with
+selected aspects of software implementation, testing and
+documentation.
+
+The use of these tools was limited to supporting the development
+process. The scientific methodology, computational objectives, and
+final decisions concerning the package remain the responsibility of
+its human authors. AI-assisted material is subject to the same
+review, testing, and quality standards as other contributions to
+the package.
+
+This declaration is provided in the interest of transparency and
+reproducibility. It does not modify the licensing terms of the
+software.
+}
+
 \seealso{
 \code{\link[=detect_separation]{detect_separation()}}, \code{\link[=check_infinite_estimates]{check_infinite_estimates()}}
 }

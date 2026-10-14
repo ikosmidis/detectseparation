@@ -5,14 +5,15 @@
 #' the detection of separation and of infinite maximum likelihood
 #' estimates in binomial response generalized linear models.
 #'
-#' The key methods are [detect_separation()] and
+#' The key methods are [detect_separation()], [detect_infinite_estimates()] and
 #' [check_infinite_estimates()].
 #'
 #' #' @details
 #' # Declaration of AI-Assisted Development
 #'
 #' Generative artificial intelligence tools were used to assist with
-#' selected aspects of software implementation and documentation.
+#' selected aspects of software implementation, testing and
+#' documentation.
 #'
 #' The use of these tools was limited to supporting the development
 #' process. The scientific methodology, computational objectives, and

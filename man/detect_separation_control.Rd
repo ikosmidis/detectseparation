@@ -44,10 +44,13 @@ detection? Only relevant if \code{implementation = "lpSolveAPI"}.}
 
 \item{purpose}{should \code{\link[=detect_separation]{detect_separation()}} simply \code{"test"} for
 separation or also \code{"find"} (default) which parameters are
-infinite? Only relevant if \code{implementation = "lpSolveAPI"}.}
+infinite? Only relevant for non-log models with
+\code{implementation = "lpSolveAPI"}.}
 
-\item{tolerance}{maximum absolute variable value from the linear
-program, before separation is declared. Default is \code{1e-04}.}
+\item{tolerance}{nonnegative numerical threshold for global margin
+objectives and coordinate ranges, also used to check primal residuals.
+Default is \code{1e-04}. Solver accuracy is controlled separately through
+\code{solver_control}.}
 
 \item{solver_control}{a list with additional control parameters for
 the \code{"solver"}. This is solver specific, so consult the
