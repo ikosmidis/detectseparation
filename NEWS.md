@@ -2,13 +2,24 @@
 
 ## Bug fixes
 
++ Coefficient classifications now use coordinate-wise LPs when the
+  global calculation does not establish finiteness. The methods return
+  `NA` for undetermined limits and unresolved calculations, with their
+  interpretation explicitly recorded. This also distinguishes finite
+  and infinite components in log-binomial models whose global LP is
+  unbounded.
+
 + Aliasing is now detected after excluding observations with zero
   effective weight, including binomial responses with zero trial
   totals. 
 
-## New functionality
-
 ## Other improvements, updates and additions
+
++ Documentation and README updates.
+
++ `print()` methods now report `NA` for aliased, undetermined and
+  unresolved coefficients.
+
 
 # detectseparation 0.4
 
